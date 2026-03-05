@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% block title %}New Service — Amar Honda Care{% endblock %}
-{% block page_title %}New Service Record{% endblock %}
+{% block title %}{% if form.instance.pk %}Edit{% else %}New{% endif %} Service — Amar Honda Care{% endblock %}
+{% block page_title %}{% if form.instance.pk %}Edit Service Record{% else %}New Service Record{% endif %}{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
@@ -10,25 +10,76 @@
                 <form method="post">
                     {% csrf_token %}
                     <div class="row g-3">
-                        <div class="col-md-6"><label class="form-label fw-semibold">Vehicle Number</label>{{
-                            form.vehicle_number }}</div>
-                        <div class="col-md-6"><label class="form-label fw-semibold">Vehicle Model</label>{{
-                            form.vehicle_model }}</div>
-                        <div class="col-md-6"><label class="form-label fw-semibold">Customer Name</label>{{
-                            form.customer_name }}</div>
-                        <div class="col-md-6"><label class="form-label fw-semibold">Customer Phone</label>{{
-                            form.customer_phone }}</div>
-                        <div class="col-md-6"><label class="form-label fw-semibold">Service Type</label>{{
-                            form.service_type }}</div>
-                        <div class="col-md-6"><label class="form-label fw-semibold">Assign Mechanic</label>{{
-                            form.mechanic }}</div>
-                        <div class="col-md-6"><label class="form-label fw-semibold">Estimated Amount (₹)</label>{{
-                            form.estimated_amount }}</div>
-                        <div class="col-12"><label class="form-label fw-semibold">Notes</label>{{ form.notes }}</div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Vehicle Number</label>
+                            {{ form.vehicle_number }}
+                            {% if form.vehicle_number.errors %}
+                            <div class="text-danger small">{{ form.vehicle_number.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Vehicle Model</label>
+                            {{ form.vehicle_model }}
+                            {% if form.vehicle_model.errors %}
+                            <div class="text-danger small">{{ form.vehicle_model.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Customer Name</label>
+                            {{ form.customer_name }}
+                            {% if form.customer_name.errors %}
+                            <div class="text-danger small">{{ form.customer_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Customer Phone</label>
+                            {{ form.customer_phone }}
+                            {% if form.customer_phone.errors %}
+                            <div class="text-danger small">{{ form.customer_phone.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Service Type</label>
+                            {{ form.service_type }}
+                            {% if form.service_type.errors %}
+                            <div class="text-danger small">{{ form.service_type.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Assign Mechanic</label>
+                            {{ form.mechanic }}
+                            {% if form.mechanic.errors %}
+                            <div class="text-danger small">{{ form.mechanic.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Estimated Amount (₹)</label>
+                            {{ form.estimated_amount }}
+                            {% if form.estimated_amount.errors %}
+                            <div class="text-danger small">{{ form.estimated_amount.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Notes</label>
+                            {{ form.notes }}
+                        </div>
+
                     </div>
-                    <div class="d-flex gap-2 justify-content-end mt-3">
+
+                    <div class="d-flex gap-2 justify-content-end mt-4">
                         <a href="{% url 'services:service_list' %}" class="btn btn-secondary">Cancel</a>
-                        <button type="submit" class="btn btn-success">Create Service</button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle me-1"></i>
+                            {% if form.instance.pk %}Update Service{% else %}Create Service{% endif %}
+                        </button>
                     </div>
                 </form>
             </div>

@@ -101,7 +101,7 @@
 
                     {{ form.notes }}
 
-                    <button type="submit" id="submitBill" class="btn btn-primary w-100 mt-3" disabled>
+                    <button type="submit" id="submitBill" class="btn btn-primary w-100 mt-3">
                         <i class="bi bi-receipt me-1"></i>Generate Invoice
                     </button>
                 </form>
@@ -140,18 +140,23 @@
         renderCart();
     }
 
+    // Enable button when cart has items OR service charge > 0
+    function updateButtonState() {
+        const serviceCharge = parseFloat(document.querySelector('[name=service_charge]')?.value) || 0;
+        const submitBtn = document.getElementById('submitBill');
+        submitBtn.disabled = (cart.length === 0 && serviceCharge <= 0);
+    }
+
     function renderCart() {
         const container = document.getElementById('cartItems');
-        const emptyMsg = document.getElementById('emptyCart');
-        const submitBtn = document.getElementById('submitBill');
         if (cart.length === 0) {
             container.innerHTML = `<div id="emptyCart" class="text-center text-muted py-3">
             <i class="bi bi-cart-x fs-2 d-block mb-2"></i>Click products to add them</div>`;
-            submitBtn.disabled = true;
             updateTotals(0);
+            updateButtonState();
             return;
         }
-        submitBtn.disabled = false;
+        updateButtonState();
         let html = '';
         let itemsTotal = 0;
         cart.forEach(item => {
@@ -186,11 +191,12 @@
         document.getElementById('grandTotal').textContent = '₹' + grand.toFixed(2);
     }
 
-    // Number inputs trigger recalculation
+    // Number inputs trigger recalculation + button state update
     document.querySelectorAll('[name=service_charge],[name=discount],[name=gst_percent]').forEach(el => {
         el.addEventListener('input', () => {
             const t = cart.reduce((s, i) => s + i.price * i.quantity, 0);
             updateTotals(t);
+            updateButtonState();
         });
     });
 

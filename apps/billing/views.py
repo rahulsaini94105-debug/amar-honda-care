@@ -34,9 +34,13 @@ class BillingPOSView(StaffOrOwnerRequiredMixin, CreateView):
         except json.JSONDecodeError:
             cart = []
 
-        if not cart:
-            messages.error(request, 'Please add at least one product to the bill.')
-            return self.form_invalid(form)
+        # Allow service-only invoices (empty cart is fine if service_charge > 0)
+        service_charge = float(request.POST.get('service_charge') or 0)
+        if not cart and service_charge <= 0:
+            return JsonResponse(
+                {'success': False, 'errors': {'__all__': ['Please add at least one product or enter a service charge.']}},
+                status=400
+            )
 
         if form.is_valid():
             invoice = form.save(commit=False)

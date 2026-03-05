@@ -32,8 +32,7 @@
     <div class="col-md-4">
         <div class="stat-card orange">
             <div class="stat-icon"><i class="bi bi-calculator"></i></div>
-            <div class="stat-value">{% if total_invoices %}₹{% widthratio total_revenue total_invoices 1 %}{% else
-                %}₹0{% endif %}</div>
+            <div class="stat-value">₹{{ avg_invoice_value|floatformat:0 }}</div>
             <div class="stat-label">Avg Invoice Value</div>
         </div>
     </div>

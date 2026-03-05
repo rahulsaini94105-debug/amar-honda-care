@@ -81,9 +81,12 @@ class SalesReportView(LoginRequiredMixin, TemplateView):
             created_at__date__lte=date_to
         ).select_related('created_by')
 
+        total_revenue = invoices.aggregate(t=Sum('grand_total'))['t'] or 0
+        total_invoices = invoices.count()
         ctx['invoices'] = invoices
-        ctx['total_revenue'] = invoices.aggregate(t=Sum('grand_total'))['t'] or 0
-        ctx['total_invoices'] = invoices.count()
+        ctx['total_revenue'] = total_revenue
+        ctx['total_invoices'] = total_invoices
+        ctx['avg_invoice_value'] = round(total_revenue / total_invoices, 2) if total_invoices else 0
         ctx['date_from'] = date_from
         ctx['date_to'] = date_to
         return ctx
