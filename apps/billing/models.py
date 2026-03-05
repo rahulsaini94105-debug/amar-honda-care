@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from decimal import Decimal
 
 
 class Invoice(models.Model):
@@ -39,7 +40,8 @@ class Invoice(models.Model):
 
     def calculate_totals(self):
         items_total = sum(item.total_price for item in self.items.all())
-        self.subtotal = items_total + self.service_charge
+        parts_total = sum(part.total_price for part in self.parts.all())
+        self.subtotal = items_total + Decimal(str(self.service_charge)) + parts_total
         self.gst_amount = (self.subtotal * self.gst_percent) / 100
         self.grand_total = self.subtotal + self.gst_amount - self.discount
         self.save()
@@ -54,6 +56,47 @@ class InvoiceItem(models.Model):
 
     def __str__(self):
         return f"{self.product.name} x {self.quantity}"
+
+    def save(self, *args, **kwargs):
+        self.total_price = self.unit_price * self.quantity
+        super().save(*args, **kwargs)
+
+
+class SparePart(models.Model):
+    """Predefined spare parts catalog that mechanics commonly replace."""
+    name = models.CharField(max_length=150)
+    default_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+class ServiceBillPart(models.Model):
+    """A spare part (predefined or custom) attached to an invoice."""
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='parts')
+    spare_part = models.ForeignKey(
+        SparePart, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='bill_items'
+    )
+    custom_name = models.CharField(max_length=150, blank=True)  # for manual/custom parts
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity = models.PositiveIntegerField(default=1)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        ordering = ['id']
+
+    def __str__(self):
+        name = self.spare_part.name if self.spare_part else self.custom_name
+        return f"{name} x {self.quantity} = ₹{self.total_price}"
+
+    @property
+    def part_name(self):
+        return self.spare_part.name if self.spare_part else self.custom_name
 
     def save(self, *args, **kwargs):
         self.total_price = self.unit_price * self.quantity

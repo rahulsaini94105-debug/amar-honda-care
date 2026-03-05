@@ -9,9 +9,20 @@ from django.contrib import messages
 from django.db import transaction
 from apps.accounts.mixins import StaffOrOwnerRequiredMixin
 from apps.products.models import Product
-from .models import Invoice, InvoiceItem
+from apps.services.models import ServiceType
+from .models import Invoice, InvoiceItem, SparePart, ServiceBillPart
 from .forms import InvoiceForm
 from .utils import generate_invoice_pdf
+
+
+class GetServiceTypesView(StaffOrOwnerRequiredMixin, View):
+    """AJAX endpoint — returns all active service types as JSON."""
+    def get(self, request, *args, **kwargs):
+        data = list(
+            ServiceType.objects.filter(is_active=True)
+            .values('id', 'name', 'base_charge', 'service_type')
+        )
+        return JsonResponse({'service_types': data})
 
 
 class BillingPOSView(StaffOrOwnerRequiredMixin, CreateView):
@@ -23,22 +34,31 @@ class BillingPOSView(StaffOrOwnerRequiredMixin, CreateView):
         ctx = super().get_context_data(**kwargs)
         ctx['products'] = Product.objects.filter(is_active=True, stock_qty__gt=0).select_related('category')
         ctx['categories'] = Product.objects.filter(is_active=True).values_list('category__name', 'category__id').distinct()
+        ctx['service_types'] = ServiceType.objects.filter(is_active=True)
+        ctx['spare_parts'] = SparePart.objects.filter(is_active=True)
         return ctx
 
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         form = InvoiceForm(request.POST)
         cart_data = request.POST.get('cart_data', '[]')
+        parts_data = request.POST.get('parts_data', '[]')
+
         try:
             cart = json.loads(cart_data)
         except json.JSONDecodeError:
             cart = []
 
-        # Allow service-only invoices (empty cart is fine if service_charge > 0)
+        try:
+            parts = json.loads(parts_data)
+        except json.JSONDecodeError:
+            parts = []
+
+        # Allow service-only invoices (empty cart is fine if service_charge > 0 or parts selected)
         service_charge = float(request.POST.get('service_charge') or 0)
-        if not cart and service_charge <= 0:
+        if not cart and service_charge <= 0 and not parts:
             return JsonResponse(
-                {'success': False, 'errors': {'__all__': ['Please add at least one product or enter a service charge.']}},
+                {'success': False, 'errors': {'__all__': ['Please add at least one product, spare part, or enter a service charge.']}},
                 status=400
             )
 
@@ -47,6 +67,7 @@ class BillingPOSView(StaffOrOwnerRequiredMixin, CreateView):
             invoice.created_by = request.user
             invoice.save()
 
+            # Create product invoice items
             for item in cart:
                 product = get_object_or_404(Product, pk=item['product_id'])
                 InvoiceItem.objects.create(
@@ -55,6 +76,29 @@ class BillingPOSView(StaffOrOwnerRequiredMixin, CreateView):
                     quantity=int(item['quantity']),
                     unit_price=product.selling_price,
                 )
+
+            # Create spare part / custom part records
+            for part in parts:
+                spare_part_id = part.get('spare_part_id')  # None for custom parts
+                custom_name = part.get('custom_name', '')
+                unit_price = float(part.get('unit_price', 0))
+                quantity = int(part.get('quantity', 1))
+                if unit_price <= 0:
+                    continue
+                spare_part_obj = None
+                if spare_part_id:
+                    try:
+                        spare_part_obj = SparePart.objects.get(pk=spare_part_id)
+                    except SparePart.DoesNotExist:
+                        pass
+                ServiceBillPart.objects.create(
+                    invoice=invoice,
+                    spare_part=spare_part_obj,
+                    custom_name=custom_name if not spare_part_obj else '',
+                    unit_price=unit_price,
+                    quantity=quantity,
+                )
+
             invoice.calculate_totals()
             messages.success(request, f'Invoice #{invoice.invoice_number} created successfully!')
             return JsonResponse({'success': True, 'invoice_id': invoice.pk, 'invoice_number': invoice.invoice_number})

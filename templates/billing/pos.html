@@ -46,6 +46,7 @@
                 <form id="billingForm" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="cart_data" id="cartData">
+                    <input type="hidden" name="parts_data" id="partsData">
 
                     <!-- Customer Info -->
                     <div class="mb-3">
@@ -65,13 +66,23 @@
                         </div>
                     </div>
 
-                    <!-- Totals -->
-                    <div class="totals-section">
-                        <div class="d-flex justify-content-between mb-1">
-                            <span class="text-muted">Items Total</span>
-                            <span id="itemsTotal">₹0.00</span>
+                    <!-- ── SERVICE SELECTION ── -->
+                    <div class="card border-0 bg-light rounded-3 mb-3 p-2">
+                        <div class="fw-semibold small text-uppercase text-muted mb-2">
+                            <i class="bi bi-wrench-adjustable me-1"></i>Service
                         </div>
-                        <div class="row g-2 mb-2">
+                        <div class="row g-2">
+                            <div class="col-12">
+                                <label class="x-small text-muted">Service Type (optional)</label>
+                                <select id="serviceTypeSelect" class="form-select form-select-sm">
+                                    <option value="">— Select Service Type —</option>
+                                    {% for st in service_types %}
+                                    <option value="{{ st.pk }}" data-charge="{{ st.base_charge }}">
+                                        {{ st.name }} — ₹{{ st.base_charge }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                             <div class="col-6">
                                 <label class="x-small text-muted">Service Charge</label>
                                 {{ form.service_charge }}
@@ -88,6 +99,75 @@
                                 <label class="x-small text-muted">Payment</label>
                                 {{ form.payment_method }}
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- ── SPARE PARTS (predefined + custom) ── -->
+                    <div class="mb-3"
+                        style="border:1px solid #e2e8f0;border-left:4px solid #6366f1;border-radius:8px;background:#f8f9ff;padding:10px 12px;">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="fw-semibold small text-uppercase" style="color:#6366f1;letter-spacing:.06em;">
+                                <i class="bi bi-tools me-1"></i>Spare Parts
+                                <span style="font-size:10px;color:#94a3b8;font-weight:400;"> — check or add
+                                    custom</span>
+                            </div>
+                            <button type="button" onclick="addCustomPartRow()"
+                                style="background:#6366f1;color:#fff;font-size:12px;border:none;border-radius:6px;padding:3px 10px;cursor:pointer;">
+                                <i class="bi bi-plus me-1"></i>Add Part
+                            </button>
+                        </div>
+                        <table class="table table-sm mb-0" id="predefinedPartsTable" style="background:transparent;">
+                            <thead>
+                                <tr style="font-size:11px;color:#94a3b8;border-bottom:1px solid #e2e8f0;">
+                                    <th style="width:30px;padding:3px 5px;"></th>
+                                    <th style="padding:3px 5px;">Part Name</th>
+                                    <th style="width:90px;padding:3px 5px;">Price (₹)</th>
+                                    <th style="width:58px;padding:3px 5px;">Qty</th>
+                                    <th style="width:28px;padding:3px 5px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="partsTableBody">
+                                {% for part in spare_parts %}
+                                <tr class="predefined-part-row" data-part-id="{{ part.pk }}" style="border:none;">
+                                    <td style="padding:4px 5px;vertical-align:middle;">
+                                        <input type="checkbox" class="form-check-input part-check"
+                                            id="part_{{ part.pk }}" onchange="togglePredefinedPart(this)">
+                                    </td>
+                                    <td style="padding:4px 5px;vertical-align:middle;">
+                                        <label for="part_{{ part.pk }}"
+                                            style="font-size:13px;cursor:pointer;margin:0;">{{ part.name }}</label>
+                                    </td>
+                                    <td style="padding:4px 5px;vertical-align:middle;">
+                                        <input type="number" class="form-control form-control-sm part-price"
+                                            value="{{ part.default_price }}" min="0" step="0.01" disabled
+                                            oninput="recalcAll()" style="font-size:13px;">
+                                    </td>
+                                    <td style="padding:4px 5px;vertical-align:middle;">
+                                        <input type="number" class="form-control form-control-sm part-qty" value="1"
+                                            min="1" disabled oninput="recalcAll()" style="font-size:13px;">
+                                    </td>
+                                    <td style="padding:4px 5px;vertical-align:middle;"></td>
+                                </tr>
+                                {% endfor %}
+                                <!-- custom part rows injected here by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                    <!-- ── TOTALS ── -->
+                    <div class="totals-section">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Items Total</span>
+                            <span id="itemsTotal">₹0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Service Charge</span>
+                            <span id="serviceChargeDisplay">₹0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1" id="partsRow" style="display:none;">
+                            <span class="text-muted">Parts Total</span>
+                            <span id="partsTotal">₹0.00</span>
                         </div>
                         <div class="d-flex justify-content-between mb-1">
                             <span class="text-muted">GST Amount</span>
@@ -114,7 +194,9 @@
 {% block extra_js %}
 <script>
     let cart = [];
+    let customRowCount = 0;
 
+    // ── Cart ──────────────────────────────────────────────
     function addToCart(id, name, price, stock) {
         if (stock <= 0) { alert('Out of stock!'); return; }
         const existing = cart.find(i => i.product_id === id);
@@ -140,23 +222,15 @@
         renderCart();
     }
 
-    // Enable button when cart has items OR service charge > 0
-    function updateButtonState() {
-        const serviceCharge = parseFloat(document.querySelector('[name=service_charge]')?.value) || 0;
-        const submitBtn = document.getElementById('submitBill');
-        submitBtn.disabled = (cart.length === 0 && serviceCharge <= 0);
-    }
-
     function renderCart() {
         const container = document.getElementById('cartItems');
         if (cart.length === 0) {
             container.innerHTML = `<div id="emptyCart" class="text-center text-muted py-3">
             <i class="bi bi-cart-x fs-2 d-block mb-2"></i>Click products to add them</div>`;
-            updateTotals(0);
+            recalcAll();
             updateButtonState();
             return;
         }
-        updateButtonState();
         let html = '';
         let itemsTotal = 0;
         cart.forEach(item => {
@@ -176,31 +250,151 @@
         </div>`;
         });
         container.innerHTML = html;
-        updateTotals(itemsTotal);
+        recalcAll();
+        updateButtonState();
     }
 
-    function updateTotals(itemsTotal) {
+    // ── Service Type auto-fill ────────────────────────────
+    document.getElementById('serviceTypeSelect').addEventListener('change', function () {
+        const option = this.options[this.selectedIndex];
+        const charge = option.dataset.charge || '0';
+        document.querySelector('[name=service_charge]').value = parseFloat(charge).toFixed(2);
+        recalcAll();
+        updateButtonState();
+    });
+
+    // ── Predefined parts toggle ───────────────────────────
+    function togglePredefinedPart(checkbox) {
+        const row = checkbox.closest('tr');
+        const priceInput = row.querySelector('.part-price');
+        const qtyInput = row.querySelector('.part-qty');
+        priceInput.disabled = !checkbox.checked;
+        qtyInput.disabled = !checkbox.checked;
+        recalcAll();
+        updateButtonState();
+    }
+
+    // ── Custom parts (appended into the shared parts table) ──
+    function addCustomPartRow() {
+        customRowCount++;
+        const id = `custom_${customRowCount}`;
+        const tr = document.createElement('tr');
+        tr.id = id;
+        tr.className = 'custom-part-row';
+        tr.style.border = 'none';
+        tr.innerHTML = `
+            <td style="padding:4px 5px;vertical-align:middle;">
+                <i class="bi bi-pencil-square" style="color:#6366f1;font-size:14px;"></i>
+            </td>
+            <td style="padding:4px 5px;vertical-align:middle;">
+                <input type="text" class="form-control form-control-sm custom-name" placeholder="Part name..." oninput="recalcAll()" style="font-size:13px;">
+            </td>
+            <td style="padding:4px 5px;vertical-align:middle;">
+                <input type="number" class="form-control form-control-sm custom-price" value="0" min="0" step="0.01" oninput="recalcAll()" style="font-size:13px;">
+            </td>
+            <td style="padding:4px 5px;vertical-align:middle;">
+                <input type="number" class="form-control form-control-sm custom-qty" value="1" min="1" oninput="recalcAll()" style="font-size:13px;">
+            </td>
+            <td style="padding:4px 5px;vertical-align:middle;">
+                <button type="button" class="btn btn-xs btn-outline-danger" onclick="removeCustomRow('${id}')" style="padding:2px 6px;">
+                    <i class="bi bi-x"></i>
+                </button>
+            </td>`;
+        document.getElementById('partsTableBody').appendChild(tr);
+        recalcAll();
+        updateButtonState();
+    }
+
+    function removeCustomRow(id) {
+        document.getElementById(id)?.remove();
+        recalcAll();
+        updateButtonState();
+    }
+
+    // ── Master recalc ─────────────────────────────────────
+    function getPartsTotal() {
+        let total = 0;
+        // Predefined checked parts
+        document.querySelectorAll('#partsTableBody .predefined-part-row').forEach(row => {
+            const chk = row.querySelector('.part-check');
+            if (chk && chk.checked) {
+                const price = parseFloat(row.querySelector('.part-price').value) || 0;
+                const qty = parseInt(row.querySelector('.part-qty').value) || 1;
+                total += price * qty;
+            }
+        });
+        // Custom rows appended into the same table
+        document.querySelectorAll('#partsTableBody .custom-part-row').forEach(row => {
+            const price = parseFloat(row.querySelector('.custom-price')?.value) || 0;
+            const qty = parseInt(row.querySelector('.custom-qty')?.value) || 1;
+            total += price * qty;
+        });
+        return total;
+    }
+
+    function recalcAll() {
+        const itemsTotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
         const serviceCharge = parseFloat(document.querySelector('[name=service_charge]')?.value) || 0;
         const discount = parseFloat(document.querySelector('[name=discount]')?.value) || 0;
         const gstPct = parseFloat(document.querySelector('[name=gst_percent]')?.value) || 0;
-        const subtotal = itemsTotal + serviceCharge;
+        const partsTotal = getPartsTotal();
+
+        const subtotal = itemsTotal + serviceCharge + partsTotal;
         const gstAmt = subtotal * gstPct / 100;
         const grand = subtotal + gstAmt - discount;
+
         document.getElementById('itemsTotal').textContent = '₹' + itemsTotal.toFixed(2);
+        document.getElementById('serviceChargeDisplay').textContent = '₹' + serviceCharge.toFixed(2);
+        document.getElementById('partsTotal').textContent = '₹' + partsTotal.toFixed(2);
         document.getElementById('gstAmount').textContent = '₹' + gstAmt.toFixed(2);
         document.getElementById('grandTotal').textContent = '₹' + grand.toFixed(2);
+
+        // Show/hide parts row
+        const partsRow = document.getElementById('partsRow');
+        partsRow.style.display = partsTotal > 0 ? 'flex' : 'none';
     }
 
-    // Number inputs trigger recalculation + button state update
-    document.querySelectorAll('[name=service_charge],[name=discount],[name=gst_percent]').forEach(el => {
-        el.addEventListener('input', () => {
-            const t = cart.reduce((s, i) => s + i.price * i.quantity, 0);
-            updateTotals(t);
-            updateButtonState();
+    function updateButtonState() {
+        const serviceCharge = parseFloat(document.querySelector('[name=service_charge]')?.value) || 0;
+        const hasCheckedParts = document.querySelectorAll('.part-check:checked').length > 0;
+        const hasCustomParts = document.querySelectorAll('#partsTableBody .custom-part-row').length > 0;
+        const submitBtn = document.getElementById('submitBill');
+        submitBtn.disabled = (cart.length === 0 && serviceCharge <= 0 && !hasCheckedParts && !hasCustomParts);
+    }
+
+    // ── Build parts payload for submission ────────────────
+    function buildPartsData() {
+        const parts = [];
+        // Predefined checked parts
+        document.querySelectorAll('#partsTableBody .predefined-part-row').forEach(row => {
+            const chk = row.querySelector('.part-check');
+            if (chk && chk.checked) {
+                parts.push({
+                    spare_part_id: row.dataset.partId,
+                    custom_name: '',
+                    unit_price: parseFloat(row.querySelector('.part-price').value) || 0,
+                    quantity: parseInt(row.querySelector('.part-qty').value) || 1,
+                });
+            }
         });
+        // Custom rows in the same table
+        document.querySelectorAll('#partsTableBody .custom-part-row').forEach(row => {
+            const name = row.querySelector('.custom-name')?.value?.trim();
+            const price = parseFloat(row.querySelector('.custom-price')?.value) || 0;
+            const qty = parseInt(row.querySelector('.custom-qty')?.value) || 1;
+            if (name && price > 0) {
+                parts.push({ spare_part_id: null, custom_name: name, unit_price: price, quantity: qty });
+            }
+        });
+        return parts;
+    }
+
+    // ── Live recalc on number inputs ──────────────────────
+    document.querySelectorAll('[name=service_charge],[name=discount],[name=gst_percent]').forEach(el => {
+        el.addEventListener('input', () => { recalcAll(); updateButtonState(); });
     });
 
-    // Search
+    // ── Product search ────────────────────────────────────
     document.getElementById('productSearch').addEventListener('input', function () {
         const q = this.value.toLowerCase();
         document.querySelectorAll('.product-grid-item').forEach(el => {
@@ -208,10 +402,11 @@
         });
     });
 
-    // Form submit
+    // ── Form submit ───────────────────────────────────────
     document.getElementById('billingForm').addEventListener('submit', async function (e) {
         e.preventDefault();
         document.getElementById('cartData').value = JSON.stringify(cart);
+        document.getElementById('partsData').value = JSON.stringify(buildPartsData());
         const fd = new FormData(this);
         const btn = document.getElementById('submitBill');
         btn.disabled = true;
@@ -232,5 +427,9 @@
             btn.innerHTML = '<i class="bi bi-receipt me-1"></i>Generate Invoice';
         }
     });
+
+    // Initial state
+    updateButtonState();
+    recalcAll();
 </script>
 {% endblock %}

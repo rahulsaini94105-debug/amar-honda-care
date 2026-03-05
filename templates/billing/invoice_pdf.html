@@ -110,26 +110,54 @@
         </tbody>
     </table>
 
+    {% with parts=invoice.parts.all %}
+    {% if parts %}
+    <p style="font-weight:bold;font-size:12px;margin-bottom:4px;">Spare &amp; Custom Parts</p>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Part Name</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for part in parts %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ part.part_name }}{% if not part.spare_part %} (Custom){% endif %}</td>
+                <td>{{ part.quantity }}</td>
+                <td>Rs.{{ part.unit_price }}</td>
+                <td>Rs.{{ part.total_price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    {% endwith %}
+
     <table class="totals-table" style="width:300px;margin-left:auto;">
         <tr>
-            <td>Items Subtotal:</td>
-            <td style="text-align:right;">₹{{ invoice.subtotal }}</td>
+            <td>Subtotal (Items + Service + Parts):</td>
+            <td style="text-align:right;">Rs.{{ invoice.subtotal }}</td>
         </tr>
         {% if invoice.service_charge %}<tr>
             <td>Service Charge:</td>
-            <td style="text-align:right;">₹{{ invoice.service_charge }}</td>
+            <td style="text-align:right;">Rs.{{ invoice.service_charge }}</td>
         </tr>{% endif %}
         {% if invoice.gst_percent %}<tr>
             <td>GST ({{ invoice.gst_percent }}%):</td>
-            <td style="text-align:right;">₹{{ invoice.gst_amount }}</td>
+            <td style="text-align:right;">Rs.{{ invoice.gst_amount }}</td>
         </tr>{% endif %}
         {% if invoice.discount %}<tr>
             <td>Discount:</td>
-            <td style="text-align:right;">-₹{{ invoice.discount }}</td>
+            <td style="text-align:right;">-Rs.{{ invoice.discount }}</td>
         </tr>{% endif %}
         <tr class="grand-total">
             <td><strong>Grand Total:</strong></td>
-            <td style="text-align:right;color:#6366f1;"><strong>₹{{ invoice.grand_total }}</strong></td>
+            <td style="text-align:right;color:#6366f1;"><strong>Rs.{{ invoice.grand_total }}</strong></td>
         </tr>
     </table>
 

@@ -60,6 +60,44 @@
                     </table>
                 </div>
 
+                <!-- Spare / Custom Parts Table -->
+                {% with parts=invoice.parts.all %}
+                {% if parts %}
+                <div class="table-responsive mb-4">
+                    <div class="fw-semibold mb-2 text-muted small text-uppercase">
+                        <i class="bi bi-tools me-1"></i>Spare &amp; Custom Parts
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr class="table-secondary">
+                                <th>#</th>
+                                <th>Part</th>
+                                <th class="text-end">Qty</th>
+                                <th class="text-end">Unit Price</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for part in parts %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>
+                                    {{ part.part_name }}
+                                    {% if not part.spare_part %}
+                                    <span class="badge bg-secondary bg-opacity-50 ms-1 small">Custom</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">{{ part.quantity }}</td>
+                                <td class="text-end">₹{{ part.unit_price }}</td>
+                                <td class="text-end fw-semibold">₹{{ part.total_price }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+                {% endwith %}
+
                 <!-- Totals -->
                 <div class="row justify-content-end">
                     <div class="col-md-5">
