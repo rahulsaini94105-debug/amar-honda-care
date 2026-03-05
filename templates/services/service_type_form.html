@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}{% if form.instance.pk %}Edit{% else %}Add{% endif %} Service Type — Amar Honda Care{% endblock %}
+{% block page_title %}{% if form.instance.pk %}Edit Service Type{% else %}Add Service Type{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">{{ field.label }}</label>
+                        {{ field }}
+                    </div>
+                    {% endfor %}
+                    <!-- Checklist Builder -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Checklist Items</label>
+                        <div id="checklistItems"></div>
+                        <div class="d-flex gap-2 mt-2">
+                            <input type="text" id="newCheckItem" class="form-control form-control-sm"
+                                placeholder="Add checklist item...">
+                            <button type="button" id="addCheckItem" class="btn btn-sm btn-outline-primary">Add</button>
+                        </div>
+                        <input type="hidden" name="checklist_template" id="checklistData" value="[]">
+                    </div>
+                    <div class="d-flex gap-2 justify-content-end">
+                        <a href="{% url 'services:service_type_list' %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-success">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let checklist = [];
+    function renderChecklist() {
+        document.getElementById('checklistData').value = JSON.stringify(checklist);
+        const container = document.getElementById('checklistItems');
+        if (!checklist.length) { container.innerHTML = ''; return; }
+        container.innerHTML = checklist.map((item, i) =>
+            `<div class="d-flex align-items-center gap-2 mb-1">
+            <span class="flex-grow-1 small">✓ ${item}</span>
+            <button type="button" class="btn btn-xs btn-outline-danger" onclick="checklist.splice(${i},1);renderChecklist()">×</button>
+        </div>`
+        ).join('');
+    }
+    document.getElementById('addCheckItem').addEventListener('click', function () {
+        const val = document.getElementById('newCheckItem').value.trim();
+        if (val) { checklist.push(val); document.getElementById('newCheckItem').value = ''; renderChecklist(); }
+    });
+    document.getElementById('newCheckItem').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); document.getElementById('addCheckItem').click(); }
+    });
+</script>
+{% endblock %}

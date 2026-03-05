@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Categories — Amar Honda Care{% endblock %}
+{% block page_title %}Categories{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between mb-4">
+    <a href="{% url 'products:product_list' %}" class="btn btn-sm btn-outline-secondary"><i
+            class="bi bi-arrow-left me-1"></i>Products</a>
+    <a href="{% url 'products:category_create' %}" class="btn btn-sm btn-success"><i class="bi bi-plus me-1"></i>Add
+        Category</a>
+</div>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Products</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cat in categories %}
+                <tr>
+                    <td class="fw-semibold">{{ cat.name }}</td>
+                    <td class="text-muted small">{{ cat.description|default:"—" }}</td>
+                    <td><span class="badge bg-primary">{{ cat.products.count }}</span></td>
+                    <td><a href="{% url 'products:category_update' cat.pk %}" class="btn btn-sm btn-outline-primary"><i
+                                class="bi bi-pencil"></i></a></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center py-4 text-muted">No categories yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

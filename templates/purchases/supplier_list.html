@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Suppliers — Amar Honda Care{% endblock %}
+{% block page_title %}Suppliers{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between mb-4">
+    <a href="{% url 'purchases:po_list' %}" class="btn btn-sm btn-outline-secondary"><i
+            class="bi bi-arrow-left me-1"></i>Purchase Orders</a>
+    <a href="{% url 'purchases:supplier_create' %}" class="btn btn-sm btn-success"><i class="bi bi-plus me-1"></i>Add
+        Supplier</a>
+</div>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>GST</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sup in suppliers %}
+                <tr>
+                    <td class="fw-semibold">{{ sup.name }}</td>
+                    <td>{{ sup.phone|default:"—" }}</td>
+                    <td>{{ sup.email|default:"—" }}</td>
+                    <td>{{ sup.gst_number|default:"—" }}</td>
+                    <td>{% if sup.is_active %}<span class="badge bg-success">Active</span>{% else %}<span
+                            class="badge bg-secondary">Inactive</span>{% endif %}</td>
+                    <td><a href="{% url 'purchases:supplier_update' sup.pk %}" class="btn btn-sm btn-outline-primary"><i
+                                class="bi bi-pencil"></i></a></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">No suppliers yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

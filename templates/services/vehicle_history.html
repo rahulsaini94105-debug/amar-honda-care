@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Vehicle Service History — Amar Honda Care{% endblock %}
+{% block page_title %}Vehicle Service History{% endblock %}
+
+{% block content %}
+<div class="card mb-4 p-3">
+    <form method="get" class="row g-2">
+        <div class="col-md-8">
+            <input type="text" name="vehicle" class="form-control" placeholder="Enter vehicle number (e.g. RJ14AB1234)"
+                value="{{ searched_vehicle }}">
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary w-100">Search History</button>
+        </div>
+    </form>
+</div>
+{% if searched_vehicle %}
+<div class="card">
+    <div class="card-header-custom">
+        History for: <strong>{{ searched_vehicle }}</strong>
+        <span class="badge bg-secondary ms-2">{{ services|length }} records</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Service Type</th>
+                    <th>Mechanic</th>
+                    <th>Status</th>
+                    <th>Notes</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for svc in services %}
+                <tr>
+                    <td>{{ svc.created_at|date:"d M Y" }}</td>
+                    <td>{{ svc.service_type.name|default:"—" }}</td>
+                    <td>{{ svc.mechanic.get_full_name|default:"—" }}</td>
+                    <td><span
+                            class="badge {% if svc.status == 'COMPLETED' %}bg-success{% else %}bg-warning text-dark{% endif %}">{{
+                            svc.get_status_display }}</span></td>
+                    <td class="small text-muted">{{ svc.notes|default:"—" }}</td>
+                    <td>₹{{ svc.estimated_amount }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">No service records found for this vehicle.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

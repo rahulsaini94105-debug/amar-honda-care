@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — Amar Honda Care{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Stats Row -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-card green">
+            <div class="stat-icon"><i class="bi bi-cash-stack"></i></div>
+            <div class="stat-value">₹{{ today_revenue|floatformat:0 }}</div>
+            <div class="stat-label">Today's Revenue</div>
+            <div class="stat-sub">{{ today_sales_count }} invoice(s)</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card blue">
+            <div class="stat-icon"><i class="bi bi-calendar-month"></i></div>
+            <div class="stat-value">₹{{ monthly_revenue|floatformat:0 }}</div>
+            <div class="stat-label">Monthly Revenue</div>
+            <div class="stat-sub">{{ monthly_invoice_count }} invoices</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card orange">
+            <div class="stat-icon"><i class="bi bi-exclamation-triangle"></i></div>
+            <div class="stat-value">{{ low_stock_count }}</div>
+            <div class="stat-label">Low Stock Items</div>
+            <div class="stat-sub">{{ out_of_stock_count }} out of stock</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card red">
+            <div class="stat-icon"><i class="bi bi-tools"></i></div>
+            <div class="stat-value">{{ pending_services }}</div>
+            <div class="stat-label">Pending Services</div>
+            <div class="stat-sub">In progress</div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row g-3 mb-4">
+    <div class="col-12">
+        <div class="card p-3">
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{% url 'billing:pos' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-1"></i>New Bill
+                </a>
+                <a href="{% url 'services:service_create' %}" class="btn btn-success">
+                    <i class="bi bi-tools me-1"></i>New Service
+                </a>
+                <a href="{% url 'products:product_create' %}" class="btn btn-info text-white">
+                    <i class="bi bi-box-seam me-1"></i>Add Product
+                </a>
+                <a href="{% url 'purchases:po_create' %}" class="btn btn-warning">
+                    <i class="bi bi-truck me-1"></i>New Purchase
+                </a>
+                <a href="{% url 'services:vehicle_history' %}" class="btn btn-secondary">
+                    <i class="bi bi-search me-1"></i>Vehicle History
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart + Low Stock Side by Side -->
+<div class="row g-3 mb-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header-custom d-flex justify-content-between">
+                <span><i class="bi bi-graph-up me-2"></i>Last 7 Days Sales</span>
+            </div>
+            <div class="card-body">
+                <canvas id="salesChart" height="120"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header-custom text-warning">
+                <i class="bi bi-exclamation-triangle me-2"></i>Stock Alerts
+            </div>
+            <div class="card-body p-0">
+                {% for product in low_stock_products %}
+                <div class="stock-alert-item">
+                    <div class="flex-grow-1">
+                        <div class="fw-semibold small">{{ product.name }}</div>
+                        <div class="text-muted x-small">{{ product.stock_qty }} unit(s) left</div>
+                    </div>
+                    {% if product.is_out_of_stock %}
+                    <span class="badge bg-danger">Out</span>
+                    {% else %}
+                    <span class="badge bg-warning text-dark">Low</span>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <div class="text-center text-success py-4">
+                    <i class="bi bi-check-circle fs-2 d-block mb-1"></i>
+                    <small>All stock levels OK</small>
+                </div>
+                {% endfor %}
+                {% if low_stock_products %}
+                <div class="p-2">
+                    <a href="{% url 'inventory:dashboard' %}" class="btn btn-sm btn-outline-warning w-100">View All</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Invoices + Pending Services -->
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header-custom"><i class="bi bi-receipt me-2"></i>Recent Invoices</div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 small">
+                    <thead>
+                        <tr>
+                            <th>Invoice #</th>
+                            <th>Customer</th>
+                            <th>Vehicle</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inv in recent_invoices %}
+                        <tr>
+                            <td><a href="{% url 'billing:invoice_detail' inv.pk %}">{{ inv.invoice_number }}</a></td>
+                            <td>{{ inv.customer_name }}</td>
+                            <td>{{ inv.vehicle_number|default:"—" }}</td>
+                            <td class="fw-semibold">₹{{ inv.grand_total|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-3 text-muted">No invoices yet</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header-custom"><i class="bi bi-tools me-2"></i>Pending Services</div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 small">
+                    <thead>
+                        <tr>
+                            <th>Vehicle</th>
+                            <th>Customer</th>
+                            <th>Mechanic</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for svc in recent_services %}
+                        <tr>
+                            <td><a href="{% url 'services:service_detail' svc.pk %}">{{ svc.vehicle_number }}</a></td>
+                            <td>{{ svc.customer_name }}</td>
+                            <td>{{ svc.mechanic.get_full_name|default:svc.mechanic.username|default:"Unassigned" }}</td>
+                            <td>
+                                <span
+                                    class="badge {% if svc.status == 'IN_PROGRESS' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                                    {{ svc.get_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-3 text-muted">No pending services</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const ctx = document.getElementById('salesChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ chart_labels| safe }},
+    datasets: [{
+        label: 'Revenue (₹)',
+        data: {{ chart_data| safe }},
+        backgroundColor: 'rgba(99, 102, 241, 0.7)',
+        borderColor: 'rgba(99, 102, 241, 1)',
+        borderWidth: 2,
+        borderRadius: 6,
+            }]
+        },
+    options: {
+        responsive: true,
+            plugins: { legend: { display: false } },
+        scales: {
+            y: {
+                beginAtZero: true,
+                    ticks: { callback: v => '₹' + v.toLocaleString() }
+            }
+        }
+    }
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}PO-{{ order.pk }} — Amar Honda Care{% endblock %}
+{% block page_title %}Purchase Order Detail{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between mb-3">
+                    <div>
+                        <h5 class="fw-bold">PO-{{ order.pk }}</h5>
+                        <div class="text-muted small">{{ order.created_at|date:"d M Y, h:i A" }}</div>
+                    </div>
+                    <span
+                        class="badge fs-6 {% if order.status == 'RECEIVED' %}bg-success{% elif order.status == 'CANCELLED' %}bg-danger{% else %}bg-warning text-dark{% endif %}">{{
+                        order.get_status_display }}</span>
+                </div>
+                <div class="mb-3 row">
+                    <div class="col-6"><strong>Supplier:</strong> {{ order.supplier.name|default:"Direct" }}</div>
+                    <div class="col-6"><strong>Total:</strong> ₹{{ order.total_amount }}</div>
+                </div>
+                <div class="table-responsive mb-3">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Qty</th>
+                                <th>Unit Cost</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>{% for item in order.items.all %}
+                            <tr>
+                                <td>{{ item.product.name }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>₹{{ item.unit_cost }}</td>
+                                <td>₹{{ item.total_cost }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if order.notes %}<p><strong>Notes:</strong> {{ order.notes }}</p>{% endif %}
+                <div class="d-flex gap-2">
+                    <a href="{% url 'purchases:po_list' %}" class="btn btn-secondary">Back</a>
+                    {% if order.status == 'PENDING' %}
+                    <button class="btn btn-success receive-btn" data-id="{{ order.pk }}">
+                        <i class="bi bi-check-circle me-1"></i>Mark as Received
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.querySelector('.receive-btn')?.addEventListener('click', async function () {
+        if (!confirm('Mark as received? Stock will be updated.')) return;
+        const res = await fetch(`/purchases/${this.dataset.id}/receive/`, { method: 'POST', headers: { 'X-CSRFToken': CSRF_TOKEN } });
+        if ((await res.json()).success) location.reload();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Service Detail — Amar Honda Care{% endblock %}
+{% block page_title %}Service Detail{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-3">
+            <div class="card-body p-4">
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="text-muted small">Vehicle</div>
+                        <div class="fw-bold fs-5">{{ service.vehicle_number }}</div>
+                        <div class="text-muted">{{ service.vehicle_model }}</div>
+                    </div>
+                    <div class="col-6 text-end">
+                        <span
+                            class="badge fs-6 {% if service.status == 'COMPLETED' %}bg-success{% elif service.status == 'IN_PROGRESS' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                            {{ service.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6"><strong>Customer:</strong> {{ service.customer_name }}<br><small>{{
+                            service.customer_phone }}</small></div>
+                    <div class="col-6"><strong>Service:</strong> {{ service.service_type.name|default:"—"
+                        }}<br><strong>Mechanic:</strong> {{ service.mechanic.get_full_name|default:"Unassigned" }}</div>
+                </div>
+                {% if service.notes %}<div class="mt-3 p-2 bg-light rounded"><strong>Notes:</strong> {{ service.notes }}
+                </div>{% endif %}
+            </div>
+        </div>
+
+        <!-- Checklist -->
+        {% if service.checklist %}
+        <div class="card">
+            <div class="card-header-custom"><i class="bi bi-list-check me-2"></i>Service Checklist</div>
+            <div class="card-body">
+                {% for item in service.checklist %}
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <input type="checkbox" class="form-check-input checklist-item" {% if item.done %}checked{% endif %}
+                        data-index="{{ forloop.counter0 }}" data-service="{{ service.pk }}">
+                    <label class="{% if item.done %}text-decoration-line-through text-muted{% endif %}">{{ item.item
+                        }}</label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header-custom">Update Status</div>
+            <div class="card-body">
+                <a href="{% url 'services:service_update' service.pk %}" class="btn btn-warning w-100 mb-2">
+                    <i class="bi bi-pencil me-1"></i>Update Status
+                </a>
+                <a href="{% url 'services:service_list' %}" class="btn btn-secondary w-100">Back to List</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let checklistData = {{ service.checklist| safe }};
+    document.querySelectorAll('.checklist-item').forEach(cb => {
+        cb.addEventListener('change', async function () {
+            const idx = parseInt(this.dataset.index);
+            checklistData[idx].done = this.checked;
+            this.nextElementSibling.classList.toggle('text-decoration-line-through', this.checked);
+            this.nextElementSibling.classList.toggle('text-muted', this.checked);
+            await fetch(`/services/${this.dataset.service}/checklist/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
+                body: JSON.stringify({ checklist: checklistData })
+            });
+        });
+    });
+</script>
+{% endblock %}

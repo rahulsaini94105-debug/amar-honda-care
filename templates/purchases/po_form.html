@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}New Purchase Order — Amar Honda Care{% endblock %}
+{% block page_title %}New Purchase Order{% endblock %}
+
+{% block content %}
+{% if low_stock_products %}
+<div class="alert alert-warning small">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    <strong>Low/Out-of-stock items suggest restock:</strong>
+    {% for p in low_stock_products %}<span class="badge bg-warning text-dark me-1">{{ p.name }} ({{ p.stock_qty
+        }})</span>{% endfor %}
+</div>
+{% endif %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-3 p-4">
+            <form id="poForm" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="items_data" id="itemsData">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6"><label class="form-label fw-semibold">Supplier</label>{{ form.supplier }}
+                    </div>
+                    <div class="col-12"><label class="form-label fw-semibold">Notes</label>{{ form.notes }}</div>
+                </div>
+                <!-- Add Item -->
+                <div class="row g-2 mb-3">
+                    <div class="col-md-5">
+                        <select id="poProduct" class="form-select">
+                            <option value="">Select Product...</option>
+                            {% for p in products %}
+                            <option value="{{ p.pk }}" data-name="{{ p.name }}" data-cost="{{ p.purchase_price }}">{{
+                                p.name }} (₹{{ p.purchase_price }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3"><input type="number" id="poQty" class="form-control" placeholder="Qty" min="1"
+                            value="1"></div>
+                    <div class="col-md-2"><input type="number" id="poCost" class="form-control" placeholder="Cost"
+                            step="0.01"></div>
+                    <div class="col-md-2"><button type="button" id="addPoItem"
+                            class="btn btn-outline-primary w-100">Add</button></div>
+                </div>
+                <!-- Items table -->
+                <div id="poItems"></div>
+                <div class="d-flex justify-content-end gap-2 mt-3">
+                    <a href="{% url 'purchases:po_list' %}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-success" id="submitPO" disabled>
+                        <i class="bi bi-save me-1"></i>Create Purchase Order
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let poItems = [];
+    document.getElementById('poProduct').addEventListener('change', function () {
+        document.getElementById('poCost').value = this.selectedOptions[0]?.dataset.cost || '';
+    });
+    document.getElementById('addPoItem').addEventListener('click', function () {
+        const sel = document.getElementById('poProduct');
+        const qty = parseInt(document.getElementById('poQty').value);
+        const cost = parseFloat(document.getElementById('poCost').value);
+        if (!sel.value || !qty || !cost) { alert('Select product, qty and cost.'); return; }
+        const existing = poItems.find(i => i.product_id == sel.value);
+        if (existing) { existing.quantity += qty; }
+        else { poItems.push({ product_id: sel.value, name: sel.selectedOptions[0].dataset.name, quantity: qty, unit_cost: cost }); }
+        renderPoItems();
+    });
+    function renderPoItems() {
+        const btn = document.getElementById('submitPO');
+        if (!poItems.length) { document.getElementById('poItems').innerHTML = ''; btn.disabled = true; return; }
+        btn.disabled = false;
+        let total = 0, html = '<table class="table table-sm"><thead><tr><th>Product</th><th>Qty</th><th>Unit Cost</th><th>Total</th><th></th></tr></thead><tbody>';
+        poItems.forEach((item, i) => {
+            const t = item.quantity * item.unit_cost; total += t;
+            html += `<tr><td>${item.name}</td><td>${item.quantity}</td><td>₹${item.unit_cost}</td><td>₹${t.toFixed(2)}</td>
+            <td><button class="btn btn-xs btn-outline-danger" onclick="poItems.splice(${i},1);renderPoItems()">×</button></td></tr>`;
+        });
+        html += `</tbody><tfoot><tr><td colspan="3"><strong>Total</strong></td><td colspan="2"><strong>₹${total.toFixed(2)}</strong></td></tr></tfoot></table>`;
+        document.getElementById('poItems').innerHTML = html;
+    }
+    document.getElementById('poForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        document.getElementById('itemsData').value = JSON.stringify(poItems);
+        const fd = new FormData(this);
+        const res = await fetch('', { method: 'POST', body: fd, headers: { 'X-CSRFToken': CSRF_TOKEN } });
+        const data = await res.json();
+        if (data.success) window.location.href = `/purchases/${data.po_id}/`;
+        else alert('Error: ' + JSON.stringify(data.errors));
+    });
+</script>
+{% endblock %}

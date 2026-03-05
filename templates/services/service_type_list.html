@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Service Types — Amar Honda Care{% endblock %}
+{% block page_title %}Service Types{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between mb-4">
+    <span class="text-muted">Configure service templates and checklists</span>
+    <a href="{% url 'services:service_type_create' %}" class="btn btn-sm btn-success"><i class="bi bi-plus me-1"></i>Add
+        Service Type</a>
+</div>
+<div class="row g-3">
+    {% for st in service_types %}
+    <div class="col-md-4">
+        <div class="card p-3">
+            <div class="d-flex justify-content-between">
+                <h6 class="fw-bold mb-1">{{ st.name }}</h6>
+                <span class="badge bg-primary">{{ st.get_service_type_display }}</span>
+            </div>
+            <div class="text-muted small mb-2">₹{{ st.base_charge }} base charge</div>
+            {% if st.checklist_template %}
+            <ul class="list-unstyled small mb-0">
+                {% for item in st.checklist_template|slice:":4" %}<li>✓ {{ item }}</li>{% endfor %}
+                {% if st.checklist_template|length > 4 %}<li class="text-muted">+ {{
+                    st.checklist_template|length|add:"-4" }} more...</li>{% endif %}
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5 text-muted">No service types configured. <a
+            href="{% url 'services:service_type_create' %}">Add one</a></div>
+    {% endfor %}
+</div>
+{% endblock %}

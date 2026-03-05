@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Profit Report — Amar Honda Care{% endblock %}
+{% block page_title %}Profit Report{% endblock %}
+
+{% block content %}
+<div class="card mb-4 p-3">
+    <form method="get" class="row g-2">
+        <div class="col-md-4"><label class="form-label small">From</label><input type="date" name="date_from"
+                class="form-control" value="{{ date_from }}"></div>
+        <div class="col-md-4"><label class="form-label small">To</label><input type="date" name="date_to"
+                class="form-control" value="{{ date_to }}"></div>
+        <div class="col-md-4 pt-1"><label class="form-label small">&nbsp;</label><button type="submit"
+                class="btn btn-primary d-block">Filter</button></div>
+    </form>
+</div>
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="stat-card blue">
+            <div class="stat-icon"><i class="bi bi-graph-up"></i></div>
+            <div class="stat-value">₹{{ total_revenue|floatformat:0 }}</div>
+            <div class="stat-label">Total Revenue</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card red">
+            <div class="stat-icon"><i class="bi bi-arrow-down-circle"></i></div>
+            <div class="stat-value">₹{{ total_cost|floatformat:0 }}</div>
+            <div class="stat-label">Total Cost</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card green">
+            <div class="stat-icon"><i class="bi bi-currency-rupee"></i></div>
+            <div class="stat-value">₹{{ gross_profit|floatformat:0 }}</div>
+            <div class="stat-label">Gross Profit</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+{% block title %}New Bill — Amar Honda Care{% endblock %}
+{% block page_title %}New Invoice / POS{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+    <!-- Product Grid -->
+    <div class="col-lg-7">
+        <div class="card mb-3">
+            <div class="card-body pb-2">
+                <input type="search" id="productSearch" class="form-control" placeholder="Search products...">
+            </div>
+        </div>
+        <div class="row g-2" id="productGrid">
+            {% for product in products %}
+            <div class="col-6 col-md-4 product-grid-item" data-name="{{ product.name|lower }}"
+                data-id="{{ product.pk }}" data-price="{{ product.selling_price }}"
+                data-stock="{{ product.stock_qty }}">
+                <div class="product-pos-card"
+                    onclick="addToCart({{ product.pk }}, '{{ product.name|escapejs }}', {{ product.selling_price }}, {{ product.stock_qty }})">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" class="pos-product-img">
+                    {% else %}
+                    <div class="pos-product-img-placeholder"><i class="bi bi-gear"></i></div>
+                    {% endif %}
+                    <div class="pos-product-name">{{ product.name }}</div>
+                    <div class="pos-product-price">₹{{ product.selling_price }}</div>
+                    <div class="pos-product-stock text-muted x-small">Stock: {{ product.stock_qty }}</div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5 text-muted">
+                No products available. <a href="{% url 'products:product_create' %}">Add products first</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Cart / Invoice Form -->
+    <div class="col-lg-5">
+        <div class="card sticky-top" style="top: 80px;">
+            <div class="card-header-custom">
+                <i class="bi bi-cart3 me-2"></i>Invoice Cart
+            </div>
+            <div class="card-body p-3">
+                <form id="billingForm" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="cart_data" id="cartData">
+
+                    <!-- Customer Info -->
+                    <div class="mb-3">
+                        <div class="row g-2">
+                            <div class="col-12">{{ form.customer_name }}</div>
+                            <div class="col-6">{{ form.customer_phone }}</div>
+                            <div class="col-6">{{ form.vehicle_number }}</div>
+                            <div class="col-12">{{ form.vehicle_model }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Cart Items -->
+                    <div id="cartItems" class="cart-items mb-3">
+                        <div id="emptyCart" class="text-center text-muted py-3">
+                            <i class="bi bi-cart-x fs-2 d-block mb-2"></i>
+                            Click products to add them
+                        </div>
+                    </div>
+
+                    <!-- Totals -->
+                    <div class="totals-section">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Items Total</span>
+                            <span id="itemsTotal">₹0.00</span>
+                        </div>
+                        <div class="row g-2 mb-2">
+                            <div class="col-6">
+                                <label class="x-small text-muted">Service Charge</label>
+                                {{ form.service_charge }}
+                            </div>
+                            <div class="col-6">
+                                <label class="x-small text-muted">Discount</label>
+                                {{ form.discount }}
+                            </div>
+                            <div class="col-6">
+                                <label class="x-small text-muted">GST %</label>
+                                {{ form.gst_percent }}
+                            </div>
+                            <div class="col-6">
+                                <label class="x-small text-muted">Payment</label>
+                                {{ form.payment_method }}
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">GST Amount</span>
+                            <span id="gstAmount">₹0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between grand-total-row">
+                            <span class="fw-bold">Grand Total</span>
+                            <span class="fw-bold text-primary" id="grandTotal">₹0.00</span>
+                        </div>
+                    </div>
+
+                    {{ form.notes }}
+
+                    <button type="submit" id="submitBill" class="btn btn-primary w-100 mt-3" disabled>
+                        <i class="bi bi-receipt me-1"></i>Generate Invoice
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let cart = [];
+
+    function addToCart(id, name, price, stock) {
+        if (stock <= 0) { alert('Out of stock!'); return; }
+        const existing = cart.find(i => i.product_id === id);
+        if (existing) {
+            if (existing.quantity < stock) existing.quantity++;
+            else { alert('Maximum stock reached!'); return; }
+        } else {
+            cart.push({ product_id: id, name, price: parseFloat(price), quantity: 1 });
+        }
+        renderCart();
+    }
+
+    function removeFromCart(id) {
+        cart = cart.filter(i => i.product_id !== id);
+        renderCart();
+    }
+
+    function changeQty(id, delta) {
+        const item = cart.find(i => i.product_id === id);
+        if (!item) return;
+        item.quantity += delta;
+        if (item.quantity <= 0) { removeFromCart(id); return; }
+        renderCart();
+    }
+
+    function renderCart() {
+        const container = document.getElementById('cartItems');
+        const emptyMsg = document.getElementById('emptyCart');
+        const submitBtn = document.getElementById('submitBill');
+        if (cart.length === 0) {
+            container.innerHTML = `<div id="emptyCart" class="text-center text-muted py-3">
+            <i class="bi bi-cart-x fs-2 d-block mb-2"></i>Click products to add them</div>`;
+            submitBtn.disabled = true;
+            updateTotals(0);
+            return;
+        }
+        submitBtn.disabled = false;
+        let html = '';
+        let itemsTotal = 0;
+        cart.forEach(item => {
+            const subtotal = item.price * item.quantity;
+            itemsTotal += subtotal;
+            html += `<div class="cart-item">
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-controls">
+                <button class="btn btn-xs btn-outline-secondary" onclick="changeQty(${item.product_id}, -1)">-</button>
+                <span class="mx-1">${item.quantity}</span>
+                <button class="btn btn-xs btn-outline-secondary" onclick="changeQty(${item.product_id}, 1)">+</button>
+            </div>
+            <div class="cart-item-price">₹${subtotal.toFixed(2)}</div>
+            <button class="btn btn-xs btn-outline-danger" onclick="removeFromCart(${item.product_id})">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>`;
+        });
+        container.innerHTML = html;
+        updateTotals(itemsTotal);
+    }
+
+    function updateTotals(itemsTotal) {
+        const serviceCharge = parseFloat(document.querySelector('[name=service_charge]')?.value) || 0;
+        const discount = parseFloat(document.querySelector('[name=discount]')?.value) || 0;
+        const gstPct = parseFloat(document.querySelector('[name=gst_percent]')?.value) || 0;
+        const subtotal = itemsTotal + serviceCharge;
+        const gstAmt = subtotal * gstPct / 100;
+        const grand = subtotal + gstAmt - discount;
+        document.getElementById('itemsTotal').textContent = '₹' + itemsTotal.toFixed(2);
+        document.getElementById('gstAmount').textContent = '₹' + gstAmt.toFixed(2);
+        document.getElementById('grandTotal').textContent = '₹' + grand.toFixed(2);
+    }
+
+    // Number inputs trigger recalculation
+    document.querySelectorAll('[name=service_charge],[name=discount],[name=gst_percent]').forEach(el => {
+        el.addEventListener('input', () => {
+            const t = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+            updateTotals(t);
+        });
+    });
+
+    // Search
+    document.getElementById('productSearch').addEventListener('input', function () {
+        const q = this.value.toLowerCase();
+        document.querySelectorAll('.product-grid-item').forEach(el => {
+            el.style.display = el.dataset.name.includes(q) ? '' : 'none';
+        });
+    });
+
+    // Form submit
+    document.getElementById('billingForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        document.getElementById('cartData').value = JSON.stringify(cart);
+        const fd = new FormData(this);
+        const btn = document.getElementById('submitBill');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+        try {
+            const res = await fetch('', { method: 'POST', body: fd, headers: { 'X-CSRFToken': CSRF_TOKEN } });
+            const data = await res.json();
+            if (data.success) {
+                window.location.href = `/billing/invoices/${data.invoice_id}/`;
+            } else {
+                alert('Error: ' + JSON.stringify(data.errors));
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-receipt me-1"></i>Generate Invoice';
+            }
+        } catch (err) {
+            alert('Network error. Please try again.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-receipt me-1"></i>Generate Invoice';
+        }
+    });
+</script>
+{% endblock %}

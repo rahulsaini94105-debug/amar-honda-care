@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Notifications — Amar Honda Care{% endblock %}
+{% block page_title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between mb-4">
+    <span class="text-muted">All system alerts and notifications</span>
+    <button class="btn btn-sm btn-outline-secondary mark-all-read">Mark All Read</button>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        {% for notif in notifications %}
+        <div class="notification-item {% if not notif.is_read %}unread{% endif %}">
+            <div
+                class="notif-icon {% if notif.notification_type == 'OUT_OF_STOCK' %}danger{% elif notif.notification_type == 'LOW_STOCK' %}warning{% else %}info{% endif %}">
+                <i class="bi bi-{% if 'STOCK' in notif.notification_type %}box-seam{% else %}tools{% endif %}"></i>
+            </div>
+            <div class="notif-content flex-grow-1">
+                <div class="notif-msg">{{ notif.message }}</div>
+                <div class="notif-time">{{ notif.created_at|date:"d M Y, h:i A" }}</div>
+            </div>
+            <span
+                class="badge {% if notif.notification_type == 'OUT_OF_STOCK' %}bg-danger{% elif notif.notification_type == 'LOW_STOCK' %}bg-warning text-dark{% else %}bg-info{% endif %}">
+                {{ notif.get_notification_type_display }}
+            </span>
+        </div>
+        {% empty %}
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-bell-slash fs-1 d-block mb-2"></i>No notifications
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% if page_obj.has_other_pages %}
+<nav class="mt-3">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}<li class="page-item"><a class="page-link"
+                href="?page={{ page_obj.previous_page_number }}">Prev</a></li>{% endif %}
+        <li class="page-item disabled"><span class="page-link">{{ page_obj.number }}</span></li>
+        {% if page_obj.has_next %}<li class="page-item"><a class="page-link"
+                href="?page={{ page_obj.next_page_number }}">Next</a></li>{% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

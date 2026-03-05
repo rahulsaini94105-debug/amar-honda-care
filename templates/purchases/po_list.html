@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}Purchase Orders — Amar Honda Care{% endblock %}
+{% block page_title %}Purchase Orders{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between mb-4">
+    <div>
+        <a href="{% url 'purchases:supplier_list' %}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-building me-1"></i>Suppliers
+        </a>
+    </div>
+    <a href="{% url 'purchases:po_create' %}" class="btn btn-success btn-sm">
+        <i class="bi bi-plus me-1"></i>New Purchase Order
+    </a>
+</div>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>PO #</th>
+                    <th>Supplier</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td><strong>PO-{{ order.pk }}</strong></td>
+                    <td>{{ order.supplier.name|default:"Direct" }}</td>
+                    <td>{{ order.items.count }}</td>
+                    <td class="fw-bold">₹{{ order.total_amount|floatformat:2 }}</td>
+                    <td>
+                        <span
+                            class="badge {% if order.status == 'RECEIVED' %}bg-success{% elif order.status == 'CANCELLED' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </td>
+                    <td class="small text-muted">{{ order.created_at|date:"d M Y" }}</td>
+                    <td>
+                        <a href="{% url 'purchases:po_detail' order.pk %}" class="btn btn-sm btn-outline-primary"><i
+                                class="bi bi-eye"></i></a>
+                        {% if order.status == 'PENDING' %}
+                        <button class="btn btn-sm btn-outline-success receive-btn" data-id="{{ order.pk }}">
+                            <i class="bi bi-check-circle"></i> Receive
+                        </button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-4 text-muted">No purchase orders yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.querySelectorAll('.receive-btn').forEach(btn => {
+        btn.addEventListener('click', async function () {
+            if (!confirm('Mark this order as received? Stock will be updated.')) return;
+            const id = this.dataset.id;
+            const res = await fetch(`/purchases/${id}/receive/`, { method: 'POST', headers: { 'X-CSRFToken': CSRF_TOKEN } });
+            if ((await res.json()).success) location.reload();
+        });
+    });
+</script>
+{% endblock %}

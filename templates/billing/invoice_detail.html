@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %}Invoice {{ invoice.invoice_number }} — Amar Honda Care{% endblock %}
+{% block page_title %}Invoice Details{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body p-4">
+                <!-- Header -->
+                <div class="d-flex justify-content-between mb-4">
+                    <div>
+                        <h4 class="fw-bold mb-0">INVOICE</h4>
+                        <div class="text-muted"># {{ invoice.invoice_number }}</div>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold fs-5 text-primary">Amar Honda Care</div>
+                        <div class="text-muted small">Garage & Bike Shop</div>
+                        <div class="text-muted small">{{ invoice.created_at|date:"d M Y, h:i A" }}</div>
+                    </div>
+                </div>
+
+                <!-- Customer Info -->
+                <div class="row mb-4">
+                    <div class="col-6">
+                        <div class="text-muted small">Customer</div>
+                        <div class="fw-semibold">{{ invoice.customer_name }}</div>
+                        <div>{{ invoice.customer_phone }}</div>
+                    </div>
+                    <div class="col-6 text-end">
+                        <div class="text-muted small">Vehicle</div>
+                        <div class="fw-semibold">{{ invoice.vehicle_number|default:"—" }}</div>
+                        <div>{{ invoice.vehicle_model }}</div>
+                    </div>
+                </div>
+
+                <!-- Items Table -->
+                <div class="table-responsive mb-4">
+                    <table class="table">
+                        <thead>
+                            <tr class="table-dark">
+                                <th>#</th>
+                                <th>Product</th>
+                                <th class="text-end">Qty</th>
+                                <th class="text-end">Price</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in invoice.items.all %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ item.product.name }}</td>
+                                <td class="text-end">{{ item.quantity }}</td>
+                                <td class="text-end">₹{{ item.unit_price }}</td>
+                                <td class="text-end fw-semibold">₹{{ item.total_price }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Totals -->
+                <div class="row justify-content-end">
+                    <div class="col-md-5">
+                        <table class="table table-sm">
+                            <tr>
+                                <td>Items Subtotal</td>
+                                <td class="text-end">₹{{ invoice.subtotal }}</td>
+                            </tr>
+                            {% if invoice.service_charge %}<tr>
+                                <td>Service Charge</td>
+                                <td class="text-end">₹{{ invoice.service_charge }}</td>
+                            </tr>{% endif %}
+                            {% if invoice.gst_percent %}<tr>
+                                <td>GST ({{ invoice.gst_percent }}%)</td>
+                                <td class="text-end">₹{{ invoice.gst_amount }}</td>
+                            </tr>{% endif %}
+                            {% if invoice.discount %}<tr>
+                                <td>Discount</td>
+                                <td class="text-end text-danger">- ₹{{ invoice.discount }}</td>
+                            </tr>{% endif %}
+                            <tr class="fw-bold fs-6">
+                                <td>Grand Total</td>
+                                <td class="text-end text-primary">₹{{ invoice.grand_total }}</td>
+                            </tr>
+                            <tr>
+                                <td>Payment</td>
+                                <td class="text-end">{{ invoice.get_payment_method_display }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                {% if invoice.notes %}<div class="mt-2 text-muted small"><strong>Notes:</strong> {{ invoice.notes }}
+                </div>{% endif %}
+
+                <!-- Actions -->
+                <div class="d-flex gap-2 mt-4 justify-content-between">
+                    <a href="{% url 'billing:invoice_list' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>Back
+                    </a>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'billing:invoice_pdf' invoice.pk %}" target="_blank" class="btn btn-primary">
+                            <i class="bi bi-file-earmark-pdf me-1"></i>Download PDF
+                        </a>
+                        <button onclick="window.print()" class="btn btn-outline-secondary">
+                            <i class="bi bi-printer me-1"></i>Print
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

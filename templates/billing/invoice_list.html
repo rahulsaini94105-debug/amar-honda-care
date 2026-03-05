@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}All Invoices — Amar Honda Care{% endblock %}
+{% block page_title %}Invoices{% endblock %}
+
+{% block content %}
+<div class="card mb-3 p-3">
+    <form method="get" class="row g-2">
+        <div class="col-md-4"><input name="q" class="form-control" placeholder="Invoice #, customer, vehicle..."
+                value="{{ request.GET.q }}"></div>
+        <div class="col-md-3"><input type="date" name="date_from" class="form-control"
+                value="{{ request.GET.date_from }}"></div>
+        <div class="col-md-3"><input type="date" name="date_to" class="form-control" value="{{ request.GET.date_to }}">
+        </div>
+        <div class="col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-primary flex-grow-1">Filter</button>
+            <a href="{% url 'billing:pos' %}" class="btn btn-success"><i class="bi bi-plus"></i></a>
+        </div>
+    </form>
+</div>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Invoice #</th>
+                    <th>Customer</th>
+                    <th>Vehicle</th>
+                    <th>Amount</th>
+                    <th>Payment</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inv in invoices %}
+                <tr>
+                    <td><strong>{{ inv.invoice_number }}</strong></td>
+                    <td>{{ inv.customer_name }}<br><small class="text-muted">{{ inv.customer_phone }}</small></td>
+                    <td>{{ inv.vehicle_number|default:"—" }}</td>
+                    <td class="fw-bold text-primary">₹{{ inv.grand_total|floatformat:2 }}</td>
+                    <td><span class="badge bg-secondary">{{ inv.get_payment_method_display }}</span></td>
+                    <td class="small text-muted">{{ inv.created_at|date:"d M Y" }}</td>
+                    <td>
+                        <a href="{% url 'billing:invoice_detail' inv.pk %}" class="btn btn-sm btn-outline-primary"><i
+                                class="bi bi-eye"></i></a>
+                        <a href="{% url 'billing:invoice_pdf' inv.pk %}" class="btn btn-sm btn-outline-danger"
+                            target="_blank"><i class="bi bi-file-pdf"></i></a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-4 text-muted">No invoices found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if page_obj.has_other_pages %}
+    <div class="p-3">
+        <nav>
+            <ul class="pagination justify-content-center mb-0">
+                {% if page_obj.has_previous %}<li class="page-item"><a class="page-link"
+                        href="?page={{ page_obj.previous_page_number }}">Prev</a></li>{% endif %}
+                <li class="page-item disabled"><span class="page-link">{{ page_obj.number }} / {{
+                        page_obj.paginator.num_pages }}</span></li>
+                {% if page_obj.has_next %}<li class="page-item"><a class="page-link"
+                        href="?page={{ page_obj.next_page_number }}">Next</a></li>{% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

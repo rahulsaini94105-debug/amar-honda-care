@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}Products — Amar Honda Care{% endblock %}
+{% block page_title %}Products{% endblock %}
+
+{% block content %}
+<!-- Filter bar -->
+<div class="card mb-4 p-3">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-md-4">
+            <input type="search" name="q" value="{{ request.GET.q }}" class="form-control"
+                placeholder="Search products...">
+        </div>
+        <div class="col-md-3">
+            <select name="category" class="form-select">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if cat.is_selected %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="stock" class="form-select">
+                <option value="">All Stock</option>
+                <option value="low" {% if stock_low_selected %}selected{% endif %}>Low Stock</option>
+                <option value="out" {% if stock_out_selected %}selected{% endif %}>Out of Stock</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary flex-grow-1">Search</button>
+            {% if user.is_owner %}
+            <a href="{% url 'products:product_create' %}" class="btn btn-success">
+                <i class="bi bi-plus"></i>
+            </a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<!-- Stats -->
+<div class="d-flex gap-3 mb-3 small text-muted">
+    <span><i class="bi bi-box-seam me-1"></i>{{ page_obj.paginator.count }} products</span>
+    {% if low_stock_count > 0 %}<span class="text-warning"><i class="bi bi-exclamation-triangle me-1"></i>{{
+        low_stock_count }} low stock</span>{% endif %}
+    {% if out_of_stock_count > 0 %}<span class="text-danger"><i class="bi bi-x-circle me-1"></i>{{ out_of_stock_count }}
+        out of stock</span>{% endif %}
+</div>
+
+<!-- Product Grid -->
+<div class="row g-3">
+    {% for product in products %}
+    <div class="col-sm-6 col-md-4 col-lg-3">
+        <div
+            class="product-card {% if product.is_out_of_stock %}out-of-stock{% elif product.is_low_stock %}low-stock{% endif %}">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img">
+            {% else %}
+            <div class="product-img-placeholder"><i class="bi bi-gear-wide-connected"></i></div>
+            {% endif %}
+            <div class="product-info">
+                <div class="product-name">{{ product.name }}</div>
+                <div class="product-cat text-muted small">{{ product.category.name|default:"—" }}</div>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <div class="product-price">₹{{ product.selling_price }}</div>
+                    <div>
+                        {% if product.is_out_of_stock %}
+                        <span class="badge bg-danger">Out of Stock</span>
+                        {% elif product.is_low_stock %}
+                        <span class="badge bg-warning text-dark">Low: {{ product.stock_qty }}</span>
+                        {% else %}
+                        <span class="badge bg-success">{{ product.stock_qty }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if user.is_owner %}
+                <div class="product-actions">
+                    <a href="{% url 'products:product_update' product.pk %}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <a href="{% url 'products:product_delete' product.pk %}" class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5 text-muted">
+        <i class="bi bi-box-seam fs-1 d-block mb-2"></i>
+        No products found.
+        {% if user.is_owner %}
+        <br><a href="{% url 'products:product_create' %}" class="btn btn-primary mt-2">Add First Product</a>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if page_obj.has_other_pages %}
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Prev</a></li>
+        {% endif %}
+        <li class="page-item disabled"><span class="page-link">{{ page_obj.number }}/{{ page_obj.paginator.num_pages
+                }}</span></li>
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
