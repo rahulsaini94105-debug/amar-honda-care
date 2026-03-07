@@ -8,8 +8,13 @@
         <div class="col-md-4">
             <select name="product" class="form-select">
                 <option value="">All Products</option>
-                {% for p in products %}<option value="{{ p.pk }}" {% if request.GET.product==p.pk|stringformat:"d"
-                    %}selected{% endif %}>{{ p.name }}</option>{% endfor %}
+                {% for p in products %}
+                {% if request.GET.product == p.pk|stringformat:"s" %}
+                <option value="{{ p.pk }}" selected>{{ p.name }}</option>
+                {% else %}
+                <option value="{{ p.pk }}">{{ p.name }}</option>
+                {% endif %}
+                {% endfor %}
             </select>
         </div>
         <div class="col-md-2">
@@ -36,9 +41,15 @@
                 <tr>
                     <td class="text-muted">{{ log.created_at|date:"d M Y, h:i A" }}</td>
                     <td class="fw-semibold">{{ log.product.name }}</td>
-                    <td><span
-                            class="badge {% if log.change_type == 'SALE' %}bg-danger{% elif log.change_type == 'PURCHASE' %}bg-success{% else %}bg-secondary{% endif %}">{{
-                            log.change_type }}</span></td>
+                    <td>
+                        {% if log.change_type == 'SALE' %}
+                        <span class="badge bg-danger">{{ log.change_type }}</span>
+                        {% elif log.change_type == 'PURCHASE' %}
+                        <span class="badge bg-success">{{ log.change_type }}</span>
+                        {% else %}
+                        <span class="badge bg-secondary">{{ log.change_type }}</span>
+                        {% endif %}
+                    </td>
                     <td class="fw-bold {% if log.quantity_change > 0 %}text-success{% else %}text-danger{% endif %}">
                         {% if log.quantity_change > 0 %}+{% endif %}{{ log.quantity_change }}
                     </td>

@@ -70,11 +70,12 @@
                             <td class="text-muted">{{ product.category.name|default:"—" }}</td>
                             <td>
                                 <div class="d-flex align-items-center gap-2">
+                                    <!-- prettier-ignore -->
                                     <div class="stock-bar"
-                                        style="width:80px;background:#eee;border-radius:4px;height:6px;">
+                                        style="width:80px;background:#eee;border-radius:4px;height:6px;overflow:hidden;">
                                         {% widthratio product.stock_qty product.low_stock_limit|add:5 100 as pct %}
                                         <div
-                                            style="width:{% if pct > 100 %}100{% else %}{{ pct }}{% endif %}%;background:{% if product.is_out_of_stock %}#ef4444{% elif product.is_low_stock %}#f59e0b{% else %}#10b981{% endif %};height:6px;border-radius:4px;">
+                                            style="width:{{ pct }}%;background:{% if product.is_out_of_stock %}#ef4444{% elif product.is_low_stock %}#f59e0b{% else %}#10b981{% endif %};height:100%;border-radius:4px;">
                                         </div>
                                     </div>
                                     <span>{{ product.stock_qty }}</span>
