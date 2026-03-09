@@ -12,13 +12,13 @@ from .models import Supplier, PurchaseOrder, PurchaseItem
 from .forms import SupplierForm, PurchaseOrderForm
 
 
-class SupplierListView(OwnerRequiredMixin, ListView):
+class SupplierListView(StaffOrOwnerRequiredMixin, ListView):
     model = Supplier
     template_name = 'purchases/supplier_list.html'
     context_object_name = 'suppliers'
 
 
-class SupplierCreateView(OwnerRequiredMixin, CreateView):
+class SupplierCreateView(StaffOrOwnerRequiredMixin, CreateView):
     model = Supplier
     form_class = SupplierForm
     template_name = 'purchases/supplier_form.html'
@@ -29,7 +29,7 @@ class SupplierCreateView(OwnerRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class SupplierUpdateView(OwnerRequiredMixin, UpdateView):
+class SupplierUpdateView(StaffOrOwnerRequiredMixin, UpdateView):
     model = Supplier
     form_class = SupplierForm
     template_name = 'purchases/supplier_form.html'
@@ -95,7 +95,7 @@ class PurchaseOrderDetailView(StaffOrOwnerRequiredMixin, DetailView):
     context_object_name = 'order'
 
 
-class ReceivePurchaseOrderView(OwnerRequiredMixin, View):
+class ReceivePurchaseOrderView(StaffOrOwnerRequiredMixin, View):
     def post(self, request, pk):
         po = get_object_or_404(PurchaseOrder, pk=pk)
         if po.status == PurchaseOrder.PENDING:

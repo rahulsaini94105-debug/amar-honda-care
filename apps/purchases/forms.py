@@ -23,3 +23,9 @@ class PurchaseOrderForm(forms.ModelForm):
             'supplier': forms.Select(attrs={'class': 'form-select'}),
             'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['supplier'].empty_label = "Select Supplier..."
+        self.fields['supplier'].queryset = Supplier.objects.filter(is_active=True)
+

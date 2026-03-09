@@ -60,17 +60,74 @@
         </table>
     </div>
 </div>
+
+<!-- Receive PO Modal -->
+<div class="modal fade" id="receivePoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow text-center p-3">
+            <div class="modal-header border-0 pb-0 justify-content-end">
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <div class="mb-3 text-warning">
+                    <i class="bi bi-exclamation-circle" style="font-size: 4rem;"></i>
+                </div>
+                <h4 class="fw-bold mb-3">Receive Purchase Order?</h4>
+                <p class="text-muted mb-4">
+                    Are you sure you want to mark this order as received? The stock quantities for all items will be
+                    updated and <strong class="text-danger">this action cannot be undone</strong>.
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                    <button type="button" class="btn btn-secondary px-4 fw-semibold"
+                        data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success px-4 fw-semibold" id="confirmReceiveBtn">
+                        <i class="bi bi-check-circle me-1"></i> Yes, Receive
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
+    let currentPoId = null;
+    const receiveModal = new bootstrap.Modal(document.getElementById('receivePoModal'));
+
     document.querySelectorAll('.receive-btn').forEach(btn => {
-        btn.addEventListener('click', async function () {
-            if (!confirm('Mark this order as received? Stock will be updated.')) return;
-            const id = this.dataset.id;
-            const res = await fetch(`/purchases/${id}/receive/`, { method: 'POST', headers: { 'X-CSRFToken': CSRF_TOKEN } });
-            if ((await res.json()).success) location.reload();
+        btn.addEventListener('click', function () {
+            currentPoId = this.dataset.id;
+            receiveModal.show();
         });
+    });
+
+    document.getElementById('confirmReceiveBtn').addEventListener('click', async function () {
+        if (!currentPoId) return;
+
+        const btn = this;
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+        btn.disabled = true;
+
+        try {
+            const res = await fetch(`/purchases/${currentPoId}/receive/`, { method: 'POST', headers: { 'X-CSRFToken': CSRF_TOKEN } });
+            if (res.ok) {
+                const data = await res.json();
+                if (data.success) location.reload();
+            } else {
+                alert(`Action failed (HTTP ${res.status}): You might not have permission.`);
+                receiveModal.hide();
+            }
+        } catch (err) {
+            console.error(err);
+            alert("An error occurred while communicating with the server.");
+            receiveModal.hide();
+        } finally {
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+        }
     });
 </script>
 {% endblock %}

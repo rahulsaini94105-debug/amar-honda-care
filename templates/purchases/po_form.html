@@ -18,27 +18,43 @@
                 {% csrf_token %}
                 <input type="hidden" name="items_data" id="itemsData">
                 <div class="row g-3 mb-4">
-                    <div class="col-md-6"><label class="form-label fw-semibold">Supplier</label>{{ form.supplier }}
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold w-100 d-flex justify-content-between align-items-center">
+                            Supplier
+                            <a href="{% url 'purchases:supplier_create' %}"
+                                class="btn btn-sm btn-link p-0 text-decoration-none"><i class="bi bi-plus"></i> Add
+                                New</a>
+                        </label>
+                        {{ form.supplier }}
                     </div>
                     <div class="col-12"><label class="form-label fw-semibold">Notes</label>{{ form.notes }}</div>
                 </div>
+                <hr class="text-muted">
+                <h6 class="mb-3">Add Purchase Items</h6>
                 <!-- Add Item -->
-                <div class="row g-2 mb-3">
+                <div class="row g-2 mb-3 align-items-end">
                     <div class="col-md-5">
+                        <label class="form-label fw-semibold small">Product</label>
                         <select id="poProduct" class="form-select">
                             <option value="">Select Product...</option>
                             {% for p in products %}
-                            <option value="{{ p.pk }}" data-name="{{ p.name }}" data-cost="{{ p.purchase_price }}">{{
-                                p.name }} (₹{{ p.purchase_price }})</option>
+                            <option value="{{ p.pk }}" data-name="{{ p.name }}" data-cost="{{ p.purchase_price }}">
+                                {{ p.name }} (₹{{ p.purchase_price }})
+                            </option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-3"><input type="number" id="poQty" class="form-control" placeholder="Qty" min="1"
-                            value="1"></div>
-                    <div class="col-md-2"><input type="number" id="poCost" class="form-control" placeholder="Cost"
-                            step="0.01"></div>
-                    <div class="col-md-2"><button type="button" id="addPoItem"
-                            class="btn btn-outline-primary w-100">Add</button></div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold small">Quantity</label>
+                        <input type="number" id="poQty" class="form-control" placeholder="Qty" min="1" value="1">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold small">Cost (₹)</label>
+                        <input type="number" id="poCost" class="form-control" placeholder="Cost" step="0.01">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" id="addPoItem" class="btn btn-outline-primary w-100">Add</button>
+                    </div>
                 </div>
                 <!-- Items table -->
                 <div id="poItems"></div>
