@@ -46,8 +46,8 @@ class InvoiceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Invoice
-        fields = ['id', 'invoice_number', 'customer_name', 'customer_phone', 'vehicle_number',
-                  'service_charge', 'discount', 'gst_percent', 'subtotal', 'gst_amount',
+        fields = ['id', 'invoice_number', 'customer_name', 'customer_phone', 'customer_address', 'vehicle_number',
+                  'vehicle_model', 'service_charge', 'discount', 'gst_percent', 'subtotal', 'gst_amount',
                   'grand_total', 'payment_method', 'notes', 'created_by_name', 'created_at', 'items']
         read_only_fields = ['invoice_number', 'subtotal', 'gst_amount', 'grand_total']
 

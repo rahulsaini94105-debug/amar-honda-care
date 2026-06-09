@@ -76,6 +76,9 @@
         <div>
             <strong>Customer:</strong> {{ invoice.customer_name }}<br>
             <strong>Phone:</strong> {{ invoice.customer_phone }}<br>
+            {% if invoice.customer_address %}
+            <strong>Address:</strong> {{ invoice.customer_address }}<br>
+            {% endif %}
             <strong>Vehicle:</strong> {{ invoice.vehicle_number }}<br>
             <strong>Model:</strong> {{ invoice.vehicle_model }}
         </div>

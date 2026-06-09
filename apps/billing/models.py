@@ -7,6 +7,7 @@ class Invoice(models.Model):
     invoice_number = models.CharField(max_length=20, unique=True, editable=False)
     customer_name = models.CharField(max_length=200)
     customer_phone = models.CharField(max_length=15, blank=True)
+    customer_address = models.TextField(blank=True)
     vehicle_number = models.CharField(max_length=20, blank=True)
     vehicle_model = models.CharField(max_length=100, blank=True)
     service_charge = models.DecimalField(max_digits=10, decimal_places=2, default=0)

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% block title %}New Bill — Amar Honda Care{% endblock %}
-{% block page_title %}New Invoice / POS{% endblock %}
+{% block title %}{% if form.instance.pk %}Edit Invoice #{{ form.instance.invoice_number }}{% else %}New Bill{% endif %} — Amar Honda Care{% endblock %}
+{% block page_title %}{% if form.instance.pk %}Edit Invoice #{{ form.instance.invoice_number }}{% else %}New Invoice / POS{% endif %}{% endblock %}
 
 {% block content %}
 <div class="row g-3">
@@ -15,9 +15,9 @@
             {% for product in products %}
             <div class="col-6 col-md-4 product-grid-item" data-name="{{ product.name|lower }}"
                 data-id="{{ product.pk }}" data-price="{{ product.selling_price }}"
-                data-stock="{{ product.stock_qty }}">
+                data-stock="{{ product.restored_stock|default:product.stock_qty }}">
                 <div class="product-pos-card"
-                    onclick="addToCart({{ product.pk }}, '{{ product.name|escapejs }}', {{ product.selling_price }}, {{ product.stock_qty }})">
+                    onclick="addToCart({{ product.pk }}, '{{ product.name|escapejs }}', {{ product.selling_price }}, {{ product.restored_stock|default:product.stock_qty }})">
                     {% if product.image %}
                     <img src="{{ product.image.url }}" class="pos-product-img">
                     {% else %}
@@ -25,7 +25,7 @@
                     {% endif %}
                     <div class="pos-product-name">{{ product.name }}</div>
                     <div class="pos-product-price">₹{{ product.selling_price }}</div>
-                    <div class="pos-product-stock text-muted x-small">Stock: {{ product.stock_qty }}</div>
+                    <div class="pos-product-stock text-muted x-small">Stock: {{ product.restored_stock|default:product.stock_qty }}</div>
                 </div>
             </div>
             {% empty %}
@@ -55,6 +55,7 @@
                             <div class="col-6">{{ form.customer_phone }}</div>
                             <div class="col-6">{{ form.vehicle_number }}</div>
                             <div class="col-12">{{ form.vehicle_model }}</div>
+                            <div class="col-12">{{ form.customer_address }}</div>
                         </div>
                     </div>
 
@@ -182,7 +183,7 @@
                     {{ form.notes }}
 
                     <button type="submit" id="submitBill" class="btn btn-primary w-100 mt-3">
-                        <i class="bi bi-receipt me-1"></i>Generate Invoice
+                        <i class="bi bi-receipt me-1"></i>{% if form.instance.pk %}Update Invoice{% else %}Generate Invoice{% endif %}
                     </button>
                 </form>
             </div>
@@ -193,7 +194,7 @@
 
 {% block extra_js %}
 <script>
-    let cart = [];
+    let cart = {{ cart_json|safe|default:"[]" }};
     let customRowCount = 0;
 
     // ── Cart ──────────────────────────────────────────────
@@ -204,7 +205,7 @@
             if (existing.quantity < stock) existing.quantity++;
             else { alert('Maximum stock reached!'); return; }
         } else {
-            cart.push({ product_id: id, name, price: parseFloat(price), quantity: 1 });
+            cart.push({ product_id: id, name, price: parseFloat(price), quantity: 1, stock: parseInt(stock) });
         }
         renderCart();
     }
@@ -217,6 +218,10 @@
     function changeQty(id, delta) {
         const item = cart.find(i => i.product_id === id);
         if (!item) return;
+        if (delta > 0 && item.quantity >= item.stock) {
+            alert('Maximum stock reached!');
+            return;
+        }
         item.quantity += delta;
         if (item.quantity <= 0) { removeFromCart(id); return; }
         renderCart();
@@ -419,16 +424,66 @@
             } else {
                 alert('Error: ' + JSON.stringify(data.errors));
                 btn.disabled = false;
-                btn.innerHTML = '<i class="bi bi-receipt me-1"></i>Generate Invoice';
+                btn.innerHTML = '{% if form.instance.pk %}<i class="bi bi-receipt me-1"></i>Update Invoice{% else %}<i class="bi bi-receipt me-1"></i>Generate Invoice{% endif %}';
             }
         } catch (err) {
             alert('Network error. Please try again.');
             btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-receipt me-1"></i>Generate Invoice';
+            btn.innerHTML = '{% if form.instance.pk %}<i class="bi bi-receipt me-1"></i>Update Invoice{% else %}<i class="bi bi-receipt me-1"></i>Generate Invoice{% endif %}';
         }
     });
 
     // Initial state
+    {% if form.instance.pk %}
+    renderCart();
+    
+    // Load predefined parts checked values
+    const prepParts = {{ predefined_parts_json|safe|default:"{}" }};
+    for (const partId in prepParts) {
+        const checkbox = document.getElementById('part_' + partId);
+        if (checkbox) {
+            checkbox.checked = true;
+            const row = checkbox.closest('tr');
+            const priceInput = row.querySelector('.part-price');
+            const qtyInput = row.querySelector('.part-qty');
+            priceInput.disabled = false;
+            qtyInput.disabled = false;
+            priceInput.value = prepParts[partId].price;
+            qtyInput.value = prepParts[partId].quantity;
+        }
+    }
+
+    // Load custom parts values
+    const custParts = {{ custom_parts_json|safe|default:"[]" }};
+    custParts.forEach(part => {
+        customRowCount++;
+        const id = `custom_${customRowCount}`;
+        const tr = document.createElement('tr');
+        tr.id = id;
+        tr.className = 'custom-part-row';
+        tr.style.border = 'none';
+        tr.innerHTML = `
+            <td style="padding:4px 5px;vertical-align:middle;">
+                <i class="bi bi-pencil-square" style="color:#6366f1;font-size:14px;"></i>
+            </td>
+            <td style="padding:4px 5px;vertical-align:middle;">
+                <input type="text" class="form-control form-control-sm custom-name" value="${part.custom_name}" placeholder="Part name..." oninput="recalcAll()" style="font-size:13px;">
+            </td>
+            <td style="padding:4px 5px;vertical-align:middle;">
+                <input type="number" class="form-control form-control-sm custom-price" value="${part.unit_price}" min="0" step="0.01" oninput="recalcAll()" style="font-size:13px;">
+            </td>
+            <td style="padding:4px 5px;vertical-align:middle;">
+                <input type="number" class="form-control form-control-sm custom-qty" value="${part.quantity}" min="1" oninput="recalcAll()" style="font-size:13px;">
+            </td>
+            <td style="padding:4px 5px;vertical-align:middle;">
+                <button type="button" class="btn btn-xs btn-outline-danger" onclick="removeCustomRow('${id}')" style="padding:2px 6px;">
+                    <i class="bi bi-x"></i>
+                </button>
+            </td>`;
+        document.getElementById('partsTableBody').appendChild(tr);
+    });
+    {% endif %}
+
     updateButtonState();
     recalcAll();
 </script>

@@ -23,16 +23,8 @@
     {% if user.is_authenticated %}
     <!-- Sidebar -->
     <nav id="sidebar" class="sidebar">
-        <div class="sidebar-brand" style="padding: 1rem 1.25rem; justify-content: start;">
-            <div class="d-flex align-items-center gap-2">
-                <div class="brand-logo" style="background: var(--primary); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
-                    <i class="bi bi-gear-wide-connected" style="font-size: 1.2rem;"></i>
-                </div>
-                <div class="brand-text">
-                    <div class="brand-title" style="font-size: 1rem; font-weight: 700; color: #1e293b; letter-spacing: 0.5px;">AMAR HONDA</div>
-                    <div class="brand-sub" style="font-size: 0.65rem; color: #64748b; font-weight: 500;">Garage Care</div>
-                </div>
-            </div>
+        <div class="sidebar-brand" style="padding: 0.75rem; justify-content: center; display: flex; border-bottom: 1px solid #e2e8f0;">
+            <img src="{% static 'images/logo.png' %}" alt="Amar Honda Care" style="width: 100%; max-width: 220px; height: auto; max-height: 90px; object-fit: contain; display: block;">
         </div>
 
         <ul class="sidebar-nav">

@@ -5,7 +5,7 @@
 {% block content %}
 <div class="card mb-3 p-3">
     <form method="get" class="row g-2">
-        <div class="col-md-4"><input name="q" class="form-control" placeholder="Invoice #, customer, vehicle..."
+        <div class="col-md-4"><input name="q" class="form-control" placeholder="Invoice #, customer, address, vehicle..."
                 value="{{ request.GET.q }}"></div>
         <div class="col-md-3"><input type="date" name="date_from" class="form-control"
                 value="{{ request.GET.date_from }}"></div>
@@ -24,6 +24,7 @@
                 <tr>
                     <th>Invoice #</th>
                     <th>Customer</th>
+                    <th>Address</th>
                     <th>Vehicle</th>
                     <th>Amount</th>
                     <th>Payment</th>
@@ -36,20 +37,23 @@
                 <tr>
                     <td><strong>{{ inv.invoice_number }}</strong></td>
                     <td>{{ inv.customer_name }}<br><small class="text-muted">{{ inv.customer_phone }}</small></td>
+                    <td><span class="small text-muted">{{ inv.customer_address|default:"—" }}</span></td>
                     <td>{{ inv.vehicle_number|default:"—" }}</td>
                     <td class="fw-bold text-primary">₹{{ inv.grand_total|floatformat:2 }}</td>
                     <td><span class="badge bg-secondary">{{ inv.get_payment_method_display }}</span></td>
                     <td class="small text-muted">{{ inv.created_at|date:"d M Y" }}</td>
                     <td>
-                        <a href="{% url 'billing:invoice_detail' inv.pk %}" class="btn btn-sm btn-outline-primary"><i
+                        <a href="{% url 'billing:invoice_detail' inv.pk %}" class="btn btn-sm btn-outline-primary" title="View"><i
                                 class="bi bi-eye"></i></a>
+                        <a href="{% url 'billing:invoice_update' inv.pk %}" class="btn btn-sm btn-outline-warning" title="Edit"><i
+                                class="bi bi-pencil"></i></a>
                         <a href="{% url 'billing:invoice_pdf' inv.pk %}" class="btn btn-sm btn-outline-danger"
-                            target="_blank"><i class="bi bi-file-pdf"></i></a>
+                            target="_blank" title="PDF"><i class="bi bi-file-pdf"></i></a>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="7" class="text-center py-4 text-muted">No invoices found.</td>
+                    <td colspan="8" class="text-center py-4 text-muted">No invoices found.</td>
                 </tr>
                 {% endfor %}
             </tbody>
