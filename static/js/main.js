@@ -8,13 +8,3 @@ document.querySelectorAll('.alert.alert-dismissible').forEach(el => {
     }, 4000);
 });
 
-// Active sidebar link highlight based on URL
-(function() {
-    const path = window.location.pathname;
-    document.querySelectorAll('.sidebar-nav .nav-link').forEach(link => {
-        const href = link.getAttribute('href');
-        if (href && href !== '/' && path.startsWith(href)) {
-            link.classList.add('active');
-        }
-    });
-})();

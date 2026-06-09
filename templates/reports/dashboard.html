@@ -3,179 +3,250 @@
 {% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
-<!-- Stats Row -->
-<div class="row g-3 mb-4">
-    <div class="col-6 col-md-3">
-        <div class="stat-card green">
-            <div class="stat-icon"><i class="bi bi-cash-stack"></i></div>
-            <div class="stat-value">₹{{ today_revenue|floatformat:0 }}</div>
-            <div class="stat-label">Today's Revenue</div>
-            <div class="stat-sub">{{ today_sales_count }} invoice(s)</div>
-        </div>
-    </div>
-    <div class="col-6 col-md-3">
-        <div class="stat-card blue">
-            <div class="stat-icon"><i class="bi bi-calendar-month"></i></div>
-            <div class="stat-value">₹{{ monthly_revenue|floatformat:0 }}</div>
-            <div class="stat-label">Monthly Revenue</div>
-            <div class="stat-sub">{{ monthly_invoice_count }} invoices</div>
-        </div>
-    </div>
-    <div class="col-6 col-md-3">
-        <div class="stat-card orange">
-            <div class="stat-icon"><i class="bi bi-exclamation-triangle"></i></div>
-            <div class="stat-value">{{ low_stock_count }}</div>
-            <div class="stat-label">Low Stock Items</div>
-            <div class="stat-sub">{{ out_of_stock_count }} out of stock</div>
-        </div>
-    </div>
-    <div class="col-6 col-md-3">
-        <div class="stat-card red">
-            <div class="stat-icon"><i class="bi bi-tools"></i></div>
-            <div class="stat-value">{{ pending_services }}</div>
-            <div class="stat-label">Pending Services</div>
-            <div class="stat-sub">In progress</div>
-        </div>
-    </div>
+<!-- Sleek Quick Actions -->
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <a href="{% url 'billing:pos' %}" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1" style="border-radius: 8px;">
+        <i class="bi bi-plus-circle"></i> New Bill
+    </a>
+    <a href="{% url 'services:service_create' %}" class="btn btn-sm btn-outline-success d-flex align-items-center gap-1" style="border-radius: 8px;">
+        <i class="bi bi-tools"></i> New Service
+    </a>
+    <a href="{% url 'products:product_create' %}" class="btn btn-sm btn-outline-info d-flex align-items-center gap-1" style="border-radius: 8px;">
+        <i class="bi bi-box-seam"></i> Add Product
+    </a>
+    <a href="{% url 'purchases:po_create' %}" class="btn btn-sm btn-outline-warning d-flex align-items-center gap-1" style="border-radius: 8px;">
+        <i class="bi bi-truck"></i> New Purchase
+    </a>
+    <a href="{% url 'services:vehicle_history' %}" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" style="border-radius: 8px;">
+        <i class="bi bi-search"></i> Vehicle History
+    </a>
 </div>
 
-<!-- Quick Actions -->
+<!-- Row 1: 4 Metrics Cards + Top Selling Products -->
 <div class="row g-3 mb-4">
-    <div class="col-12">
-        <div class="card p-3">
-            <div class="d-flex flex-wrap gap-2">
-                <a href="{% url 'billing:pos' %}" class="btn btn-primary">
-                    <i class="bi bi-plus-circle me-1"></i>New Bill
-                </a>
-                <a href="{% url 'services:service_create' %}" class="btn btn-success">
-                    <i class="bi bi-tools me-1"></i>New Service
-                </a>
-                <a href="{% url 'products:product_create' %}" class="btn btn-info text-white">
-                    <i class="bi bi-box-seam me-1"></i>Add Product
-                </a>
-                <a href="{% url 'purchases:po_create' %}" class="btn btn-warning">
-                    <i class="bi bi-truck me-1"></i>New Purchase
-                </a>
-                <a href="{% url 'services:vehicle_history' %}" class="btn btn-secondary">
-                    <i class="bi bi-search me-1"></i>Vehicle History
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Chart + Low Stock Side by Side -->
-<div class="row g-3 mb-4">
+    <!-- Left: 4 Metrics Cards -->
     <div class="col-lg-8">
-        <div class="card">
-            <div class="card-header-custom d-flex justify-content-between">
-                <span><i class="bi bi-graph-up me-2"></i>Last 7 Days Sales</span>
+        <div class="row g-3 h-100">
+            <!-- Card 1: Total Order -->
+            <div class="col-sm-6">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <span class="stat-label">Total Order</span>
+                        <div class="stat-icon"><i class="bi bi-cart"></i></div>
+                    </div>
+                    <div>
+                        <div class="stat-value">
+                            {{ monthly_invoice_count }}
+                            <span class="stat-badge {% if sales_growth_direction == 'up' %}up{% else %}down{% endif %}">
+                                <i class="bi {% if sales_growth_direction == 'up' %}bi-arrow-up-right{% else %}bi-arrow-down-right{% endif %}"></i>
+                                {{ sales_growth }}%
+                            </span>
+                        </div>
+                        <div class="stat-sub">Compared to Last Month</div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <canvas id="salesChart" height="120"></canvas>
+            <!-- Card 2: Total Revenue -->
+            <div class="col-sm-6">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <span class="stat-label">Total Revenue</span>
+                        <div class="stat-icon"><i class="bi bi-currency-rupee"></i></div>
+                    </div>
+                    <div>
+                        <div class="stat-value">
+                            ₹{{ monthly_revenue|floatformat:0 }}
+                            <span class="stat-badge {% if revenue_growth_direction == 'up' %}up{% else %}down{% endif %}">
+                                <i class="bi {% if revenue_growth_direction == 'up' %}bi-arrow-up-right{% else %}bi-arrow-down-right{% endif %}"></i>
+                                {{ revenue_growth }}%
+                            </span>
+                        </div>
+                        <div class="stat-sub">Compared to Last Month</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 3: Delivered Order / Completed Services -->
+            <div class="col-sm-6">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <span class="stat-label">Completed Services</span>
+                        <div class="stat-icon"><i class="bi bi-check-circle"></i></div>
+                    </div>
+                    <div>
+                        <div class="stat-value">
+                            {{ completed_services_count }}
+                            <span class="stat-badge {% if completed_services_growth_direction == 'up' %}up{% else %}down{% endif %}">
+                                <i class="bi {% if completed_services_growth_direction == 'up' %}bi-arrow-up-right{% else %}bi-arrow-down-right{% endif %}"></i>
+                                {{ completed_services_growth }}%
+                            </span>
+                        </div>
+                        <div class="stat-sub">Compared to Last Month</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 4: Outstanding Delivered / Active Services -->
+            <div class="col-sm-6">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <span class="stat-label">Active Services</span>
+                        <div class="stat-icon"><i class="bi bi-clock-history"></i></div>
+                    </div>
+                    <div>
+                        <div class="stat-value">
+                            {{ active_services_count }}
+                            <span class="stat-badge {% if active_services_growth_direction == 'up' %}up{% else %}down{% endif %}">
+                                <i class="bi {% if active_services_growth_direction == 'up' %}bi-arrow-up-right{% else %}bi-arrow-down-right{% endif %}"></i>
+                                {{ active_services_growth }}%
+                            </span>
+                        </div>
+                        <div class="stat-sub">Compared to Last Month</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    
+    <!-- Right: Top Selling Products -->
     <div class="col-lg-4">
-        <div class="card h-100">
-            <div class="card-header-custom text-warning">
-                <i class="bi bi-exclamation-triangle me-2"></i>Stock Alerts
+        <div class="card h-100 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0 text-dark">Top Selling Products</h6>
+                <select class="form-select form-select-sm border-0 bg-light py-1" style="width: auto; font-size: 0.75rem; font-weight: 500; border-radius: 6px;">
+                    <option>Month</option>
+                    <option>Week</option>
+                </select>
             </div>
-            <div class="card-body p-0">
-                {% for product in low_stock_products %}
-                <div class="stock-alert-item">
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold small">{{ product.name }}</div>
-                        <div class="text-muted x-small">{{ product.stock_qty }} unit(s) left</div>
+            
+            <div class="d-flex flex-column justify-content-center h-100" style="min-height: 160px;">
+                {% for p in top_selling_products %}
+                <div class="selling-progress-item">
+                    <div class="selling-progress-label">
+                        <span class="selling-item-name">{{ p.name }}</span>
+                        <span class="selling-qty-label">{{ p.qty_label }} units</span>
                     </div>
-                    {% if product.is_out_of_stock %}
-                    <span class="badge bg-danger">Out</span>
-                    {% else %}
-                    <span class="badge bg-warning text-dark">Low</span>
-                    {% endif %}
-                </div>
-                {% empty %}
-                <div class="text-center text-success py-4">
-                    <i class="bi bi-check-circle fs-2 d-block mb-1"></i>
-                    <small>All stock levels OK</small>
+                    <div class="selling-progress-bar-container">
+                        <div class="selling-progress-bar-fill" style="width: {{ p.percentage }}%;"></div>
+                    </div>
                 </div>
                 {% endfor %}
-                {% if low_stock_products %}
-                <div class="p-2">
-                    <a href="{% url 'inventory:dashboard' %}" class="btn btn-sm btn-outline-warning w-100">View All</a>
-                </div>
-                {% endif %}
             </div>
         </div>
     </div>
 </div>
 
-<!-- Recent Invoices + Pending Services -->
-<div class="row g-3">
-    <div class="col-lg-6">
-        <div class="card">
-            <div class="card-header-custom"><i class="bi bi-receipt me-2"></i>Recent Invoices</div>
-            <div class="table-responsive">
-                <table class="table table-hover mb-0 small">
-                    <thead>
-                        <tr>
-                            <th>Invoice #</th>
-                            <th>Customer</th>
-                            <th>Vehicle</th>
-                            <th>Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for inv in recent_invoices %}
-                        <tr>
-                            <td><a href="{% url 'billing:invoice_detail' inv.pk %}">{{ inv.invoice_number }}</a></td>
-                            <td>{{ inv.customer_name }}</td>
-                            <td>{{ inv.vehicle_number|default:"—" }}</td>
-                            <td class="fw-semibold">₹{{ inv.grand_total|floatformat:2 }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="4" class="text-center py-3 text-muted">No invoices yet</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+<!-- Row 2: Total Sales (Line Chart) + Low Stock Items (Table) -->
+<div class="row g-3 mb-4">
+    <!-- Left: Total Sales -->
+    <div class="col-lg-8">
+        <div class="card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h6 class="fw-bold mb-0 text-dark">Total Sales</h6>
+                    <small class="text-muted" style="font-size: 0.75rem;">Grand total revenue performance</small>
+                </div>
+                <select class="form-select form-select-sm border-0 bg-light py-1" style="width: auto; font-size: 0.75rem; font-weight: 500; border-radius: 6px;">
+                    <option>Month</option>
+                    <option>Week</option>
+                </select>
+            </div>
+            <div>
+                <canvas id="salesChart" height="130"></canvas>
             </div>
         </div>
     </div>
-    <div class="col-lg-6">
-        <div class="card">
-            <div class="card-header-custom"><i class="bi bi-tools me-2"></i>Pending Services</div>
-            <div class="table-responsive">
-                <table class="table table-hover mb-0 small">
-                    <thead>
-                        <tr>
-                            <th>Vehicle</th>
-                            <th>Customer</th>
-                            <th>Mechanic</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for svc in recent_services %}
-                        <tr>
-                            <td><a href="{% url 'services:service_detail' svc.pk %}">{{ svc.vehicle_number }}</a></td>
-                            <td>{{ svc.customer_name }}</td>
-                            <td>{{ svc.mechanic.get_full_name|default:svc.mechanic.username|default:"Unassigned" }}</td>
-                            <td>
-                                <span
-                                    class="badge {% if svc.status == 'IN_PROGRESS' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
-                                    {{ svc.get_status_display }}
-                                </span>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="4" class="text-center py-3 text-muted">No pending services</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    
+    <!-- Right: Low Stock Items -->
+    <div class="col-lg-4">
+        <div class="card h-100 p-4 d-flex flex-column justify-content-between">
+            <div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold mb-0 text-dark">Low Stock Items</h6>
+                    <span class="badge bg-warning text-dark" style="font-size: 0.7rem; border-radius: 6px;">{{ low_stock_count }} items</span>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" style="font-size: 0.75rem;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #f1f5f9;">
+                                <th class="py-2 px-0 text-muted" style="font-weight: 600;">Item</th>
+                                <th class="py-2 text-muted" style="font-weight: 600;">SKU</th>
+                                <th class="py-2 text-muted text-center" style="font-weight: 600;">Qty</th>
+                                <th class="py-2 px-0 text-end text-muted" style="font-weight: 600;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in low_stock_products %}
+                            <tr style="border-bottom: 1px solid #f8fafc;">
+                                <td class="py-2 px-0 fw-semibold text-dark" style="max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ product.name }}</td>
+                                <td class="py-2 text-muted">{{ product.barcode|default:"—" }}</td>
+                                <td class="py-2 text-center fw-bold">{{ product.stock_qty }}</td>
+                                <td class="py-2 px-0 text-end">
+                                    <div class="d-inline-flex align-items-center gap-2">
+                                        <span class="rounded-circle" style="width: 8px; height: 8px; background: {% if product.is_out_of_stock %}#ef4444{% else %}#f59e0b{% endif %}; display: inline-block;"></span>
+                                        <span class="text-muted" style="font-size: 0.7rem;">{% if product.is_out_of_stock %}Out{% else %}Low{% endif %}</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-success fw-semibold">
+                                    <i class="bi bi-check-circle me-1"></i> All stock levels OK
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            {% if low_stock_products %}
+            <div class="text-end mt-3">
+                <a href="{% url 'inventory:dashboard' %}" class="btn btn-sm btn-primary px-3" style="border-radius: 8px; font-size: 0.75rem;">View All</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Row 3: Account Receivable (Bar Chart) + Sales by Channel (Pie Chart) + Users (Donut Chart) -->
+<div class="row g-3">
+    <!-- Bottom Left: Account Receivable -->
+    <div class="col-md-4">
+        <div class="card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0 text-dark">Account Receivable</h6>
+                <select class="form-select form-select-sm border-0 bg-light py-1" style="width: auto; font-size: 0.75rem; font-weight: 500; border-radius: 6px;">
+                    <option>Month</option>
+                </select>
+            </div>
+            <div style="height: 180px; position: relative;">
+                <canvas id="receivableChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Middle: Sales by Channel -->
+    <div class="col-md-4">
+        <div class="card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0 text-dark">Sales by Channel</h6>
+                <span class="text-muted small" style="font-size: 0.7rem;">Last 30 Days</span>
+            </div>
+            <div class="d-flex align-items-center justify-content-center" style="height: 180px; position: relative;">
+                <canvas id="channelChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Right: Users -->
+    <div class="col-md-4">
+        <div class="card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0 text-dark">Users</h6>
+                <span class="text-muted small" style="font-size: 0.7rem;">Total Distribution</span>
+            </div>
+            <div class="d-flex align-items-center justify-content-center" style="height: 180px; position: relative;">
+                <canvas id="usersChart"></canvas>
             </div>
         </div>
     </div>
@@ -184,32 +255,193 @@
 
 {% block extra_js %}
 <script>
-    const ctx = document.getElementById('salesChart');
-    if (ctx) {
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: {{ chart_labels| safe }},
-    datasets: [{
-        label: 'Revenue (₹)',
-        data: {{ chart_data| safe }},
-        backgroundColor: 'rgba(99, 102, 241, 0.7)',
-        borderColor: 'rgba(99, 102, 241, 1)',
-        borderWidth: 2,
-        borderRadius: 6,
-            }]
-        },
-    options: {
-        responsive: true,
-            plugins: { legend: { display: false } },
-        scales: {
-            y: {
-                beginAtZero: true,
-                    ticks: { callback: v => '₹' + v.toLocaleString() }
-            }
+    document.addEventListener("DOMContentLoaded", function () {
+        // Colors from reference image palette
+        const indigoPrimary = "#4f46e5";
+        const indigoLight = "rgba(79, 70, 229, 0.1)";
+        
+        // 1. Total Sales (Line Chart)
+        const salesCtx = document.getElementById('salesChart');
+        if (salesCtx) {
+            const chartCtx = salesCtx.getContext('2d');
+            const fillGrad = chartCtx.createLinearGradient(0, 0, 0, 300);
+            fillGrad.addColorStop(0, 'rgba(79, 70, 229, 0.25)');
+            fillGrad.addColorStop(1, 'rgba(79, 70, 229, 0.00)');
+            
+            new Chart(chartCtx, {
+                type: 'line',
+                data: {
+                    labels: {{ chart_labels|safe }},
+                    datasets: [{
+                        label: 'Sales (₹)',
+                        data: {{ chart_data|safe }},
+                        borderColor: indigoPrimary,
+                        borderWidth: 3,
+                        backgroundColor: fillGrad,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: indigoPrimary,
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            padding: 10,
+                            borderRadius: 8,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return '₹' + context.raw.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { size: 10 },
+                                maxTicksLimit: 7
+                            }
+                        },
+                        y: {
+                            grid: {
+                                borderDash: [5, 5],
+                                color: '#e2e8f0',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { size: 10 },
+                                callback: v => '₹' + v.toLocaleString()
+                            }
+                        }
+                    }
+                }
+            });
         }
-    }
+
+        // 2. Account Receivable (6-Month Bar Chart)
+        const receivableCtx = document.getElementById('receivableChart');
+        if (receivableCtx) {
+            new Chart(receivableCtx, {
+                type: 'bar',
+                data: {
+                    labels: {{ bar_chart_labels|safe }},
+                    datasets: [{
+                        data: {{ bar_chart_data|safe }},
+                        backgroundColor: (context) => {
+                            const index = context.dataIndex;
+                            const count = context.dataset.data.length;
+                            return index === count - 1 ? '#4f46e5' : '#c7d2fe';
+                        },
+                        borderRadius: 8,
+                        borderSkipped: false,
+                        barThickness: 16
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return '₹' + context.raw.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8', font: { size: 10 } }
+                        },
+                        y: {
+                            grid: { display: false, drawBorder: false },
+                            ticks: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 3. Sales by Channel (Pie Chart)
+        const channelCtx = document.getElementById('channelChart');
+        if (channelCtx) {
+            new Chart(channelCtx, {
+                type: 'pie',
+                data: {
+                    labels: {{ channel_labels|safe }},
+                    datasets: [{
+                        data: {{ channel_data|safe }},
+                        backgroundColor: ['#10b981', '#f59e0b', '#06b6d4', '#ef4444'],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 15,
+                                color: '#64748b',
+                                font: { size: 10, weight: '500' }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 4. Users Distribution (Donut Chart)
+        const usersCtx = document.getElementById('usersChart');
+        if (usersCtx) {
+            new Chart(usersCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: {{ users_labels|safe }},
+                    datasets: [{
+                        data: {{ users_data|safe }},
+                        backgroundColor: ['#3b82f6', '#10b981', '#f97316'],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 15,
+                                color: '#64748b',
+                                font: { size: 10, weight: '500' }
+                            }
+                        }
+                    }
+                }
+            });
+        }
     });
-}
 </script>
 {% endblock %}

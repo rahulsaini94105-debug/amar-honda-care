@@ -23,9 +23,15 @@
     {% if user.is_authenticated %}
     <!-- Sidebar -->
     <nav id="sidebar" class="sidebar">
-        <div class="sidebar-brand" style="padding: 0.75rem 1rem; justify-content: center;">
-            <div class="sidebar-logo-wrap">
-                <img src="{% static 'images/logo.png' %}" alt="Amar Honda Care" onerror="this.style.display='none'">
+        <div class="sidebar-brand" style="padding: 1rem 1.25rem; justify-content: start;">
+            <div class="d-flex align-items-center gap-2">
+                <div class="brand-logo" style="background: var(--primary); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+                    <i class="bi bi-gear-wide-connected" style="font-size: 1.2rem;"></i>
+                </div>
+                <div class="brand-text">
+                    <div class="brand-title" style="font-size: 1rem; font-weight: 700; color: #1e293b; letter-spacing: 0.5px;">AMAR HONDA</div>
+                    <div class="brand-sub" style="font-size: 0.65rem; color: #64748b; font-weight: 500;">Garage Care</div>
+                </div>
             </div>
         </div>
 
@@ -34,7 +40,7 @@
             <li>
                 <a href="{% url 'reports:dashboard' %}"
                     class="nav-link {% if request.resolver_match.namespace == 'reports' and request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-                    <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+                    <i class="bi bi-grid-1x2"></i><span>Dashboard</span>
                 </a>
             </li>
             <li class="nav-label">Operations</li>
@@ -46,20 +52,20 @@
             </li>
             <li>
                 <a href="{% url 'billing:invoice_list' %}"
-                    class="nav-link {% if request.resolver_match.namespace == 'billing' and request.resolver_match.url_name == 'invoice_list' %}active{% endif %}">
+                    class="nav-link {% if request.resolver_match.namespace == 'billing' and request.resolver_match.url_name != 'pos' %}active{% endif %}">
                     <i class="bi bi-file-earmark-text"></i><span>Invoices</span>
                 </a>
             </li>
             <li>
                 <a href="{% url 'services:service_list' %}"
-                    class="nav-link {% if request.resolver_match.namespace == 'services' %}active{% endif %}">
+                    class="nav-link {% if request.resolver_match.namespace == 'services' and 'service_type' not in request.resolver_match.url_name %}active{% endif %}">
                     <i class="bi bi-tools"></i><span>Services</span>
                 </a>
             </li>
             <li class="nav-label">Inventory</li>
             <li>
                 <a href="{% url 'products:product_list' %}"
-                    class="nav-link {% if request.resolver_match.namespace == 'products' %}active{% endif %}">
+                    class="nav-link {% if request.resolver_match.namespace == 'products' and 'category' not in request.resolver_match.url_name %}active{% endif %}">
                     <i class="bi bi-box-seam"></i><span>Products</span>
                 </a>
             </li>
@@ -106,24 +112,27 @@
                 </a>
             </li>
             <li>
-                <a href="{% url 'products:category_list' %}" class="nav-link">
+                <a href="{% url 'products:category_list' %}" class="nav-link {% if request.resolver_match.namespace == 'products' and 'category' in request.resolver_match.url_name %}active{% endif %}">
                     <i class="bi bi-tags"></i><span>Categories</span>
                 </a>
             </li>
             <li>
-                <a href="{% url 'services:service_type_list' %}" class="nav-link">
+                <a href="{% url 'services:service_type_list' %}" class="nav-link {% if request.resolver_match.namespace == 'services' and 'service_type' in request.resolver_match.url_name %}active{% endif %}">
                     <i class="bi bi-list-check"></i><span>Service Types</span>
                 </a>
             </li>
             {% endif %}
         </ul>
 
-        <div class="sidebar-user">
-            <div class="user-avatar">{{ user.username|first|upper }}</div>
-            <div class="user-info">
-                <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
-                <div class="user-role">{{ user.get_role_display }}</div>
-            </div>
+        <!-- Bottom Log Out Link matching screenshot -->
+        <div class="mt-auto border-top p-3">
+            <form method="post" action="{% url 'accounts:logout' %}" id="logoutFormSidebar">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-link nav-link text-muted w-100 text-start d-flex align-items-center gap-2 p-2" style="text-decoration: none; font-size: 0.85rem; font-weight: 500; border-right: none;">
+                    <i class="bi bi-box-arrow-right" style="font-size: 1.1rem;"></i>
+                    <span>Log Out</span>
+                </button>
+            </form>
         </div>
     </nav>
 
@@ -134,7 +143,14 @@
             <button id="sidebarToggle" class="sidebar-toggle btn btn-sm">
                 <i class="bi bi-list"></i>
             </button>
-            <div class="topbar-title">{% block page_title %}Dashboard{% endblock %}</div>
+            <div class="topbar-title d-none d-md-block">{% block page_title %}Dashboard{% endblock %}</div>
+            
+            <!-- Centered Search Bar -->
+            <div class="topbar-search-wrap">
+                <i class="bi bi-search topbar-search-icon"></i>
+                <input type="text" class="topbar-search-input" placeholder="Search...">
+            </div>
+
             <div class="topbar-right">
                 <!-- Notification Bell -->
                 <div class="dropdown me-2">
