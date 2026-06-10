@@ -80,7 +80,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             invoice__created_at__date__gte=today - timedelta(days=30)
         ).values('product__name').annotate(
             total_qty=Sum('quantity')
-        ).order_by('-total_qty')[:3]
+        ).order_by('-total_qty')[:5]
 
         top_selling_list = []
         max_qty = 1
@@ -92,21 +92,8 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             if item['total_qty'] > max_qty:
                 max_qty = item['total_qty']
 
-        # Fallback items to ensure beautiful rendering if DB has no/low transactions
-        if len(top_selling_list) < 3:
-            mock_products = [
-                {'name': 'Engine Oil Motul 10W30', 'qty': 18},
-                {'name': 'Brake Shoe Front', 'qty': 12},
-                {'name': 'Spark Plug NGK', 'qty': 7}
-            ]
-            for mp in mock_products:
-                if mp['name'] not in [p['name'] for p in top_selling_list]:
-                    top_selling_list.append(mp)
-            max_qty = max(p['qty'] for p in top_selling_list)
-
         for p in top_selling_list:
             p['percentage'] = int((p['qty'] / max_qty) * 100) if max_qty > 0 else 0
-            # Convert values into human-readable label (e.g. 5.9k, 3.7k etc. or simple counts)
             p['qty_label'] = f"{p['qty']}"
         ctx['top_selling_products'] = top_selling_list
 

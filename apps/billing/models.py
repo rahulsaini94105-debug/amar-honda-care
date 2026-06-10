@@ -47,6 +47,29 @@ class Invoice(models.Model):
         self.grand_total = self.subtotal + self.gst_amount - self.discount
         self.save()
 
+    @property
+    def all_items(self):
+        items = []
+        for item in self.items.select_related('product').all():
+            items.append({
+                'name': item.product.name,
+                'quantity': item.quantity,
+                'unit_price': item.unit_price,
+                'total_price': item.total_price,
+                'is_part': False,
+                'is_custom': False,
+            })
+        for part in self.parts.select_related('spare_part').all():
+            items.append({
+                'name': part.part_name,
+                'quantity': part.quantity,
+                'unit_price': part.unit_price,
+                'total_price': part.total_price,
+                'is_part': True,
+                'is_custom': part.spare_part is None,
+            })
+        return items
+
 
 class InvoiceItem(models.Model):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='items')

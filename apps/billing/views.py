@@ -115,10 +115,29 @@ class InvoiceListView(StaffOrOwnerRequiredMixin, ListView):
     def get_queryset(self):
         qs = Invoice.objects.select_related('created_by').all()
         q = self.request.GET.get('q')
+        preset = self.request.GET.get('preset')
         date_from = self.request.GET.get('date_from')
         date_to = self.request.GET.get('date_to')
         if q:
             qs = qs.filter(invoice_number__icontains=q) | qs.filter(customer_name__icontains=q) | qs.filter(customer_address__icontains=q) | qs.filter(vehicle_number__icontains=q)
+        
+        if preset and preset != 'custom' and not (date_from or date_to):
+            from django.utils import timezone
+            from datetime import timedelta
+            today = timezone.localtime(timezone.now()).date()
+            if preset == 'this_week':
+                date_from = today - timedelta(days=today.weekday())
+                date_to = date_from + timedelta(days=6)
+            elif preset == 'this_month':
+                date_from = today.replace(day=1)
+                if today.month == 12:
+                    date_to = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
+                else:
+                    date_to = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
+            elif preset == 'this_year':
+                date_from = today.replace(month=1, day=1)
+                date_to = today.replace(month=12, day=31)
+
         if date_from:
             qs = qs.filter(created_at__date__gte=date_from)
         if date_to:
