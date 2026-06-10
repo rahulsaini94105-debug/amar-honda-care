@@ -39,10 +39,8 @@
 <!-- Stats -->
 <div class="d-flex gap-3 mb-3 small text-muted">
     <span><i class="bi bi-box-seam me-1"></i>{{ page_obj.paginator.count }} products</span>
-    {% if low_stock_count > 0 %}<span class="text-warning"><i class="bi bi-exclamation-triangle me-1"></i>{{
-        low_stock_count }} low stock</span>{% endif %}
-    {% if out_of_stock_count > 0 %}<span class="text-danger"><i class="bi bi-x-circle me-1"></i>{{ out_of_stock_count }}
-        out of stock</span>{% endif %}
+    {% if low_stock_count > 0 %}<span class="text-danger"><i class="bi bi-exclamation-circle me-1"></i>{{ low_stock_count }} low stock</span>{% endif %}
+    {% if out_of_stock_count > 0 %}<span class="text-danger"><i class="bi bi-x-circle me-1"></i>{{ out_of_stock_count }} out of stock</span>{% endif %}
 </div>
 
 <!-- Product Grid -->
@@ -65,7 +63,7 @@
                         {% if product.is_out_of_stock %}
                         <span class="badge bg-danger">Out of Stock</span>
                         {% elif product.is_low_stock %}
-                        <span class="badge bg-warning text-dark">Low: {{ product.stock_qty }}</span>
+                        <span class="badge bg-danger">Low: {{ product.stock_qty }}</span>
                         {% else %}
                         <span class="badge bg-success">{{ product.stock_qty }}</span>
                         {% endif %}

@@ -138,7 +138,7 @@
             <div class="topbar-title d-none d-md-block">{% block page_title %}Dashboard{% endblock %}</div>
             
             <!-- Centered Search Bar -->
-            <div class="topbar-search-wrap">
+            <div class="topbar-search-wrap d-none d-md-block">
                 <i class="bi bi-search topbar-search-icon"></i>
                 <input type="text" class="topbar-search-input" placeholder="Search...">
             </div>
@@ -247,10 +247,63 @@
         }
         const CSRF_TOKEN = getCookie('csrftoken');
 
+        // Custom, beautifully styled modal alert
+        function showCustomAlert(message, title = 'Alert') {
+            const existing = document.getElementById('customAlertModal');
+            if (existing) {
+                existing.remove();
+            }
+
+            const modalHtml = `
+            <div class="modal fade" id="customAlertModal" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(5px); z-index: 2050;">
+                <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+                    <div class="modal-content border-0" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+                        <div class="modal-body p-4 text-center">
+                            <div class="d-flex justify-content-center mb-3">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center bg-danger-subtle text-danger" style="width: 60px; height: 60px; font-size: 1.8rem;">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                </div>
+                            </div>
+                            <h5 class="fw-bold text-dark mb-2">${title}</h5>
+                            <p class="text-muted small mb-4 px-2" style="font-size: 0.9rem; line-height: 1.5; color: #64748b;">${message}</p>
+                            <button type="button" class="btn btn-primary w-100 py-2 fw-semibold" data-bs-dismiss="modal" style="border-radius: 10px; background-color: var(--primary); border-color: var(--primary);">
+                                Dismiss
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            const modalEl = document.getElementById('customAlertModal');
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+
+            modalEl.addEventListener('hidden.bs.modal', function () {
+                modalEl.remove();
+            });
+        }
+
         // Sidebar toggle
         document.getElementById('sidebarToggle')?.addEventListener('click', () => {
-            document.getElementById('sidebar').classList.toggle('collapsed');
-            document.getElementById('mainWrapper').classList.toggle('expanded');
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.toggle('mobile-open');
+            } else {
+                document.getElementById('sidebar').classList.toggle('collapsed');
+                document.getElementById('mainWrapper').classList.toggle('expanded');
+            }
+        });
+
+        // Close sidebar on click outside (for mobile view)
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.getElementById('sidebarToggle');
+            if (window.innerWidth <= 768 && sidebar && sidebar.classList.contains('mobile-open')) {
+                if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                    sidebar.classList.remove('mobile-open');
+                }
+            }
         });
 
         // Mark all notifications read

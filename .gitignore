@@ -3,9 +3,16 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+<<<<<<< HEAD
 # Database
 *.sqlite3
 db.sqlite3
+=======
+# Database and Backups
+*.sqlite3
+db.sqlite3
+*.bak
+>>>>>>> new_amar
 
 # Environments
 .env
