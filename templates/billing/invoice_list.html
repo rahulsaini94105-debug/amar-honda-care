@@ -4,16 +4,31 @@
 
 {% block content %}
 <div class="card mb-3 p-3">
-    <form method="get" class="row g-2">
-        <div class="col-md-4"><input name="q" class="form-control" placeholder="Invoice #, customer, address, vehicle..."
-                value="{{ request.GET.q }}"></div>
-        <div class="col-md-3"><input type="date" name="date_from" class="form-control"
-                value="{{ request.GET.date_from }}"></div>
-        <div class="col-md-3"><input type="date" name="date_to" class="form-control" value="{{ request.GET.date_to }}">
+    <form method="get" class="row g-2 align-items-center" id="filterForm">
+        <div class="col-12 col-md-3">
+            <input name="q" class="form-control" placeholder="Invoice #, customer, address, vehicle..."
+                value="{{ request.GET.q }}">
         </div>
-        <div class="col-md-2 d-flex gap-2">
+        <div class="col-12 col-sm-6 col-md-2">
+            <select name="preset" class="form-select" id="presetSelect">
+                <option value="">All Time</option>
+                <option value="this_week" {% if request.GET.preset == 'this_week' %}selected{% endif %}>This Week</option>
+                <option value="this_month" {% if request.GET.preset == 'this_month' %}selected{% endif %}>This Month</option>
+                <option value="this_year" {% if request.GET.preset == 'this_year' %}selected{% endif %}>This Year</option>
+                <option value="custom" {% if request.GET.preset == 'custom' or not request.GET.preset and request.GET.date_from or not request.GET.preset and request.GET.date_to %}selected{% endif %}>Custom Range</option>
+            </select>
+        </div>
+        <div class="col-6 col-sm-3 col-md-2">
+            <input type="date" name="date_from" id="dateFromInput" class="form-control"
+                value="{{ request.GET.date_from }}">
+        </div>
+        <div class="col-6 col-sm-3 col-md-2">
+            <input type="date" name="date_to" id="dateToInput" class="form-control" value="{{ request.GET.date_to }}">
+        </div>
+        <div class="col-12 col-md-3 d-flex gap-2">
             <button type="submit" class="btn btn-primary flex-grow-1">Filter</button>
-            <a href="{% url 'billing:pos' %}" class="btn btn-success"><i class="bi bi-plus"></i></a>
+            <a href="{% url 'billing:invoice_list' %}" class="btn btn-outline-secondary" title="Reset Filters"><i class="bi bi-arrow-clockwise"></i></a>
+            <a href="{% url 'billing:pos' %}" class="btn btn-success" title="New Invoice"><i class="bi bi-plus"></i></a>
         </div>
     </form>
 </div>
@@ -74,4 +89,69 @@
     </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const presetSelect = document.getElementById('presetSelect');
+    const dateFromInput = document.getElementById('dateFromInput');
+    const dateToInput = document.getElementById('dateToInput');
+    const filterForm = document.getElementById('filterForm');
+
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    presetSelect.addEventListener('change', function() {
+        const val = this.value;
+        if (val === '') {
+            dateFromInput.value = '';
+            dateToInput.value = '';
+            filterForm.submit();
+        } else if (val === 'this_week') {
+            const now = new Date();
+            const day = now.getDay();
+            const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+            const startOfWeek = new Date(now.setDate(diff));
+            const endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(startOfWeek.getDate() + 6);
+            
+            dateFromInput.value = formatDate(startOfWeek);
+            dateToInput.value = formatDate(endOfWeek);
+            filterForm.submit();
+        } else if (val === 'this_month') {
+            const now = new Date();
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            
+            dateFromInput.value = formatDate(startOfMonth);
+            dateToInput.value = formatDate(endOfMonth);
+            filterForm.submit();
+        } else if (val === 'this_year') {
+            const now = new Date();
+            const startOfYear = new Date(now.getFullYear(), 0, 1);
+            const endOfYear = new Date(now.getFullYear(), 11, 31);
+            
+            dateFromInput.value = formatDate(startOfYear);
+            dateToInput.value = formatDate(endOfYear);
+            filterForm.submit();
+        } else if (val === 'custom') {
+            // Focus on date_from, let user select custom range without auto-submitting
+            dateFromInput.focus();
+        }
+    });
+
+    [dateFromInput, dateToInput].forEach(input => {
+        input.addEventListener('change', function() {
+            if (presetSelect.value !== 'custom') {
+                presetSelect.value = 'custom';
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

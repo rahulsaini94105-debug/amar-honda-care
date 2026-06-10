@@ -199,11 +199,11 @@
 
     // ── Cart ──────────────────────────────────────────────
     function addToCart(id, name, price, stock) {
-        if (stock <= 0) { alert('Out of stock!'); return; }
+        if (stock <= 0) { showCustomAlert('This product is out of stock.', 'Out of Stock'); return; }
         const existing = cart.find(i => i.product_id === id);
         if (existing) {
             if (existing.quantity < stock) existing.quantity++;
-            else { alert('Maximum stock reached!'); return; }
+            else { showCustomAlert('Maximum stock quantity reached for this item.', 'Limit Reached'); return; }
         } else {
             cart.push({ product_id: id, name, price: parseFloat(price), quantity: 1, stock: parseInt(stock) });
         }
@@ -219,7 +219,7 @@
         const item = cart.find(i => i.product_id === id);
         if (!item) return;
         if (delta > 0 && item.quantity >= item.stock) {
-            alert('Maximum stock reached!');
+            showCustomAlert('Maximum stock quantity reached for this item.', 'Limit Reached');
             return;
         }
         item.quantity += delta;
@@ -399,6 +399,22 @@
         el.addEventListener('input', () => { recalcAll(); updateButtonState(); });
     });
 
+    // Restrict phone number to 10 digits and numbers only
+    const phoneInputEl = document.querySelector('[name=customer_phone]');
+    if (phoneInputEl) {
+        phoneInputEl.addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '').substring(0, 10);
+        });
+    }
+
+    // Capitalize vehicle number input auto
+    const vehicleInputEl = document.querySelector('[name=vehicle_number]');
+    if (vehicleInputEl) {
+        vehicleInputEl.addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+    }
+
     // ── Product search ────────────────────────────────────
     document.getElementById('productSearch').addEventListener('input', function () {
         const q = this.value.toLowerCase();
@@ -410,6 +426,35 @@
     // ── Form submit ───────────────────────────────────────
     document.getElementById('billingForm').addEventListener('submit', async function (e) {
         e.preventDefault();
+
+        // Phone number validation
+        const phoneInput = document.querySelector('[name=customer_phone]');
+        const phoneVal = phoneInput ? phoneInput.value.trim() : '';
+        if (phoneVal.length === 0) {
+            showCustomAlert('Please enter the customer phone number.', 'Required Input');
+            phoneInput?.focus();
+            return;
+        }
+        if (!/^\d{10}$/.test(phoneVal)) {
+            showCustomAlert('Phone number must be exactly 10 digits.', 'Invalid Input');
+            phoneInput?.focus();
+            return;
+        }
+
+        // Vehicle number validation
+        const vehicleInput = document.querySelector('[name=vehicle_number]');
+        const vehicleVal = vehicleInput ? vehicleInput.value.trim() : '';
+        if (vehicleVal.length === 0) {
+            showCustomAlert('Please enter the bike/vehicle number.', 'Required Input');
+            vehicleInput?.focus();
+            return;
+        }
+        if (!/^[A-Z]{2}[ -]?\d{2}[ -]?[A-Z]{1,2}[ -]?\d{4}$/i.test(vehicleVal)) {
+            showCustomAlert('Invalid bike/vehicle number format. Correct format is like RJ 14 AB 3456 or RJ14 AB 3456.', 'Invalid Input');
+            vehicleInput?.focus();
+            return;
+        }
+
         document.getElementById('cartData').value = JSON.stringify(cart);
         document.getElementById('partsData').value = JSON.stringify(buildPartsData());
         const fd = new FormData(this);
@@ -422,12 +467,12 @@
             if (data.success) {
                 window.location.href = `/billing/invoices/${data.invoice_id}/`;
             } else {
-                alert('Error: ' + JSON.stringify(data.errors));
+                showCustomAlert(JSON.stringify(data.errors), 'Submission Error');
                 btn.disabled = false;
                 btn.innerHTML = '{% if form.instance.pk %}<i class="bi bi-receipt me-1"></i>Update Invoice{% else %}<i class="bi bi-receipt me-1"></i>Generate Invoice{% endif %}';
             }
         } catch (err) {
-            alert('Network error. Please try again.');
+            showCustomAlert('A network error occurred. Please check your connection and try again.', 'Network Error');
             btn.disabled = false;
             btn.innerHTML = '{% if form.instance.pk %}<i class="bi bi-receipt me-1"></i>Update Invoice{% else %}<i class="bi bi-receipt me-1"></i>Generate Invoice{% endif %}';
         }

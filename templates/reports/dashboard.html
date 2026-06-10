@@ -128,6 +128,8 @@
                         <div class="selling-progress-bar-fill" style="width: {{ p.percentage }}%;"></div>
                     </div>
                 </div>
+                {% empty %}
+                <div class="text-center text-muted small py-4">No products sold in the last 30 days</div>
                 {% endfor %}
             </div>
         </div>

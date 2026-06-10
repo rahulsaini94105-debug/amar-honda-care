@@ -599,12 +599,23 @@ body {
 }
 
 .product-card.out-of-stock {
-    opacity: 0.6;
-    filter: grayscale(0.5);
+    opacity: 0.8;
+    filter: grayscale(0.2);
+    border-color: #ef4444;
+}
+
+.product-card.out-of-stock:hover {
+    border-color: #ef4444;
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.15);
 }
 
 .product-card.low-stock {
-    border-color: #fbbf24;
+    border-color: #ef4444;
+}
+
+.product-card.low-stock:hover {
+    border-color: #ef4444;
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.25);
 }
 
 .product-img {
