@@ -10,4 +10,5 @@ urlpatterns = [
     path('invoices/<int:pk>/', views.InvoiceDetailView.as_view(), name='invoice_detail'),
     path('invoices/<int:pk>/edit/', views.BillingPOSEditView.as_view(), name='invoice_update'),
     path('invoices/<int:pk>/pdf/', views.InvoicePDFView.as_view(), name='invoice_pdf'),
+    path('invoices/<int:pk>/delete/', views.InvoiceDeleteView.as_view(), name='invoice_delete'),
 ]

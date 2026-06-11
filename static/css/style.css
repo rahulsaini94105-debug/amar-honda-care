@@ -359,6 +359,8 @@ body {
     border-bottom: 1px solid #f1f5f9;
     cursor: pointer;
     transition: background 0.15s;
+    text-decoration: none;
+    color: inherit;
 }
 
 .notification-item:hover {

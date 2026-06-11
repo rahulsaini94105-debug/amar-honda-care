@@ -2,6 +2,9 @@ from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.views import View
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
+import urllib.parse
 from .models import StockLog, Notification
 from apps.products.models import Product
 
@@ -50,6 +53,17 @@ class MarkNotificationReadView(LoginRequiredMixin, View):
         else:
             Notification.objects.filter(is_read=False).update(is_read=True)
         return JsonResponse({'status': 'ok'})
+
+
+class NotificationClickView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        notification = get_object_or_404(Notification, pk=pk)
+        notification.is_read = True
+        notification.save()
+        if notification.related_product:
+            url = reverse('products:product_list') + f"?q={urllib.parse.quote(notification.related_product.name)}"
+            return redirect(url)
+        return redirect('inventory:notifications')
 
 
 class NotificationListView(LoginRequiredMixin, ListView):
