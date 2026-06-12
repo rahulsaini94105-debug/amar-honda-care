@@ -65,3 +65,104 @@ class NotificationClickViewTests(TestCase):
         # Verify notification is marked as read
         notification_no_prod.refresh_from_db()
         self.assertTrue(notification_no_prod.is_read)
+
+
+class ProductNotificationSignalTests(TestCase):
+    def setUp(self):
+        self.product = Product.objects.create(
+            name='Test Bike Helmet',
+            selling_price=1000.00,
+            purchase_price=800.00,
+            stock_qty=10,
+            low_stock_limit=5
+        )
+
+    def test_stock_drops_to_low_stock_creates_notification(self):
+        # Drop stock to 4 (low stock)
+        self.product.stock_qty = 4
+        self.product.save()
+
+        # Verify LOW_STOCK notification is created
+        notifications = Notification.objects.filter(related_product=self.product, notification_type=Notification.LOW_STOCK, is_read=False)
+        self.assertEqual(notifications.count(), 1)
+        self.assertIn("has only 4 unit(s) left", notifications.first().message)
+
+    def test_stock_drops_to_out_of_stock_creates_notification_and_resolves_low_stock(self):
+        # First drop to low stock to create low stock notification
+        self.product.stock_qty = 4
+        self.product.save()
+
+        low_stock_notif = Notification.objects.get(related_product=self.product, notification_type=Notification.LOW_STOCK)
+        self.assertFalse(low_stock_notif.is_read)
+
+        # Now drop to out of stock
+        self.product.stock_qty = 0
+        self.product.save()
+
+        # Low stock notification should be marked as read
+        low_stock_notif.refresh_from_db()
+        self.assertTrue(low_stock_notif.is_read)
+
+        # Out of stock notification should be created
+        out_of_stock_notif = Notification.objects.get(related_product=self.product, notification_type=Notification.OUT_OF_STOCK, is_read=False)
+        self.assertIn("has 0 units left", out_of_stock_notif.message)
+
+    def test_stock_increases_to_low_stock_resolves_out_of_stock(self):
+        # Start at out of stock
+        self.product.stock_qty = 0
+        self.product.save()
+
+        out_of_stock_notif = Notification.objects.get(related_product=self.product, notification_type=Notification.OUT_OF_STOCK)
+        self.assertFalse(out_of_stock_notif.is_read)
+
+        # Increase to low stock (e.g. 3)
+        self.product.stock_qty = 3
+        self.product.save()
+
+        # Out of stock should be read
+        out_of_stock_notif.refresh_from_db()
+        self.assertTrue(out_of_stock_notif.is_read)
+
+        # Low stock should be created
+        low_stock_notif = Notification.objects.get(related_product=self.product, notification_type=Notification.LOW_STOCK, is_read=False)
+        self.assertIn("has only 3 unit(s) left", low_stock_notif.message)
+
+    def test_stock_updates_within_low_stock_updates_message(self):
+        # Start at low stock 3
+        self.product.stock_qty = 3
+        self.product.save()
+
+        low_stock_notif = Notification.objects.get(related_product=self.product, notification_type=Notification.LOW_STOCK, is_read=False)
+        self.assertIn("has only 3 unit(s) left", low_stock_notif.message)
+
+        # Update to low stock 4
+        self.product.stock_qty = 4
+        self.product.save()
+
+        # Message should be updated
+        low_stock_notif.refresh_from_db()
+        self.assertIn("has only 4 unit(s) left", low_stock_notif.message)
+        self.assertFalse(low_stock_notif.is_read)
+
+    def test_stock_increased_above_limit_resolves_all_notifications(self):
+        # Start at out of stock
+        self.product.stock_qty = 0
+        self.product.save()
+
+        out_of_stock_notif = Notification.objects.get(related_product=self.product, notification_type=Notification.OUT_OF_STOCK)
+
+        # Change to low stock
+        self.product.stock_qty = 3
+        self.product.save()
+
+        low_stock_notif = Notification.objects.get(related_product=self.product, notification_type=Notification.LOW_STOCK, is_read=False)
+
+        # Increase above low stock
+        self.product.stock_qty = 8
+        self.product.save()
+
+        # Both should be marked as read
+        out_of_stock_notif.refresh_from_db()
+        low_stock_notif.refresh_from_db()
+        self.assertTrue(out_of_stock_notif.is_read)
+        self.assertTrue(low_stock_notif.is_read)
