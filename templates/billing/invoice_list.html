@@ -58,12 +58,12 @@
                     <td><span class="badge bg-secondary">{{ inv.get_payment_method_display }}</span></td>
                     <td class="small text-muted">{{ inv.created_at|date:"d M Y" }}</td>
                     <td>
-                        <a href="{% url 'billing:invoice_detail' inv.pk %}" class="btn btn-sm btn-outline-primary" title="View"><i
-                                class="bi bi-eye"></i></a>
-                        <a href="{% url 'billing:invoice_update' inv.pk %}" class="btn btn-sm btn-outline-warning" title="Edit"><i
-                                class="bi bi-pencil"></i></a>
-                        <a href="{% url 'billing:invoice_pdf' inv.pk %}" class="btn btn-sm btn-outline-danger"
-                            target="_blank" title="PDF"><i class="bi bi-file-pdf"></i></a>
+                        <div class="d-flex flex-wrap gap-1" style="max-width: 80px;">
+                            <a href="{% url 'billing:invoice_detail' inv.pk %}" class="btn btn-sm btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                            <a href="{% url 'billing:invoice_update' inv.pk %}" class="btn btn-sm btn-outline-warning" title="Edit"><i class="bi bi-pencil"></i></a>
+                            <a href="{% url 'billing:invoice_pdf' inv.pk %}" class="btn btn-sm btn-outline-danger" target="_blank" title="PDF"><i class="bi bi-file-pdf"></i></a>
+                            <button type="button" class="btn btn-sm btn-outline-danger delete-invoice-btn" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal" data-id="{{ inv.pk }}" data-number="{{ inv.invoice_number }}" title="Delete"><i class="bi bi-trash"></i></button>
+                        </div>
                     </td>
                 </tr>
                 {% empty %}
@@ -88,6 +88,32 @@
         </nav>
     </div>
     {% endif %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true" style="backdrop-filter: blur(4px);">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+            <div class="modal-body p-4 text-center">
+                <div class="d-flex justify-content-center mb-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-danger-subtle text-danger" style="width: 60px; height: 60px; font-size: 1.8rem;">
+                        <i class="bi bi-trash-fill"></i>
+                    </div>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">Delete Invoice</h5>
+                <p class="text-muted small mb-4 px-2" style="font-size: 0.9rem; line-height: 1.5;">
+                    Are you sure you want to delete invoice <strong id="deleteInvoiceNumber"></strong>? This will restore the stock of all items associated with this invoice and cannot be undone.
+                </p>
+                <form id="deleteInvoiceForm" method="post" action="">
+                    {% csrf_token %}
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-secondary w-50 py-2 fw-semibold" data-bs-dismiss="modal" style="border-radius: 10px;">Cancel</button>
+                        <button type="submit" class="btn btn-danger w-50 py-2 fw-semibold" style="border-radius: 10px;">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -152,6 +178,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    const deleteModal = document.getElementById('deleteConfirmModal');
+    if (deleteModal) {
+        deleteModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const invoiceId = button.getAttribute('data-id');
+            const invoiceNumber = button.getAttribute('data-number');
+            
+            const form = deleteModal.querySelector('#deleteInvoiceForm');
+            const numberSpan = deleteModal.querySelector('#deleteInvoiceNumber');
+            
+            form.action = `/billing/invoices/${invoiceId}/delete/`;
+            numberSpan.textContent = invoiceNumber;
+        });
+    }
 });
 </script>
 {% endblock %}

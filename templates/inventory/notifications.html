@@ -10,7 +10,7 @@
 <div class="card">
     <div class="card-body p-0">
         {% for notif in notifications %}
-        <div class="notification-item {% if not notif.is_read %}unread{% endif %}">
+        <a href="{% url 'inventory:notification_click' notif.pk %}" class="notification-item {% if not notif.is_read %}unread{% endif %}">
             <div
                 class="notif-icon {% if notif.notification_type == 'OUT_OF_STOCK' %}danger{% elif notif.notification_type == 'LOW_STOCK' %}warning{% else %}info{% endif %}">
                 <i class="bi bi-{% if 'STOCK' in notif.notification_type %}box-seam{% else %}tools{% endif %}"></i>
@@ -23,7 +23,7 @@
                 class="badge {% if notif.notification_type == 'OUT_OF_STOCK' %}bg-danger{% elif notif.notification_type == 'LOW_STOCK' %}bg-warning text-dark{% else %}bg-info{% endif %}">
                 {{ notif.get_notification_type_display }}
             </span>
-        </div>
+        </a>
         {% empty %}
         <div class="text-center py-5 text-muted">
             <i class="bi bi-bell-slash fs-1 d-block mb-2"></i>No notifications

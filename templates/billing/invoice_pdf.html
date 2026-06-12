@@ -1,103 +1,228 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="utf-8">
     <style>
+        @page {
+            size: A4;
+            margin: 1.2cm;
+        }
         body {
-            font-family: Arial, sans-serif;
-            font-size: 12px;
-            color: #333;
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 11px;
+            color: #334155;
+            line-height: 1.5;
         }
-
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #333;
-            padding-bottom: 10px;
-        }
-
-        .company-name {
-            font-size: 22px;
-            font-weight: bold;
-            color: #6366f1;
-        }
-
-        .invoice-meta {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-
-        table {
+        .header-table {
             width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 15px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
         }
-
-        th {
-            background: #6366f1;
-            color: white;
-            padding: 8px;
-            text-align: left;
+        .logo {
+            height: 60px;
+            max-width: 180px;
         }
-
-        td {
-            padding: 7px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .totals-table td {
-            border: none;
-        }
-
-        .grand-total {
+        .shop-name {
             font-size: 14px;
             font-weight: bold;
+            color: #0f172a;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-
+        .company-subtitle {
+            font-size: 9px;
+            color: #64748b;
+            margin-top: 3px;
+        }
+        .invoice-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4f46e5;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .invoice-num {
+            font-size: 12px;
+            font-weight: bold;
+            color: #0f172a;
+        }
+        .section-title {
+            font-size: 10px;
+            font-weight: bold;
+            color: #4f46e5;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 3px;
+        }
+        .meta-table {
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        .meta-cell {
+            width: 50%;
+            vertical-align: top;
+            padding: 0;
+            border: none;
+        }
+        .meta-label {
+            font-weight: bold;
+            color: #64748b;
+            width: 80px;
+            display: inline-block;
+        }
+        .meta-value {
+            color: #0f172a;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+        .items-table th {
+            background-color: #4f46e5;
+            color: #ffffff;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 9px;
+            padding: 8px 10px;
+            text-align: left;
+            letter-spacing: 0.5px;
+        }
+        .items-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+        }
+        .totals-table {
+            width: 260px;
+            margin-left: auto;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .totals-table td {
+            padding: 6px 10px;
+            border: none;
+            color: #475569;
+        }
+        .totals-table .grand-total-row td {
+            border-top: 1.5px solid #e2e8f0;
+            border-bottom: 1.5px solid #e2e8f0;
+            padding: 8px 10px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #0f172a;
+        }
+        .grand-total-val {
+            color: #4f46e5 !important;
+        }
+        .notes-section {
+            background-color: #f8fafc;
+            border-left: 3px solid #cbd5e1;
+            padding: 10px 15px;
+            margin-top: 25px;
+            margin-bottom: 25px;
+            border-radius: 0 6px 6px 0;
+        }
+        .notes-title {
+            font-weight: bold;
+            color: #475569;
+            margin-bottom: 4px;
+        }
         .footer {
             text-align: center;
-            margin-top: 20px;
-            font-size: 10px;
-            color: #888;
+            margin-top: 50px;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 15px;
+            font-size: 9px;
+            color: #94a3b8;
         }
     </style>
 </head>
-
 <body>
-    <div class="header">
-        <div class="company-name">Amar Honda Care</div>
-        <div>Garage & Bike Shop Management System</div>
-        <div>INVOICE #{{ invoice.invoice_number }}</div>
-    </div>
+    <!-- Top Header -->
+    <table class="header-table" style="border: none;">
+        <tr>
+            <td style="border: none; vertical-align: top; padding: 0;">
+                <img src="{% static 'images/logo.png' %}" class="logo">
+                <div class="shop-name">Amar Honda Care</div>
+                <div class="company-subtitle">Garage & Bike Shop Management System</div>
+            </td>
+            <td style="border: none; vertical-align: top; text-align: right; padding: 0;">
+                <div class="invoice-title">Invoice</div>
+                <div class="invoice-num"># {{ invoice.invoice_number }}</div>
+            </td>
+        </tr>
+    </table>
 
-    <div class="invoice-meta">
-        <div>
-            <strong>Customer:</strong> {{ invoice.customer_name }}<br>
-            <strong>Phone:</strong> {{ invoice.customer_phone }}<br>
-            {% if invoice.customer_address %}
-            <strong>Address:</strong> {{ invoice.customer_address }}<br>
-            {% endif %}
-            <strong>Vehicle:</strong> {{ invoice.vehicle_number }}<br>
-            <strong>Model:</strong> {{ invoice.vehicle_model }}
-        </div>
-        <div style="text-align:right;">
-            <strong>Date:</strong> {{ invoice.created_at|date:"d M Y" }}<br>
-            <strong>Time:</strong> {{ invoice.created_at|date:"h:i A" }}<br>
-            <strong>Payment:</strong> {{ invoice.get_payment_method_display }}<br>
-            <strong>Billed by:</strong> {{ invoice.created_by.username }}
-        </div>
-    </div>
+    <!-- Metadata Section -->
+    <table class="meta-table" style="border: none;">
+        <tr>
+            <td class="meta-cell" style="padding-right: 15px;">
+                <div class="section-title">Customer Info</div>
+                <table style="border: none; width: 100%;">
+                    <tr>
+                        <td style="border: none; padding: 2px 0; width: 70px; color: #64748b; font-weight: bold;">Customer:</td>
+                        <td style="border: none; padding: 2px 0; color: #0f172a; font-weight: bold;">{{ invoice.customer_name }}</td>
+                    </tr>
+                    <tr>
+                        <td style="border: none; padding: 2px 0; color: #64748b; font-weight: bold;">Phone:</td>
+                        <td style="border: none; padding: 2px 0; color: #0f172a;">{{ invoice.customer_phone }}</td>
+                    </tr>
+                    {% if invoice.customer_address %}
+                    <tr>
+                        <td style="border: none; padding: 2px 0; color: #64748b; font-weight: bold;">Address:</td>
+                        <td style="border: none; padding: 2px 0; color: #0f172a;">{{ invoice.customer_address }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <td style="border: none; padding: 2px 0; color: #64748b; font-weight: bold;">Vehicle:</td>
+                        <td style="border: none; padding: 2px 0; color: #0f172a; font-weight: bold;">{{ invoice.vehicle_number|default:"—" }}</td>
+                    </tr>
+                    <tr>
+                        <td style="border: none; padding: 2px 0; color: #64748b; font-weight: bold;">Model:</td>
+                        <td style="border: none; padding: 2px 0; color: #0f172a;">{{ invoice.vehicle_model|default:"—" }}</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="meta-cell" style="padding-left: 15px;">
+                <div class="section-title">Invoice Details</div>
+                <table style="border: none; width: 100%;">
+                    <tr>
+                        <td style="border: none; padding: 2px 0; width: 80px; color: #64748b; font-weight: bold;">Date:</td>
+                        <td style="border: none; padding: 2px 0; color: #0f172a;">{{ invoice.created_at|date:"d M Y" }}</td>
+                    </tr>
+                    <tr>
+                        <td style="border: none; padding: 2px 0; color: #64748b; font-weight: bold;">Time:</td>
+                        <td style="border: none; padding: 2px 0; color: #0f172a;">{{ invoice.created_at|date:"h:i A" }}</td>
+                    </tr>
+                    <tr>
+                        <td style="border: none; padding: 2px 0; color: #64748b; font-weight: bold;">Payment:</td>
+                        <td style="border: none; padding: 2px 0; color: #0f172a;">{{ invoice.get_payment_method_display }}</td>
+                    </tr>
+                    <tr>
+                        <td style="border: none; padding: 2px 0; color: #64748b; font-weight: bold;">Billed by:</td>
+                        <td style="border: none; padding: 2px 0; color: #0f172a;">{{ invoice.created_by.username }}</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 
-    <table>
+    <!-- Items Table -->
+    <table class="items-table">
         <thead>
             <tr>
-                <th>#</th>
-                <th>Product / Part</th>
-                <th>Qty</th>
-                <th>Unit Price</th>
-                <th>Total</th>
+                <th style="width: 6%;">#</th>
+                <th style="width: 44%;">Product / Part</th>
+                <th style="width: 10%; text-align: center;">Qty</th>
+                <th style="width: 20%; text-align: right;">Unit Price</th>
+                <th style="width: 20%; text-align: right;">Total</th>
             </tr>
         </thead>
         <tbody>
@@ -105,43 +230,56 @@
             <tr>
                 <td>{{ forloop.counter }}</td>
                 <td>{{ item.name }}{% if item.is_custom %} (Custom){% endif %}</td>
-                <td>{{ item.quantity }}</td>
-                <td>₹{{ item.unit_price }}</td>
-                <td>₹{{ item.total_price }}</td>
+                <td style="text-align: center;">{{ item.quantity }}</td>
+                <td style="text-align: right; white-space: nowrap;">Rs. {{ item.unit_price }}</td>
+                <td style="text-align: right; font-weight: bold; white-space: nowrap;">Rs. {{ item.total_price }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <table class="totals-table" style="width:300px;margin-left:auto;">
+    <!-- Totals Area -->
+    <table class="totals-table">
         <tr>
             <td>Subtotal (Items + Service + Parts):</td>
-            <td style="text-align:right;">₹{{ invoice.subtotal }}</td>
+            <td style="text-align: right; white-space: nowrap;">Rs. {{ invoice.subtotal }}</td>
         </tr>
-        {% if invoice.service_charge %}<tr>
+        {% if invoice.service_charge %}
+        <tr>
             <td>Service Charge:</td>
-            <td style="text-align:right;">₹{{ invoice.service_charge }}</td>
-        </tr>{% endif %}
-        {% if invoice.gst_percent %}<tr>
+            <td style="text-align: right; white-space: nowrap;">Rs. {{ invoice.service_charge }}</td>
+        </tr>
+        {% endif %}
+        {% if invoice.gst_percent %}
+        <tr>
             <td>GST ({{ invoice.gst_percent }}%):</td>
-            <td style="text-align:right;">₹{{ invoice.gst_amount }}</td>
-        </tr>{% endif %}
-        {% if invoice.discount %}<tr>
+            <td style="text-align: right; white-space: nowrap;">Rs. {{ invoice.gst_amount }}</td>
+        </tr>
+        {% endif %}
+        {% if invoice.discount %}
+        <tr>
             <td>Discount:</td>
-            <td style="text-align:right;">-₹{{ invoice.discount }}</td>
-        </tr>{% endif %}
-        <tr class="grand-total">
-            <td><strong>Grand Total:</strong></td>
-            <td style="text-align:right;color:#6366f1;"><strong>₹{{ invoice.grand_total }}</strong></td>
+            <td style="text-align: right; color: #dc2626; white-space: nowrap;">-Rs. {{ invoice.discount }}</td>
+        </tr>
+        {% endif %}
+        <tr class="grand-total-row">
+            <td>Grand Total:</td>
+            <td class="grand-total-val" style="text-align: right; font-weight: bold; white-space: nowrap;">Rs. {{ invoice.grand_total }}</td>
         </tr>
     </table>
 
-    {% if invoice.notes %}<p><strong>Notes:</strong> {{ invoice.notes }}</p>{% endif %}
+    <!-- Notes Section -->
+    {% if invoice.notes %}
+    <div class="notes-section">
+        <div class="notes-title">Notes:</div>
+        <div>{{ invoice.notes }}</div>
+    </div>
+    {% endif %}
 
+    <!-- Footer -->
     <div class="footer">
         Thank you for your business! Visit us again.<br>
         Generated by Amar Honda Care Management System
     </div>
 </body>
-
 </html>

@@ -9,4 +9,5 @@ urlpatterns = [
     path('notifications/', views.NotificationListView.as_view(), name='notifications'),
     path('notifications/mark-read/', views.MarkNotificationReadView.as_view(), name='mark_all_read'),
     path('notifications/<int:pk>/read/', views.MarkNotificationReadView.as_view(), name='mark_read'),
+    path('notifications/<int:pk>/click/', views.NotificationClickView.as_view(), name='notification_click'),
 ]

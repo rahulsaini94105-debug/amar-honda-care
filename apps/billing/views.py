@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.views.generic import ListView, CreateView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponse
 from django.views import View
 from django.contrib import messages
@@ -154,12 +154,12 @@ class InvoiceDetailView(StaffOrOwnerRequiredMixin, DetailView):
 class InvoicePDFView(LoginRequiredMixin, View):
     def get(self, request, pk):
         invoice = get_object_or_404(Invoice, pk=pk)
-        pdf = generate_invoice_pdf(invoice)
-        if pdf:
-            response = HttpResponse(pdf, content_type='application/pdf')
+        response = generate_invoice_pdf(invoice)
+        if response:
             response['Content-Disposition'] = f'inline; filename="Invoice_{invoice.invoice_number}.pdf"'
             return response
         return HttpResponse('Error generating PDF', status=500)
+
 
 
 class BillingPOSEditView(StaffOrOwnerRequiredMixin, UpdateView):
@@ -304,3 +304,28 @@ class BillingPOSEditView(StaffOrOwnerRequiredMixin, UpdateView):
             messages.success(request, f'Invoice #{invoice.invoice_number} updated successfully!')
             return JsonResponse({'success': True, 'invoice_id': invoice.pk, 'invoice_number': invoice.invoice_number})
         return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+
+
+class InvoiceDeleteView(StaffOrOwnerRequiredMixin, View):
+    @transaction.atomic
+    def post(self, request, pk):
+        invoice = get_object_or_404(Invoice, pk=pk)
+        
+        # Revert stock of products
+        from apps.inventory.models import StockLog
+        for item in invoice.items.all():
+            prod = item.product
+            prod.stock_qty += item.quantity
+            prod.save()
+            StockLog.objects.create(
+                product=prod,
+                change_type=StockLog.RETURN,
+                quantity_change=item.quantity,
+                stock_before=prod.stock_qty - item.quantity,
+                stock_after=prod.stock_qty,
+                note=f'Stock revert (Delete Invoice #{invoice.invoice_number})',
+            )
+            
+        invoice.delete()
+        messages.success(request, f'Invoice #{invoice.invoice_number} deleted successfully!')
+        return redirect('billing:invoice_list')

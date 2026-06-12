@@ -110,6 +110,19 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         )[:5]
         ctx['recent_invoices'] = Invoice.objects.select_related('created_by').all()[:5]
 
+        # Invoice groups: Last 2 Months vs Before 2 Months
+        two_months_ago = today - timedelta(days=60)
+        invoices_last_2_months = Invoice.objects.filter(created_at__date__gte=two_months_ago).select_related('created_by')
+        invoices_before_2_months = Invoice.objects.filter(created_at__date__lt=two_months_ago).select_related('created_by')
+        
+        ctx['invoices_last_2_months'] = invoices_last_2_months[:10]
+        ctx['invoices_last_2_months_count'] = invoices_last_2_months.count()
+        ctx['invoices_last_2_months_total'] = invoices_last_2_months.aggregate(t=Sum('grand_total'))['t'] or 0
+        
+        ctx['invoices_before_2_months'] = invoices_before_2_months[:10]
+        ctx['invoices_before_2_months_count'] = invoices_before_2_months.count()
+        ctx['invoices_before_2_months_total'] = invoices_before_2_months.aggregate(t=Sum('grand_total'))['t'] or 0
+
         # Total products
         ctx['total_products'] = all_products.count()
 

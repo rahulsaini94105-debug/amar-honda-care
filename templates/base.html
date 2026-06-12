@@ -24,7 +24,9 @@
     <!-- Sidebar -->
     <nav id="sidebar" class="sidebar">
         <div class="sidebar-brand" style="padding: 0.75rem; justify-content: center; display: flex; border-bottom: 1px solid #e2e8f0;">
-            <img src="{% static 'images/logo.png' %}" alt="Amar Honda Care" style="width: 100%; max-width: 220px; height: auto; max-height: 90px; object-fit: contain; display: block;">
+            <a href="{% url 'reports:dashboard' %}" style="display: block; width: 100%;">
+                <img src="{% static 'images/logo.png' %}" alt="Amar Honda Care" style="width: 100%; max-width: 220px; height: auto; max-height: 90px; object-fit: contain; display: block; margin: 0 auto;">
+            </a>
         </div>
 
         <ul class="sidebar-nav">
@@ -159,7 +161,7 @@
                         </div>
                         {% if recent_notifications %}
                         {% for notif in recent_notifications %}
-                        <div class="notification-item {% if not notif.is_read %}unread{% endif %}"
+                        <a href="{% url 'inventory:notification_click' notif.pk %}" class="notification-item {% if not notif.is_read %}unread{% endif %}"
                             data-id="{{ notif.pk }}">
                             <div
                                 class="notif-icon {% if notif.notification_type == 'OUT_OF_STOCK' %}danger{% elif notif.notification_type == 'LOW_STOCK' %}warning{% else %}info{% endif %}">
@@ -170,7 +172,7 @@
                                 <div class="notif-msg">{{ notif.message }}</div>
                                 <div class="notif-time">{{ notif.created_at|timesince }} ago</div>
                             </div>
-                        </div>
+                        </a>
                         {% endfor %}
                         {% else %}
                         <div class="text-center py-4 text-muted small">No new notifications</div>
