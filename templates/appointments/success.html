@@ -40,16 +40,15 @@
                     </div>
                     {% endif %}
 
-                    <div class="alert alert-info border-0 rounded-3 text-start small d-flex gap-2">
+                    <div class="alert alert-info border-0 rounded-3 text-start small d-flex gap-2 mb-4">
                         <i class="bi bi-info-circle-fill text-info mt-1"></i>
                         <div>
-                            We have sent a confirmation email to <strong>{{ appointment.customer_email }}</strong> and a simulated SMS message. Keep an eye on your inbox!
+                            We have sent a confirmation email to <strong>{{ appointment.customer_email }}</strong> and an SMS message. Keep an eye on your inbox!
                         </div>
                     </div>
 
                     <div class="mt-4 d-grid gap-2">
-                        <a href="{% url 'appointments:book' %}" class="btn btn-outline-primary py-2 fw-semibold" style="border-radius: 8px;">Book Another Slot</a>
-                        <a href="{% url 'reports:dashboard' %}" class="btn btn-primary py-2 fw-semibold" style="border-radius: 8px;">Go to Dashboard</a>
+                        <a href="{% url 'appointments:book' %}" class="btn btn-primary py-2 fw-semibold" style="border-radius: 8px;">Go to Booking Page</a>
                     </div>
                 </div>
             </div>

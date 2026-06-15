@@ -20,9 +20,11 @@ def send_appointment_email(appointment, subject, template_text):
             fail_silently=False,
         )
         logger.info(f"Email sent successfully to {appointment.customer_email} for appointment {appointment.id}")
+        print(f"\n[SMTP SUCCESS] Email sent successfully to {appointment.customer_email}!\n")
         return True
     except Exception as e:
         logger.error(f"Error sending email to {appointment.customer_email}: {e}")
+        print(f"\n[SMTP ERROR] Failed to send email to {appointment.customer_email}. Error: {e}\n")
         return False
 
 
@@ -41,10 +43,10 @@ def send_appointment_sms(appointment, message_content):
     return True
 
 
-def notify_appointment_created(appointment):
-    """Send notifications when an appointment is booked."""
+def get_appointment_messages(appointment):
+    """Generate email subject, email body, and SMS body for a new appointment."""
     start_time_str = appointment.scheduled_start.strftime("%B %d, %Y at %I:%M %p")
-    subject = f"Service Booking Received - Amar Honda Care"
+    subject = "Service Booking Received - Amar Honda Care"
     
     email_body = (
         f"Hello {appointment.customer_name},\n\n"
@@ -58,13 +60,19 @@ def notify_appointment_created(appointment):
         f"Best regards,\n"
         f"Amar Honda Care Team"
     )
-    send_appointment_email(appointment, subject, email_body)
-
+    
     sms_body = (
         f"Amar Honda Care: Hello {appointment.customer_name}, we've received your service booking for {appointment.vehicle_number} "
         f"on {appointment.scheduled_start.strftime('%d-%m-%Y')} at {appointment.scheduled_start.strftime('%I:%M %p')}. "
         f"We will confirm shortly!"
     )
+    return subject, email_body, sms_body
+
+
+def notify_appointment_created(appointment):
+    """Send notifications when an appointment is booked."""
+    subject, email_body, sms_body = get_appointment_messages(appointment)
+    send_appointment_email(appointment, subject, email_body)
     send_appointment_sms(appointment, sms_body)
 
 

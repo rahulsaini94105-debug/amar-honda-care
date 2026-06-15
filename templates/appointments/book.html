@@ -167,6 +167,15 @@
                         <div class="step" id="step-3-indicator">3</div>
                     </div>
 
+                    {% if form.errors %}
+                    <div class="alert alert-danger d-flex align-items-center mb-4 rounded-3" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+                        <div>
+                            <strong>Booking failed!</strong> Please correct the highlighted errors in the form steps below.
+                        </div>
+                    </div>
+                    {% endif %}
+
                     <form method="post" id="bookingForm" novalidate>
                         {% csrf_token %}
                         
@@ -178,27 +187,57 @@
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold text-secondary">Customer Name <span class="text-danger">*</span></label>
                                     {{ form.customer_name }}
-                                    <div class="invalid-feedback">Please enter your name.</div>
+                                    <div class="invalid-feedback">
+                                        {% if form.customer_name.errors %}
+                                            {% for error in form.customer_name.errors %}{{ error }}{% endfor %}
+                                        {% else %}
+                                            Please enter your name.
+                                        {% endif %}
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold text-secondary">Phone Number <span class="text-danger">*</span></label>
                                     {{ form.customer_phone }}
-                                    <div class="invalid-feedback">Please enter a valid phone number.</div>
+                                    <div class="invalid-feedback">
+                                        {% if form.customer_phone.errors %}
+                                            {% for error in form.customer_phone.errors %}{{ error }}{% endfor %}
+                                        {% else %}
+                                            Please enter a valid phone number.
+                                        {% endif %}
+                                    </div>
                                 </div>
                                 <div class="col-md-12">
                                     <label class="form-label fw-semibold text-secondary">Email Address <span class="text-danger">*</span></label>
                                     {{ form.customer_email }}
-                                    <div class="invalid-feedback">Please enter a valid email address.</div>
+                                    <div class="invalid-feedback">
+                                        {% if form.customer_email.errors %}
+                                            {% for error in form.customer_email.errors %}{{ error }}{% endfor %}
+                                        {% else %}
+                                            Please enter a valid email address.
+                                        {% endif %}
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold text-secondary">Vehicle Number <span class="text-danger">*</span></label>
                                     {{ form.vehicle_number }}
-                                    <div class="invalid-feedback">Please enter your vehicle number.</div>
+                                    <div class="invalid-feedback">
+                                        {% if form.vehicle_number.errors %}
+                                            {% for error in form.vehicle_number.errors %}{{ error }}{% endfor %}
+                                        {% else %}
+                                            Please enter your vehicle number.
+                                        {% endif %}
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold text-secondary">Vehicle Model <span class="text-danger">*</span></label>
                                     {{ form.vehicle_model }}
-                                    <div class="invalid-feedback">Please enter your vehicle model.</div>
+                                    <div class="invalid-feedback">
+                                        {% if form.vehicle_model.errors %}
+                                            {% for error in form.vehicle_model.errors %}{{ error }}{% endfor %}
+                                        {% else %}
+                                            Please enter your vehicle model.
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
 
@@ -215,10 +254,24 @@
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold text-secondary">Select Booking Date <span class="text-danger">*</span></label>
                                     {{ form.booking_date }}
+                                    <div class="invalid-feedback">
+                                        {% if form.booking_date.errors %}
+                                            {% for error in form.booking_date.errors %}{{ error }}{% endfor %}
+                                        {% else %}
+                                            Please select a valid booking date.
+                                        {% endif %}
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold text-secondary">Select Service Type <span class="text-danger">*</span></label>
                                     {{ form.service_type }}
+                                    <div class="invalid-feedback">
+                                        {% if form.service_type.errors %}
+                                            {% for error in form.service_type.errors %}{{ error }}{% endfor %}
+                                        {% else %}
+                                            Please select a service type.
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
 
@@ -228,11 +281,16 @@
                                     <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
                                     <span class="ms-2 text-muted small">Checking mechanic availability...</span>
                                 </div>
-                                <div class="slot-grid" id="slotsContainer">
+                                <div class="slot-grid mb-2" id="slotsContainer">
                                     <!-- Populated dynamically via JS -->
                                     <div class="text-muted small py-2">Please select a booking date to see slot availability.</div>
                                 </div>
-                                <input type="hidden" name="time_slot" id="selectedTimeSlotInput">
+                                <input type="hidden" name="time_slot" id="selectedTimeSlotInput" value="{{ form.time_slot.value|default:'' }}">
+                                <div class="invalid-feedback d-block" id="timeSlotError">
+                                    {% if form.time_slot.errors %}
+                                        {% for error in form.time_slot.errors %}{{ error }}{% endfor %}
+                                    {% endif %}
+                                </div>
                             </div>
 
                             <div class="d-flex justify-content-between mt-4">
@@ -248,6 +306,11 @@
                             <div class="mb-4">
                                 <label class="form-label fw-semibold text-secondary">Special requests or issues to report</label>
                                 {{ form.notes }}
+                                <div class="invalid-feedback">
+                                    {% if form.notes.errors %}
+                                        {% for error in form.notes.errors %}{{ error }}{% endfor %}
+                                    {% endif %}
+                                </div>
                             </div>
 
                             <!-- Summary Details Card -->
@@ -338,15 +401,32 @@
         const slotInput = document.getElementById('selectedTimeSlotInput');
         const dateInput = document.getElementById('id_booking_date');
         
+        let valid = true;
         if (!dateInput.value) {
-            alert('Please select a booking date.');
-            return false;
+            dateInput.classList.add('is-invalid');
+            valid = false;
+        } else {
+            dateInput.classList.remove('is-invalid');
         }
+        
+        const errorDiv = document.getElementById('timeSlotError');
         if (!slotInput.value) {
-            alert('Please select an available time slot.');
-            return false;
+            const slotsContainer = document.getElementById('slotsContainer');
+            slotsContainer.classList.add('border', 'border-danger', 'rounded-3', 'p-2');
+            if (errorDiv) {
+                errorDiv.innerText = 'Please select an available time slot.';
+                errorDiv.style.display = 'block';
+            }
+            valid = false;
+        } else {
+            const slotsContainer = document.getElementById('slotsContainer');
+            slotsContainer.classList.remove('border', 'border-danger', 'p-2');
+            if (errorDiv) {
+                errorDiv.innerText = '';
+                errorDiv.style.display = 'none';
+            }
         }
-        return true;
+        return valid;
     }
 
     function nextStep(stepNum) {
@@ -378,7 +458,7 @@
     const slotsContainer = document.getElementById('slotsContainer');
     const loader = document.getElementById('slot-loader');
 
-    dateInput.addEventListener('change', async () => {
+    async function loadAvailabilitySlots() {
         const date = dateInput.value;
         if (!date) return;
 
@@ -393,14 +473,16 @@
             
             if (data.slots && data.slots.length > 0) {
                 let html = '';
+                const selectedSlotVal = document.getElementById('selectedTimeSlotInput').value;
                 data.slots.forEach(slot => {
                     const isDisabled = slot.available <= 0;
                     const availabilityText = isDisabled 
                         ? 'Fully Booked' 
                         : `${slot.available} free slots`;
+                    const isSelected = slot.slot === selectedSlotVal;
                     
                     html += `
-                        <div class="slot-card ${isDisabled ? 'disabled' : ''}" data-slot="${slot.slot}">
+                        <div class="slot-card ${isDisabled ? 'disabled' : ''} ${isSelected ? 'selected' : ''}" data-slot="${slot.slot}">
                             <span class="slot-time">${slot.label}</span>
                             <span class="slot-availability ${isDisabled ? 'text-danger' : 'text-success'}">${availabilityText}</span>
                         </div>
@@ -414,6 +496,14 @@
                         document.querySelectorAll('.slot-card').forEach(c => c.classList.remove('selected'));
                         card.classList.add('selected');
                         document.getElementById('selectedTimeSlotInput').value = card.dataset.slot;
+                        
+                        // Clear slot selection errors
+                        const errorDiv = document.getElementById('timeSlotError');
+                        if (errorDiv) {
+                            errorDiv.innerText = '';
+                            errorDiv.style.display = 'none';
+                        }
+                        slotsContainer.classList.remove('border', 'border-danger', 'p-2');
                     });
                 });
             } else {
@@ -422,6 +512,53 @@
         } catch (e) {
             loader.classList.add('d-none');
             slotsContainer.innerHTML = '<div class="text-danger small">Failed to load availability slots.</div>';
+        }
+    }
+
+    dateInput.addEventListener('change', loadAvailabilitySlots);
+
+    // Run on DOM load to handle django validation error states
+    window.addEventListener('DOMContentLoaded', () => {
+        let initialStep = 1;
+        {% if form.errors %}
+            {% if form.customer_name.errors or form.customer_phone.errors or form.customer_email.errors or form.vehicle_number.errors or form.vehicle_model.errors %}
+                initialStep = 1;
+            {% elif form.booking_date.errors or form.service_type.errors or form.time_slot.errors %}
+                initialStep = 2;
+            {% elif form.notes.errors %}
+                initialStep = 3;
+            {% endif %}
+            
+            // Highlight fields that have errors
+            {% for field in form %}
+                {% if field.errors %}
+                    const fieldEl = document.getElementById('id_{{ field.name }}');
+                    if (fieldEl) {
+                        fieldEl.classList.add('is-invalid');
+                    }
+                {% endif %}
+            {% endfor %}
+            {% if form.booking_date.errors %}
+                const bdEl = document.getElementById('id_booking_date');
+                if (bdEl) bdEl.classList.add('is-invalid');
+            {% endif %}
+            {% if form.service_type.errors %}
+                const stEl = document.getElementById('id_service_type');
+                if (stEl) stEl.classList.add('is-invalid');
+            {% endif %}
+            {% if form.time_slot.errors %}
+                const slotsCont = document.getElementById('slotsContainer');
+                if (slotsCont) {
+                    slotsCont.classList.add('border', 'border-danger', 'rounded-3', 'p-2');
+                }
+            {% endif %}
+        {% endif %}
+        
+        showStep(initialStep);
+        
+        // Trigger slots load if date is prefilled
+        if (dateInput && dateInput.value) {
+            loadAvailabilitySlots();
         }
     });
 </script>
