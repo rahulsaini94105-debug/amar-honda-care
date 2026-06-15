@@ -13,6 +13,7 @@ urlpatterns = [
     path('inventory/', include('apps.inventory.urls', namespace='inventory')),
     path('purchases/', include('apps.purchases.urls', namespace='purchases')),
     path('services/', include('apps.services.urls', namespace='services')),
+    path('appointments/', include('apps.appointments.urls', namespace='appointments')),
     # REST API
     path('api/v1/', include('apps.api.urls')),
 ]

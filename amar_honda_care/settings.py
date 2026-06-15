@@ -40,6 +40,7 @@ LOCAL_APPS = [
     'apps.purchases',
     'apps.services',
     'apps.reports',
+    'apps.appointments',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

@@ -1,0 +1,428 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book Bike Service Online - Amar Honda Care{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.85);
+        --glass-border: rgba(226, 232, 240, 0.8);
+        --accent: #4f46e5;
+    }
+
+    body {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+    }
+
+    .booking-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        transition: all 0.3s ease;
+    }
+
+    .booking-header {
+        background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+        color: white;
+        border-radius: 20px 20px 0 0;
+        padding: 2.5rem 2rem;
+        text-align: center;
+    }
+
+    .step-indicator {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .step-indicator::before {
+        content: '';
+        position: absolute;
+        top: 15px;
+        left: 5%;
+        right: 5%;
+        height: 3px;
+        background: #e2e8f0;
+        z-index: 1;
+    }
+
+    .step {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: #fff;
+        border: 3px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #94a3b8;
+        position: relative;
+        z-index: 2;
+        transition: all 0.3s ease;
+    }
+
+    .step.active {
+        border-color: #4f46e5;
+        color: #4f46e5;
+        background: #e0e7ff;
+        transform: scale(1.15);
+    }
+
+    .step.completed {
+        border-color: #10b981;
+        color: white;
+        background: #10b981;
+    }
+
+    .slot-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    .slot-card {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.75rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        background: white;
+    }
+
+    .slot-card:hover:not(.disabled) {
+        border-color: #818cf8;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+    }
+
+    .slot-card.selected {
+        border-color: #4f46e5;
+        background: #e0e7ff;
+        color: #4f46e5;
+        font-weight: 600;
+    }
+
+    .slot-card.disabled {
+        background: #f1f5f9;
+        border-color: #e2e8f0;
+        color: #94a3b8;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .slot-time {
+        font-size: 0.95rem;
+        display: block;
+    }
+
+    .slot-availability {
+        font-size: 0.75rem;
+        display: block;
+        margin-top: 2px;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #818cf8;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+        opacity: 0.95;
+        transform: translateY(-1px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="booking-card">
+                <div class="booking-header">
+                    <h2 class="fw-bold mb-1"><i class="bi bi-calendar2-check-fill me-2"></i>Book Bike Service</h2>
+                    <p class="mb-0 text-white-50">Select your preferences and lock your service slot in real-time</p>
+                </div>
+                
+                <div class="p-4 p-md-5">
+                    <!-- Step Indicator -->
+                    <div class="step-indicator">
+                        <div class="step active" id="step-1-indicator">1</div>
+                        <div class="step" id="step-2-indicator">2</div>
+                        <div class="step" id="step-3-indicator">3</div>
+                    </div>
+
+                    <form method="post" id="bookingForm" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- STEP 1: Service details -->
+                        <div class="booking-step" id="step-1">
+                            <h4 class="fw-bold mb-4 text-dark"><i class="bi bi-tools me-2 text-indigo"></i>Step 1: Service details</h4>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-secondary">Customer Name <span class="text-danger">*</span></label>
+                                    {{ form.customer_name }}
+                                    <div class="invalid-feedback">Please enter your name.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-secondary">Phone Number <span class="text-danger">*</span></label>
+                                    {{ form.customer_phone }}
+                                    <div class="invalid-feedback">Please enter a valid phone number.</div>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label fw-semibold text-secondary">Email Address <span class="text-danger">*</span></label>
+                                    {{ form.customer_email }}
+                                    <div class="invalid-feedback">Please enter a valid email address.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-secondary">Vehicle Number <span class="text-danger">*</span></label>
+                                    {{ form.vehicle_number }}
+                                    <div class="invalid-feedback">Please enter your vehicle number.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-secondary">Vehicle Model <span class="text-danger">*</span></label>
+                                    {{ form.vehicle_model }}
+                                    <div class="invalid-feedback">Please enter your vehicle model.</div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end mt-4">
+                                <button type="button" class="btn btn-primary" onclick="nextStep(2)">Next Step <i class="bi bi-arrow-right ms-1"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- STEP 2: Date and Time Slot -->
+                        <div class="booking-step d-none" id="step-2">
+                            <h4 class="fw-bold mb-4 text-dark"><i class="bi bi-clock me-2 text-indigo"></i>Step 2: Date & Slot Selection</h4>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-secondary">Select Booking Date <span class="text-danger">*</span></label>
+                                    {{ form.booking_date }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-secondary">Select Service Type <span class="text-danger">*</span></label>
+                                    {{ form.service_type }}
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <label class="form-label fw-semibold text-secondary">Available Time Slots</label>
+                                <div id="slot-loader" class="text-center py-4 d-none">
+                                    <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
+                                    <span class="ms-2 text-muted small">Checking mechanic availability...</span>
+                                </div>
+                                <div class="slot-grid" id="slotsContainer">
+                                    <!-- Populated dynamically via JS -->
+                                    <div class="text-muted small py-2">Please select a booking date to see slot availability.</div>
+                                </div>
+                                <input type="hidden" name="time_slot" id="selectedTimeSlotInput">
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <button type="button" class="btn btn-outline-secondary" onclick="prevStep(1)"><i class="bi bi-arrow-left me-1"></i> Back</button>
+                                <button type="button" class="btn btn-primary" onclick="nextStep(3)">Next Step <i class="bi bi-arrow-right ms-1"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- STEP 3: Confirm and Book -->
+                        <div class="booking-step d-none" id="step-3">
+                            <h4 class="fw-bold mb-4 text-dark"><i class="bi bi-chat-left-text me-2 text-indigo"></i>Step 3: Notes & Confirmation</h4>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold text-secondary">Special requests or issues to report</label>
+                                {{ form.notes }}
+                            </div>
+
+                            <!-- Summary Details Card -->
+                            <div class="p-4 rounded-3 bg-light border mb-4">
+                                <h5 class="fw-bold text-dark mb-3"><i class="bi bi-file-earmark-text-fill text-primary me-2"></i>Booking Summary</h5>
+                                <div class="row g-2 text-secondary small">
+                                    <div class="col-5 fw-semibold">Customer:</div>
+                                    <div class="col-7" id="summary-customer">-</div>
+                                    
+                                    <div class="col-5 fw-semibold">Contact:</div>
+                                    <div class="col-7" id="summary-phone">-</div>
+                                    
+                                    <div class="col-5 fw-semibold">Vehicle:</div>
+                                    <div class="col-7" id="summary-vehicle">-</div>
+                                    
+                                    <div class="col-5 fw-semibold">Service Type:</div>
+                                    <div class="col-7" id="summary-type">-</div>
+                                    
+                                    <div class="col-5 fw-semibold">Date & Time Slot:</div>
+                                    <div class="col-7 text-indigo fw-bold" id="summary-slot">-</div>
+                                </div>
+                            </div>
+
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" id="reminderConsent" checked>
+                                <label class="form-check-input-label text-muted small" for="reminderConsent">
+                                    Send me instant SMS & Email updates regarding booking confirmation and status changes.
+                                </label>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-outline-secondary" onclick="prevStep(2)"><i class="bi bi-arrow-left me-1"></i> Back</button>
+                                <button type="submit" class="btn btn-primary px-4">Submit Booking <i class="bi bi-check2-circle ms-1"></i></button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentStep = 1;
+    
+    function showStep(stepNum) {
+        document.querySelectorAll('.booking-step').forEach(step => step.classList.add('d-none'));
+        document.getElementById(`step-${stepNum}`).classList.remove('d-none');
+        
+        // Update indicators
+        for (let i = 1; i <= 3; i++) {
+            const ind = document.getElementById(`step-${i}-indicator`);
+            if (i < stepNum) {
+                ind.classList.remove('active');
+                ind.classList.add('completed');
+                ind.innerHTML = '<i class="bi bi-check"></i>';
+            } else if (i === stepNum) {
+                ind.classList.add('active');
+                ind.classList.remove('completed');
+                ind.innerHTML = i;
+            } else {
+                ind.classList.remove('active', 'completed');
+                ind.innerHTML = i;
+            }
+        }
+        currentStep = stepNum;
+    }
+
+    function validateStep1() {
+        let valid = true;
+        const fields = ['id_customer_name', 'id_customer_phone', 'id_customer_email', 'id_vehicle_number', 'id_vehicle_model'];
+        fields.forEach(fid => {
+            const el = document.getElementById(fid);
+            if (!el || !el.value.trim()) {
+                el.classList.add('is-invalid');
+                valid = false;
+            } else {
+                el.classList.remove('is-invalid');
+            }
+        });
+        return valid;
+    }
+
+    function validateStep2() {
+        const slotInput = document.getElementById('selectedTimeSlotInput');
+        const dateInput = document.getElementById('id_booking_date');
+        
+        if (!dateInput.value) {
+            alert('Please select a booking date.');
+            return false;
+        }
+        if (!slotInput.value) {
+            alert('Please select an available time slot.');
+            return false;
+        }
+        return true;
+    }
+
+    function nextStep(stepNum) {
+        if (stepNum === 2 && !validateStep1()) return;
+        if (stepNum === 3 && !validateStep2()) return;
+        
+        if (stepNum === 3) {
+            // Populate summary details
+            document.getElementById('summary-customer').innerText = document.getElementById('id_customer_name').value;
+            document.getElementById('summary-phone').innerText = `${document.getElementById('id_customer_phone').value} | ${document.getElementById('id_customer_email').value}`;
+            document.getElementById('summary-vehicle').innerText = `${document.getElementById('id_vehicle_model').value} (${document.getElementById('id_vehicle_number').value})`;
+            
+            const serviceSelect = document.getElementById('id_service_type');
+            document.getElementById('summary-type').innerText = serviceSelect.options[serviceSelect.selectedIndex].text;
+            
+            const dateStr = document.getElementById('id_booking_date').value;
+            const slotStr = document.getElementById('selectedTimeSlotInput').value;
+            document.getElementById('summary-slot').innerText = `${dateStr} @ ${slotStr}`;
+        }
+        showStep(stepNum);
+    }
+
+    function prevStep(stepNum) {
+        showStep(stepNum);
+    }
+
+    // Availability slot checker
+    const dateInput = document.getElementById('id_booking_date');
+    const slotsContainer = document.getElementById('slotsContainer');
+    const loader = document.getElementById('slot-loader');
+
+    dateInput.addEventListener('change', async () => {
+        const date = dateInput.value;
+        if (!date) return;
+
+        loader.classList.remove('d-none');
+        slotsContainer.innerHTML = '';
+        
+        try {
+            const resp = await fetch(`/appointments/api/availability/?date=${date}`);
+            const data = await resp.json();
+            
+            loader.classList.add('d-none');
+            
+            if (data.slots && data.slots.length > 0) {
+                let html = '';
+                data.slots.forEach(slot => {
+                    const isDisabled = slot.available <= 0;
+                    const availabilityText = isDisabled 
+                        ? 'Fully Booked' 
+                        : `${slot.available} free slots`;
+                    
+                    html += `
+                        <div class="slot-card ${isDisabled ? 'disabled' : ''}" data-slot="${slot.slot}">
+                            <span class="slot-time">${slot.label}</span>
+                            <span class="slot-availability ${isDisabled ? 'text-danger' : 'text-success'}">${availabilityText}</span>
+                        </div>
+                    `;
+                });
+                slotsContainer.innerHTML = html;
+                
+                // Add event listeners
+                document.querySelectorAll('.slot-card:not(.disabled)').forEach(card => {
+                    card.addEventListener('click', () => {
+                        document.querySelectorAll('.slot-card').forEach(c => c.classList.remove('selected'));
+                        card.classList.add('selected');
+                        document.getElementById('selectedTimeSlotInput').value = card.dataset.slot;
+                    });
+                });
+            } else {
+                slotsContainer.innerHTML = '<div class="text-danger small">No mechanics available for this date.</div>';
+            }
+        } catch (e) {
+            loader.classList.add('d-none');
+            slotsContainer.innerHTML = '<div class="text-danger small">Failed to load availability slots.</div>';
+        }
+    });
+</script>
+{% endblock %}
