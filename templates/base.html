@@ -56,6 +56,18 @@
                     <i class="bi bi-tools"></i><span>Services</span>
                 </a>
             </li>
+            <li>
+                <a href="{% url 'appointments:calendar' %}"
+                    class="nav-link {% if request.resolver_match.namespace == 'appointments' %}active{% endif %}">
+                    <i class="bi bi-calendar-range"></i><span>Bookings</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'appointments:book' %}" target="_blank"
+                    class="nav-link text-info">
+                    <i class="bi bi-box-arrow-up-right text-info"></i><span class="text-info">Customer Form</span>
+                </a>
+            </li>
             <li class="nav-label">Inventory</li>
             <li>
                 <a href="{% url 'products:product_list' %}"

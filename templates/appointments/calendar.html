@@ -1,0 +1,483 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Appointment Calendar - Amar Honda Care{% endblock %}
+
+{% block page_title %}Appointment & Booking Calendar{% endblock %}
+
+{% block extra_css %}
+<style>
+    .fc {
+        background: #ffffff;
+        padding: 1.5rem;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    }
+    .fc-header-toolbar {
+        margin-bottom: 1.5rem !important;
+    }
+    .fc-button-primary {
+        background-color: #4f46e5 !important;
+        border-color: #4f46e5 !important;
+        font-weight: 500;
+        border-radius: 8px !important;
+        padding: 0.5rem 1rem !important;
+        box-shadow: none !important;
+        transition: all 0.2s;
+    }
+    .fc-button-primary:hover {
+        background-color: #4338ca !important;
+        border-color: #4338ca !important;
+    }
+    .fc-button-primary:disabled {
+        background-color: #a5b4fc !important;
+        border-color: #a5b4fc !important;
+    }
+    .fc-button-active {
+        background-color: #3730a3 !important;
+        border-color: #3730a3 !important;
+    }
+    .fc-event {
+        cursor: pointer;
+        padding: 2px 6px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: transform 0.15s ease;
+    }
+    .fc-event:hover {
+        transform: scale(1.02);
+    }
+    .fc-day-today {
+        background-color: #f8fafc !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+    <!-- Quick Stats Summary -->
+    <div class="col-12">
+        <div class="card border-0 shadow-sm" style="border-radius: 16px; background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); color: white;">
+            <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h4 class="fw-bold mb-1">Schedule & Dispatch Center</h4>
+                    <p class="mb-0 text-white-50 small">Drag-and-drop bookings to reschedule, assign mechanics, and track live garage statuses.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'appointments:analytics' %}" class="btn btn-light text-indigo fw-semibold px-3" style="border-radius: 8px;">
+                        <i class="bi bi-graph-up-arrow me-2"></i>View Analytics
+                    </a>
+                    <button class="btn btn-primary bg-indigo-800 border-0 fw-semibold px-3" style="border-radius: 8px;" onclick="openNewAppointmentModal()">
+                        <i class="bi bi-calendar-plus me-2"></i>New Appointment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Filter Panel -->
+    <div class="col-lg-3">
+        <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
+            <div class="card-body p-4">
+                <h5 class="fw-bold text-dark mb-3"><i class="bi bi-filter-left me-2 text-primary"></i>Filters</h5>
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-semibold">Filter by Mechanic</label>
+                    <select id="filterMechanic" class="form-select" style="border-radius: 10px;">
+                        <option value="">All Mechanics</option>
+                        {% for mech in mechanics %}
+                        <option value="{{ mech.id }}">{{ mech.get_full_name|default:mech.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-semibold">Filter by Status</label>
+                    <select id="filterStatus" class="form-select" style="border-radius: 10px;">
+                        <option value="">All Statuses</option>
+                        {% for val, label in status_choices %}
+                        <option value="{{ val }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <hr class="text-black-50">
+
+                <div class="d-grid">
+                    <button class="btn btn-outline-secondary btn-sm" id="resetFiltersBtn" style="border-radius: 8px;">Reset Filters</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mini Legend -->
+        <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+            <div class="card-body p-4">
+                <h6 class="fw-bold text-dark mb-3">Calendar Legend</h6>
+                <div class="d-flex flex-column gap-2 small">
+                    <div class="d-flex align-items-center gap-2">
+                        <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:#64748b;"></span>
+                        <span>Pending Approval</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:#4f46e5;"></span>
+                        <span>Confirmed Booking</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:#f59e0b;"></span>
+                        <span>Rescheduled</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:#10b981;"></span>
+                        <span>Completed Service</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:#ef4444;"></span>
+                        <span>Cancelled</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar Area -->
+    <div class="col-lg-9">
+        <div id="calendar"></div>
+    </div>
+</div>
+
+<!-- Details & Edit Appointment Modal -->
+<div class="modal fade" id="appointmentModal" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(5px);">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="fw-bold text-dark" id="modalTitle">Appointment Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-4 py-3">
+                <form id="modalForm">
+                    <input type="hidden" id="modalAppId">
+                    
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted fw-semibold">Customer Name</label>
+                            <input type="text" class="form-control" id="modalCustomerName" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted fw-semibold">Customer Phone</label>
+                            <input type="text" class="form-control" id="modalCustomerPhone" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label small text-muted fw-semibold">Customer Email</label>
+                            <input type="email" class="form-control" id="modalCustomerEmail" required>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted fw-semibold">Vehicle Number</label>
+                            <input type="text" class="form-control" id="modalVehicleNumber" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted fw-semibold">Vehicle Model</label>
+                            <input type="text" class="form-control" id="modalVehicleModel" required>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted fw-semibold">Service Type</label>
+                            <select class="form-select" id="modalServiceType">
+                                {% for st in service_types %}
+                                <option value="{{ st.id }}">{{ st.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted fw-semibold">Assign Mechanic</label>
+                            <select class="form-select" id="modalMechanic">
+                                <option value="">Select Mechanic</option>
+                                {% for mech in mechanics %}
+                                <option value="{{ mech.id }}">{{ mech.get_full_name|default:mech.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted fw-semibold">Start Date & Time</label>
+                            <input type="datetime-local" class="form-control" id="modalStart" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-muted fw-semibold">End Date & Time</label>
+                            <input type="datetime-local" class="form-control" id="modalEnd" required>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-12">
+                            <label class="form-label small text-muted fw-semibold">Appointment Status</label>
+                            <select class="form-select" id="modalStatus">
+                                {% for val, label in status_choices %}
+                                <option value="{{ val }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label small text-muted fw-semibold">Notes</label>
+                            <textarea class="form-control" id="modalNotes" rows="2"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="modal-footer border-top-0 d-flex justify-content-between">
+                <div>
+                    <!-- Confirm / Cancel Actions -->
+                    <button type="button" class="btn btn-success" id="btnApprove" onclick="triggerAction('confirm')">Confirm</button>
+                    <button type="button" class="btn btn-outline-danger" id="btnCancel" onclick="triggerAction('cancel')">Cancel</button>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-warning text-white" id="btnConvert" onclick="triggerAction('convert')"><i class="bi bi-gear-fill me-1"></i>Start Service</button>
+                    <button type="button" class="btn btn-primary" onclick="saveAppointment()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Include FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
+<script>
+    let calendar;
+    const modalEl = document.getElementById('appointmentModal');
+    const appointmentModal = new bootstrap.Modal(modalEl);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const calendarEl = document.getElementById('calendar');
+        
+        calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            editable: true,
+            droppable: true,
+            selectable: true,
+            events: function(info, successCallback, failureCallback) {
+                const params = new URLSearchParams({
+                    start: info.startStr,
+                    end: info.endStr,
+                    mechanic: document.getElementById('filterMechanic').value,
+                    status: document.getElementById('filterStatus').value
+                });
+
+                fetch(`/appointments/api/events/?${params.toString()}`)
+                    .then(resp => resp.json())
+                    .then(events => successCallback(events))
+                    .catch(err => failureCallback(err));
+            },
+            
+            // Event Drop (drag and drop)
+            eventDrop: function(info) {
+                updateEventTiming(info.event);
+            },
+            
+            // Event Resize
+            eventResize: function(info) {
+                updateEventTiming(info.event);
+            },
+
+            // Click Event
+            eventClick: function(info) {
+                openEditModal(info.event);
+            },
+
+            // Click Date to Create
+            select: function(info) {
+                openNewAppointmentModal(info.startStr, info.endStr);
+            }
+        });
+
+        calendar.render();
+
+        // Register filter listeners
+        document.getElementById('filterMechanic').addEventListener('change', () => calendar.refetchEvents());
+        document.getElementById('filterStatus').addEventListener('change', () => calendar.refetchEvents());
+        document.getElementById('resetFiltersBtn').addEventListener('click', () => {
+            document.getElementById('filterMechanic').value = '';
+            document.getElementById('filterStatus').value = '';
+            calendar.refetchEvents();
+        });
+    });
+
+    // Helper to format ISO datetimes to local datetime-local value
+    function formatDateTimeLocal(isoString) {
+        if (!isoString) return '';
+        const d = new Date(isoString);
+        const pad = (n) => n.toString().padStart(2, '0');
+        return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    // Save changes when dragged/dropped
+    function updateEventTiming(event) {
+        const payload = {
+            start: event.start.toISOString(),
+            end: event.end ? event.end.toISOString() : new Date(event.start.getTime() + 60*60*1000).toISOString()
+        };
+
+        fetch(`/appointments/api/update/${event.id}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': CSRF_TOKEN
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(resp => resp.json())
+        .then(data => {
+            if (!data.success) {
+                showCustomAlert('Failed to reschedule appointment.');
+                calendar.refetchEvents();
+            }
+        });
+    }
+
+    function openEditModal(event) {
+        const props = event.extendedProps;
+        document.getElementById('modalTitle').innerText = 'Edit Appointment';
+        document.getElementById('modalAppId').value = event.id;
+        document.getElementById('modalCustomerName').value = props.customer_name;
+        document.getElementById('modalCustomerPhone').value = props.customer_phone;
+        document.getElementById('modalCustomerEmail').value = props.customer_email;
+        document.getElementById('modalVehicleNumber').value = props.vehicle_number;
+        document.getElementById('modalVehicleModel').value = props.vehicle_model;
+        document.getElementById('modalServiceType').value = props.service_type_id;
+        document.getElementById('modalMechanic').value = props.mechanic_id;
+        document.getElementById('modalNotes').value = props.notes;
+        document.getElementById('modalStatus').value = props.status;
+
+        document.getElementById('modalStart').value = formatDateTimeLocal(event.start);
+        document.getElementById('modalEnd').value = formatDateTimeLocal(event.end || new Date(event.start.getTime() + 60*60*1000));
+
+        // Show/hide action buttons depending on status
+        if (props.status === 'PENDING') {
+            document.getElementById('btnApprove').classList.remove('d-none');
+            document.getElementById('btnCancel').classList.remove('d-none');
+            document.getElementById('btnConvert').classList.add('d-none');
+        } else if (props.status === 'CONFIRMED' || props.status === 'RESCHEDULED') {
+            document.getElementById('btnApprove').classList.add('d-none');
+            document.getElementById('btnCancel').classList.remove('d-none');
+            document.getElementById('btnConvert').classList.remove('d-none');
+        } else {
+            document.getElementById('btnApprove').classList.add('d-none');
+            document.getElementById('btnCancel').classList.add('d-none');
+            document.getElementById('btnConvert').classList.add('d-none');
+        }
+
+        appointmentModal.show();
+    }
+
+    function openNewAppointmentModal(startStr, endStr) {
+        document.getElementById('modalTitle').innerText = 'New Appointment';
+        document.getElementById('modalAppId').value = '';
+        document.getElementById('modalForm').reset();
+        
+        // Populate dates if selected
+        if (startStr) {
+            document.getElementById('modalStart').value = startStr.includes('T') ? startStr.substring(0, 16) : startStr + 'T09:00';
+        }
+        if (endStr) {
+            document.getElementById('modalEnd').value = endStr.includes('T') ? endStr.substring(0, 16) : endStr + 'T10:00';
+        }
+
+        document.getElementById('btnApprove').classList.add('d-none');
+        document.getElementById('btnCancel').classList.add('d-none');
+        document.getElementById('btnConvert').classList.add('d-none');
+        document.getElementById('modalStatus').value = 'CONFIRMED';
+
+        appointmentModal.show();
+    }
+
+    function saveAppointment() {
+        const appId = document.getElementById('modalAppId').value;
+        const payload = {
+            customer_name: document.getElementById('modalCustomerName').value,
+            customer_phone: document.getElementById('modalCustomerPhone').value,
+            customer_email: document.getElementById('modalCustomerEmail').value,
+            vehicle_number: document.getElementById('modalVehicleNumber').value,
+            vehicle_model: document.getElementById('modalVehicleModel').value,
+            service_type: document.getElementById('modalServiceType').value,
+            mechanic: document.getElementById('modalMechanic').value,
+            notes: document.getElementById('modalNotes').value,
+            status: document.getElementById('modalStatus').value,
+            start: new Date(document.getElementById('modalStart').value).toISOString(),
+            end: new Date(document.getElementById('modalEnd').value).toISOString()
+        };
+
+        let url = '/appointments/api/update/0/'; // Endpoint logic can handle new creation if appId empty
+        if (appId) {
+            url = `/appointments/api/update/${appId}/`;
+        } else {
+            // Need a creation API endpoint, or we can just send to update/0/ where views.py creates if pk=0
+            url = `/appointments/api/update/0/`;
+        }
+
+        // Make update view handle pk=0 for creating new appointments!
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': CSRF_TOKEN
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(resp => resp.json())
+        .then(data => {
+            if (data.success) {
+                appointmentModal.hide();
+                calendar.refetchEvents();
+            } else {
+                showCustomAlert(data.error || 'Failed to save appointment details.');
+            }
+        });
+    }
+
+    function triggerAction(action) {
+        const appId = document.getElementById('modalAppId').value;
+        if (!appId) return;
+
+        fetch(`/appointments/api/action/${appId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': CSRF_TOKEN
+            },
+            body: JSON.stringify({ action: action })
+        })
+        .then(resp => resp.json())
+        .then(data => {
+            if (data.success) {
+                appointmentModal.hide();
+                calendar.refetchEvents();
+                if (action === 'convert' && data.service_record_id) {
+                    // Redirect to the newly created service record detail
+                    window.location.href = `/services/${data.service_record_id}/`;
+                }
+            } else {
+                showCustomAlert(data.error || 'Operation failed.');
+            }
+        });
+    }
+</script>
+{% endblock %}

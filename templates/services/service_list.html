@@ -39,8 +39,7 @@
             <tbody>
                 {% for svc in services %}
                 <tr>
-                    <td><strong>{{ svc.vehicle_number }}</strong><br><small class="text-muted">{{ svc.vehicle_model
-                            }}</small></td>
+                    <td><strong>{{ svc.vehicle_number }}</strong><br><small class="text-muted">{{ svc.vehicle_model }}</small></td>
                     <td>{{ svc.customer_name }}<br><small class="text-muted">{{ svc.customer_phone }}</small></td>
                     <td>{{ svc.service_type.name|default:"—" }}</td>
                     <td>{{ svc.mechanic.get_full_name|default:svc.mechanic.username|default:"Unassigned" }}</td>

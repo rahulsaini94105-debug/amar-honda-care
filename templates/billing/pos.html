@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
-{% block title %}{% if form.instance.pk %}Edit Invoice #{{ form.instance.invoice_number }}{% else %}New Bill{% endif %} — Amar Honda Care{% endblock %}
-{% block page_title %}{% if form.instance.pk %}Edit Invoice #{{ form.instance.invoice_number }}{% else %}New Invoice / POS{% endif %}{% endblock %}
+{% block title %}{% if form.instance.pk %}Edit Invoice #{{ form.instance.invoice_number }}{% else %}New Bill{% endif %}
+— Amar Honda Care{% endblock %}
+{% block page_title %}{% if form.instance.pk %}Edit Invoice #{{ form.instance.invoice_number }}{% else %}New Invoice /
+POS{% endif %}{% endblock %}
 
 {% block content %}
 <div class="row g-3">
@@ -76,7 +78,7 @@
                             <div class="col-12">
                                 <label class="x-small text-muted">Service Type (optional)</label>
                                 <select id="serviceTypeSelect" class="form-select form-select-sm">
-                                    <option value="">— Select Service Type —</option>
+                                    <option value=""> Service Type </option>
                                     {% for st in service_types %}
                                     <option value="{{ st.pk }}" data-charge="{{ st.base_charge }}">
                                         {{ st.name }} — ₹{{ st.base_charge }}
@@ -183,7 +185,8 @@
                     {{ form.notes }}
 
                     <button type="submit" id="submitBill" class="btn btn-primary w-100 mt-3">
-                        <i class="bi bi-receipt me-1"></i>{% if form.instance.pk %}Update Invoice{% else %}Generate Invoice{% endif %}
+                        <i class="bi bi-receipt me-1"></i>{% if form.instance.pk %}Update Invoice{% else %}Generate
+                        Invoice{% endif %}
                     </button>
                 </form>
             </div>
@@ -399,10 +402,38 @@
         el.addEventListener('input', () => { recalcAll(); updateButtonState(); });
     });
 
+    // ── Sync Service Type dropdown with Service Charge input ──
+    const serviceChargeEl = document.querySelector('[name=service_charge]');
+    const serviceTypeSelectEl = document.getElementById('serviceTypeSelect');
+
+    function syncServiceTypeDropdown() {
+        if (!serviceChargeEl || !serviceTypeSelectEl) return;
+        const val = parseFloat(serviceChargeEl.value) || 0;
+        let found = false;
+        for (let i = 0; i < serviceTypeSelectEl.options.length; i++) {
+            const opt = serviceTypeSelectEl.options[i];
+            const charge = parseFloat(opt.dataset.charge) || 0;
+            if (charge > 0 && Math.abs(charge - val) < 0.01) {
+                serviceTypeSelectEl.selectedIndex = i;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            serviceTypeSelectEl.selectedIndex = 0;
+        }
+    }
+
+    if (serviceChargeEl) {
+        serviceChargeEl.addEventListener('input', syncServiceTypeDropdown);
+        // Sync on page load
+        syncServiceTypeDropdown();
+    }
+
     // Restrict phone number to 10 digits and numbers only
     const phoneInputEl = document.querySelector('[name=customer_phone]');
     if (phoneInputEl) {
-        phoneInputEl.addEventListener('input', function() {
+        phoneInputEl.addEventListener('input', function () {
             this.value = this.value.replace(/\D/g, '').substring(0, 10);
         });
     }
@@ -410,7 +441,7 @@
     // Capitalize vehicle number input auto
     const vehicleInputEl = document.querySelector('[name=vehicle_number]');
     if (vehicleInputEl) {
-        vehicleInputEl.addEventListener('input', function() {
+        vehicleInputEl.addEventListener('input', function () {
             this.value = this.value.toUpperCase();
         });
     }
@@ -481,7 +512,7 @@
     // Initial state
     {% if form.instance.pk %}
     renderCart();
-    
+
     // Load predefined parts checked values
     const prepParts = {{ predefined_parts_json|safe|default:"{}" }};
     for (const partId in prepParts) {
