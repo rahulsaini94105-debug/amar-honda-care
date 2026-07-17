@@ -39,8 +39,7 @@
                     <td>{{ svc.service_type.name|default:"—" }}</td>
                     <td>{{ svc.mechanic.get_full_name|default:"—" }}</td>
                     <td><span
-                            class="badge {% if svc.status == 'COMPLETED' %}bg-success{% else %}bg-warning text-dark{% endif %}">{{
-                            svc.get_status_display }}</span></td>
+                            class="badge {% if svc.status == 'COMPLETED' %}bg-success{% else %}bg-warning text-dark{% endif %}">{{ svc.get_status_display }}</span></td>
                     <td class="small text-muted">{{ svc.notes|default:"—" }}</td>
                     <td>₹{{ svc.estimated_amount }}</td>
                 </tr>

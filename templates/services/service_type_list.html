@@ -20,8 +20,7 @@
             {% if st.checklist_template %}
             <ul class="list-unstyled small mb-0">
                 {% for item in st.checklist_template|slice:":4" %}<li>✓ {{ item }}</li>{% endfor %}
-                {% if st.checklist_template|length > 4 %}<li class="text-muted">+ {{
-                    st.checklist_template|length|add:"-4" }} more...</li>{% endif %}
+                {% if st.checklist_template|length > 4 %}<li class="text-muted">+ {{ st.checklist_template|length|add:"-4" }} more...</li>{% endif %}
             </ul>
             {% endif %}
         </div>
