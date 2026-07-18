@@ -23,9 +23,12 @@
     {% if user.is_authenticated %}
     <!-- Sidebar -->
     <nav id="sidebar" class="sidebar">
-        <div class="sidebar-brand" style="padding: 0.75rem; justify-content: center; display: flex; border-bottom: 1px solid #e2e8f0;">
-            <a href="{% url 'reports:dashboard' %}" style="display: block; width: 100%;">
-                <img src="{% static 'images/logo.png' %}" alt="Amar Honda Care" style="width: 100%; max-width: 220px; height: auto; max-height: 90px; object-fit: contain; display: block; margin: 0 auto;">
+        <div class="sidebar-brand">
+            <a href="{% url 'reports:dashboard' %}">
+                <div class="brand-logo-img">
+                    <img src="{% static 'images/logo.png' %}" alt="Amar Honda Care">
+                </div>
+                <span class="brand-title">Amar Honda Care</span>
             </a>
         </div>
 
