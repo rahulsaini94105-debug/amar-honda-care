@@ -3,7 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-    --sidebar-width: 260px;
+    --sidebar-width: 220px;
     --sidebar-collapsed-width: 70px;
     --topbar-height: 64px;
     --primary: #4f46e5;
@@ -67,29 +67,44 @@ body {
 .sidebar-brand {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 0;
     border-bottom: 1px solid #e2e8f0;
     overflow: hidden;
 }
 
+.sidebar-brand a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 0.75rem 0.75rem;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.sidebar-brand a:hover {
+    text-decoration: none;
+}
+
+.sidebar.collapsed .sidebar-brand a {
+    padding: 0.75rem 0;
+    justify-content: center;
+}
+
 .brand-logo-img {
-    width: 46px;
-    height: 46px;
-    border-radius: 10px;
+    width: 58px;
+    height: 48px;
     flex-shrink: 0;
-    background: white;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    padding: 2px;
 }
 
 .brand-logo-img img {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    transform: scale(1.35);
 }
 
 /* Full-width logo — fills sidebar like a banner */
@@ -123,15 +138,21 @@ body {
 }
 
 .brand-title {
-    font-size: 0.95rem;
+    font-size: 0.925rem;
     font-weight: 700;
     color: #1e293b;
     line-height: 1.2;
+    white-space: nowrap;
 }
 
 .brand-sub {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
+    font-weight: 600;
     color: #64748b;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin-top: 6px;
+    line-height: 1.3;
 }
 
 .sidebar-nav {

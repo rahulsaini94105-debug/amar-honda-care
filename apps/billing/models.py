@@ -51,20 +51,26 @@ class Invoice(models.Model):
     def all_items(self):
         items = []
         for item in self.items.select_related('product').all():
+            gst = (item.total_price * self.gst_percent) / 100
             items.append({
                 'name': item.product.name,
                 'quantity': item.quantity,
                 'unit_price': item.unit_price,
                 'total_price': item.total_price,
+                'gst': gst,
+                'discount': Decimal('0.00'),
                 'is_part': False,
                 'is_custom': False,
             })
         for part in self.parts.select_related('spare_part').all():
+            gst = (part.total_price * self.gst_percent) / 100
             items.append({
                 'name': part.part_name,
                 'quantity': part.quantity,
                 'unit_price': part.unit_price,
                 'total_price': part.total_price,
+                'gst': gst,
+                'discount': Decimal('0.00'),
                 'is_part': True,
                 'is_custom': part.spare_part is None,
             })
