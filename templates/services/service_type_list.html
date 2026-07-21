@@ -16,7 +16,7 @@
                 <h6 class="fw-bold mb-1">{{ st.name }}</h6>
                 <span class="badge bg-primary">{{ st.get_service_type_display }}</span>
             </div>
-            <div class="text-muted small mb-2">₹{{ st.base_charge }} base charge</div>
+            <div class="text-muted small mb-2">₹{{ st.base_charge|floatformat:-2 }} base charge</div>
             {% if st.checklist_template %}
             <ul class="list-unstyled small mb-0">
                 {% for item in st.checklist_template|slice:":4" %}<li>✓ {{ item }}</li>{% endfor %}

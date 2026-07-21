@@ -50,13 +50,13 @@
         <!-- Products Grid -->
         <div class="row g-3" id="productGrid">
             {% for product in products %}
-            <div class="col-6 col-md-4 product-grid-item" 
+                <div class="col-6 col-md-4 product-grid-item" 
                 data-name="{{ product.name|lower }}"
                 data-id="{{ product.pk }}" 
-                data-price="{{ product.selling_price }}"
+                data-price="{{ product.selling_price|floatformat:-2 }}"
                 data-stock="{{ product.restored_stock|default:product.stock_qty }}">
                 <div class="product-pos-card"
-                    onclick="addToCart({{ product.pk }}, '{{ product.name|escapejs }}', {{ product.selling_price }}, {{ product.restored_stock|default:product.stock_qty }})">
+                    onclick="addToCart({{ product.pk }}, '{{ product.name|escapejs }}', {{ product.selling_price|floatformat:-2 }}, {{ product.restored_stock|default:product.stock_qty }})">
                     <div class="product-pos-image">
                         {% if product.image %}
                             <img src="{{ product.image.url }}" alt="{{ product.name }}">
@@ -68,7 +68,7 @@
                     </div>
                     <div class="product-pos-info">
                         <h6 class="product-pos-name">{{ product.name }}</h6>
-                        <div class="product-pos-price">₹{{ product.selling_price }}</div>
+                        <div class="product-pos-price">₹{{ product.selling_price|floatformat:-2 }}</div>
                         <div class="product-pos-stock">
                             <i class="bi bi-box-seam me-1"></i>
                             Stock: <strong>{{ product.restored_stock|default:product.stock_qty }}</strong>
@@ -188,8 +188,8 @@
                             <select id="serviceTypeSelect" class="form-select">
                                 <option value="">-- Select Service Type --</option>
                                 {% for st in service_types %}
-                                <option value="{{ st.pk }}" data-charge="{{ st.base_charge }}">
-                                    {{ st.name }} (₹{{ st.base_charge }})
+                                <option value="{{ st.pk }}" data-charge="{{ st.base_charge|floatformat:-2 }}">
+                                    {{ st.name }} (₹{{ st.base_charge|floatformat:-2 }})
                                 </option>
                                 {% endfor %}
                             </select>
@@ -261,7 +261,7 @@
                                         </td>
                                         <td class="py-2 text-end">
                                             <input type="number" class="form-control form-control-sm part-price"
-                                                value="{{ part.default_price }}" min="0" step="0.01" disabled
+                                                value="{{ part.default_price|floatformat:-2 }}" min="0" step="0.01" disabled
                                                 oninput="recalcAll()" style="font-size: 0.85rem;">
                                         </td>
                                         <td class="py-2 text-center">
@@ -712,6 +712,10 @@
     .spare-parts-container input[type="number"],
     .spare-parts-container input[type="text"] {
         border-color: #fcd34d !important;
+        box-sizing: border-box;
+        text-align: right;
+        min-width: 70px;
+        width: 70px;
     }
 
     .spare-parts-container input[type="number"]:focus,
@@ -987,7 +991,7 @@
                     <span class="mx-1" style="min-width: 25px; text-align: center;">${item.quantity}</span>
                     <button type="button" class="btn btn-xs btn-outline-secondary" onclick="changeQty(${item.product_id}, 1)">+</button>
                 </div>
-                <div class="cart-item-price">₹${subtotal.toFixed(2)}</div>
+                <div class="cart-item-price">${formatPrice(subtotal)}</div>
                 <button type="button" class="btn btn-xs btn-outline-danger" onclick="removeFromCart(${item.product_id})" title="Remove">
                     <i class="bi bi-x"></i>
                 </button>
@@ -1002,7 +1006,7 @@
     document.getElementById('serviceTypeSelect').addEventListener('change', function () {
         const option = this.options[this.selectedIndex];
         const charge = option.dataset.charge || '0';
-        document.querySelector('[name=service_charge]').value = parseFloat(charge).toFixed(2);
+        document.querySelector('[name=service_charge]').value = formatNumberNoTrailing(parseFloat(charge));
         recalcAll();
         updateButtonState();
     });
@@ -1080,6 +1084,18 @@
         return total;
     }
 
+    // ── Number formatting helpers ─────────────────────────
+    function formatNumberNoTrailing(v) {
+        if (isNaN(v) || v === null) return '0';
+        const n = Number(v);
+        if (Math.abs(n - Math.round(n)) < 0.01) return String(Math.round(n));
+        return n.toFixed(2).replace(/\.0+$|(?<=\.[0-9]*?)0+$/,'');
+    }
+
+    function formatPrice(v) {
+        return '₹' + formatNumberNoTrailing(v);
+    }
+
     // ── Master Recalculation ──────────────────────────────
     function recalcAll() {
         const itemsTotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
@@ -1092,12 +1108,12 @@
         const gstAmt = subtotal * gstPct / 100;
         const grand = subtotal + gstAmt - discount;
 
-        document.getElementById('itemsTotal').textContent = '₹' + itemsTotal.toFixed(2);
-        document.getElementById('serviceChargeDisplay').textContent = '₹' + serviceCharge.toFixed(2);
-        document.getElementById('partsTotal').textContent = '₹' + partsTotal.toFixed(2);
-        document.getElementById('subtotal').textContent = '₹' + subtotal.toFixed(2);
-        document.getElementById('gstAmount').textContent = '₹' + gstAmt.toFixed(2);
-        document.getElementById('grandTotal').textContent = '₹' + grand.toFixed(2);
+        document.getElementById('itemsTotal').textContent = formatPrice(itemsTotal);
+        document.getElementById('serviceChargeDisplay').textContent = formatPrice(serviceCharge);
+        document.getElementById('partsTotal').textContent = formatPrice(partsTotal);
+        document.getElementById('subtotal').textContent = formatPrice(subtotal);
+        document.getElementById('gstAmount').textContent = formatPrice(gstAmt);
+        document.getElementById('grandTotal').textContent = formatPrice(grand);
 
         // Show/hide parts row
         const partsRow = document.getElementById('partsRow');

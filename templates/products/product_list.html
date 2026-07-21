@@ -58,7 +58,7 @@
                 <div class="product-name">{{ product.name }}</div>
                 <div class="product-cat text-muted small">{{ product.category.name|default:"—" }}</div>
                 <div class="d-flex justify-content-between align-items-center mt-2">
-                    <div class="product-price">₹{{ product.selling_price }}</div>
+                    <div class="product-price">₹{{ product.selling_price|floatformat:-2 }}</div>
                     <div>
                         {% if product.is_out_of_stock %}
                         <span class="badge bg-danger">Out of Stock</span>
