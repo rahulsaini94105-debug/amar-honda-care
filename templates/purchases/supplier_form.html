@@ -5,23 +5,84 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-6">
-        <div class="card">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi {% if form.instance.pk %}bi-pencil-square{% else %}bi-plus-circle{% endif %} me-2"></i>
+                    {% if form.instance.pk %}Edit Supplier{% else %}Add New Supplier{% endif %}
+                </h5>
+            </div>
             <div class="card-body p-4">
-                <form method="post">
+                <form method="post" novalidate>
                     {% csrf_token %}
+                    
                     {% for field in form %}
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">{{ field.label }}</label>
-                        {{ field }}
-                    </div>
+                        {% if field.name != 'is_active' %}
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    {{ field.label }}
+                                    {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                                </label>
+                                <div>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <small class="form-text text-muted d-block mt-1">{{ field.help_text }}</small>
+                                    {% endif %}
+                                </div>
+                                {% if field.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in field.errors %}
+                                            <i class="bi bi-exclamation-circle me-1"></i>{{ error }}<br>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
                     {% endfor %}
-                    <div class="d-flex gap-2 justify-content-end">
-                        <a href="{% url 'purchases:supplier_list' %}" class="btn btn-secondary">Cancel</a>
-                        <button type="submit" class="btn btn-success">Save Supplier</button>
+
+                    <!-- Active status checkbox -->
+                    <div class="mb-4">
+                        <div class="form-check">
+                            {{ form.is_active }}
+                            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                {{ form.is_active.label }} - Check to enable this supplier
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Non-field errors -->
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {% for error in form.non_field_errors %}
+                                <strong>Error:</strong> {{ error }}<br>
+                            {% endfor %}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endif %}
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'purchases:supplier_list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle me-1"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-check-circle me-1"></i>Save Supplier
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-control, .form-select {
+        border-color: #dee2e6;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+</style>
 {% endblock %}

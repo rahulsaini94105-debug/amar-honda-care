@@ -2,6 +2,9 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, D
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.db.models import Q
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from django.utils.decorators import method_decorator
 from apps.accounts.mixins import OwnerRequiredMixin, StaffOrOwnerRequiredMixin
 from .models import Product, Category
 from .forms import ProductForm, CategoryForm
@@ -77,9 +80,20 @@ class ProductDeleteView(OwnerRequiredMixin, DeleteView):
     template_name = 'products/product_confirm_delete.html'
     success_url = reverse_lazy('products:product_list')
 
-    def form_valid(self, form):
-        messages.success(self.request, 'Product deleted successfully!')
-        return super().form_valid(form)
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        product_name = self.object.name
+        
+        # Check if it's an AJAX request
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.content_type == 'application/json':
+            self.object.delete()
+            messages.success(request, f'Product "{product_name}" deleted successfully!')
+            return JsonResponse({'status': 'success', 'message': f'Product "{product_name}" deleted successfully!'})
+        else:
+            # Original behavior for non-AJAX requests
+            response = super().delete(request, *args, **kwargs)
+            messages.success(request, f'Product "{product_name}" deleted successfully!')
+            return response
 
 
 # Category Views

@@ -3,63 +3,149 @@
 {% block page_title %}Purchase Orders{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between mb-4">
-    <div>
-        <a href="{% url 'purchases:supplier_list' %}" class="btn btn-sm btn-outline-secondary">
-            <i class="bi bi-building me-1"></i>Suppliers
-        </a>
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <a href="{% url 'purchases:supplier_list' %}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-building me-1"></i>Manage Suppliers
+            </a>
+        </div>
+        <div>
+            <a href="{% url 'purchases:po_create' %}" class="btn btn-success btn-sm">
+                <i class="bi bi-plus-circle me-1"></i>New Purchase Order
+            </a>
+        </div>
     </div>
-    <a href="{% url 'purchases:po_create' %}" class="btn btn-success btn-sm">
-        <i class="bi bi-plus me-1"></i>New Purchase Order
-    </a>
 </div>
-<div class="card">
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-light">
+        <h5 class="mb-0"><i class="bi bi-boxes me-2"></i>Purchase Orders</h5>
+    </div>
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
-            <thead>
+            <thead class="table-light">
                 <tr>
-                    <th>PO #</th>
-                    <th>Supplier</th>
-                    <th>Items</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th>Created</th>
-                    <th>Actions</th>
+                    <th>
+                        <i class="bi bi-hash me-1"></i>PO Number
+                    </th>
+                    <th>
+                        <i class="bi bi-shop me-1"></i>Supplier
+                    </th>
+                    <th class="text-center">
+                        <i class="bi bi-bag me-1"></i>Items
+                    </th>
+                    <th class="text-end">
+                        <i class="bi bi-currency-rupee me-1"></i>Total
+                    </th>
+                    <th class="text-center">
+                        <i class="bi bi-flag me-1"></i>Status
+                    </th>
+                    <th>
+                        <i class="bi bi-calendar me-1"></i>Created
+                    </th>
+                    <th class="text-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {% for order in orders %}
                 <tr>
-                    <td><strong>PO-{{ order.pk }}</strong></td>
-                    <td>{{ order.supplier.name|default:"Direct" }}</td>
-                    <td>{{ order.items.count }}</td>
-                    <td class="fw-bold">₹{{ order.total_amount|floatformat:2 }}</td>
                     <td>
-                        <span
-                            class="badge {% if order.status == 'RECEIVED' %}bg-success{% elif order.status == 'CANCELLED' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
-                            {{ order.get_status_display }}
-                        </span>
+                        <strong class="text-primary">PO-{{ order.pk }}</strong>
                     </td>
-                    <td class="small text-muted">{{ order.created_at|date:"d M Y" }}</td>
                     <td>
-                        <a href="{% url 'purchases:po_detail' order.pk %}" class="btn btn-sm btn-outline-primary"><i
-                                class="bi bi-eye"></i></a>
-                        {% if order.status == 'PENDING' %}
-                        <button class="btn btn-sm btn-outline-success receive-btn" data-id="{{ order.pk }}">
-                            <i class="bi bi-check-circle"></i> Receive
-                        </button>
+                        <div>
+                            <strong class="text-dark">{{ order.supplier.name|default:"Direct Purchase" }}</strong>
+                            {% if order.supplier.phone %}
+                                <br><small class="text-muted">{{ order.supplier.phone }}</small>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-info">{{ order.items.count }}</span>
+                    </td>
+                    <td class="text-end">
+                        <strong class="text-success fs-5">₹{{ order.total_amount|floatformat:2 }}</strong>
+                    </td>
+                    <td class="text-center">
+                        {% if order.status == 'RECEIVED' %}
+                            <span class="badge bg-success" title="Order Received">
+                                <i class="bi bi-check-circle me-1"></i>Received
+                            </span>
+                        {% elif order.status == 'CANCELLED' %}
+                            <span class="badge bg-danger" title="Order Cancelled">
+                                <i class="bi bi-x-circle me-1"></i>Cancelled
+                            </span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark" title="Order Pending">
+                                <i class="bi bi-clock me-1"></i>Pending
+                            </span>
                         {% endif %}
+                    </td>
+                    <td>
+                        <small class="text-muted">
+                            <i class="bi bi-calendar3 me-1"></i>{{ order.created_at|date:"d M, Y" }}
+                        </small>
+                    </td>
+                    <td class="text-center">
+                        <div class="btn-group btn-group-sm" role="group">
+                            <a href="{% url 'purchases:po_detail' order.pk %}" class="btn btn-outline-primary" title="View Details">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            {% if order.status == 'PENDING' %}
+                                <button class="btn btn-outline-success receive-btn" data-id="{{ order.pk }}" title="Mark as Received">
+                                    <i class="bi bi-check-circle"></i>
+                                </button>
+                            {% endif %}
+                        </div>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="7" class="text-center py-4 text-muted">No purchase orders yet.</td>
+                    <td colspan="7" class="text-center py-5">
+                        <div class="text-muted">
+                            <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                            <p class="mt-2">No purchase orders yet</p>
+                            <a href="{% url 'purchases:po_create' %}" class="btn btn-sm btn-success">
+                                <i class="bi bi-plus me-1"></i>Create First Purchase Order
+                            </a>
+                        </div>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<nav class="d-flex justify-content-center mt-4">
+    <ul class="pagination">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1">First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            </li>
+        {% endif %}
+
+        <li class="page-item active">
+            <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        </li>
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}
@@ -68,8 +154,28 @@
         btn.addEventListener('click', async function () {
             if (!confirm('Mark this order as received? Stock will be updated.')) return;
             const id = this.dataset.id;
-            const res = await fetch(`/purchases/${id}/receive/`, { method: 'POST', headers: { 'X-CSRFToken': CSRF_TOKEN } });
-            if ((await res.json()).success) location.reload();
+            const btn = this;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+            
+            try {
+                const res = await fetch(`/purchases/${id}/receive/`, {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': CSRF_TOKEN }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.message || 'Unknown error'));
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-check-circle"></i>';
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-check-circle"></i>';
+            }
         });
     });
 </script>

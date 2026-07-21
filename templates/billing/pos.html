@@ -1,192 +1,335 @@
 {% extends 'base.html' %}
-{% block title %}{% if form.instance.pk %}Edit Invoice #{{ form.instance.invoice_number }}{% else %}New Bill{% endif %}
-— Amar Honda Care{% endblock %}
-{% block page_title %}{% if form.instance.pk %}Edit Invoice #{{ form.instance.invoice_number }}{% else %}New Invoice /
-POS{% endif %}{% endblock %}
+{% block title %}{% if form.instance.pk %}Edit Invoice #{{ form.instance.invoice_number }}{% else %}New Invoice{% endif %} — Amar Honda Care{% endblock %}
+{% block page_title %}{% if form.instance.pk %}Edit Invoice #{{ form.instance.invoice_number }}{% else %}New Invoice / POS{% endif %}{% endblock %}
 
 {% block content %}
-<div class="row g-3">
-    <!-- Product Grid -->
-    <div class="col-lg-7">
-        <div class="card mb-3">
-            <div class="card-body pb-2">
-                <input type="search" id="productSearch" class="form-control" placeholder="Search products...">
+<!-- Page Header -->
+<div class="mb-4">
+    <div class="d-flex align-items-center justify-content-between">
+        <div>
+            <h2 class="mb-1" style="color: #0f172a; font-weight: 700;">
+                <i class="bi bi-receipt me-2" style="color: #4f46e5;"></i>Create New Invoice
+            </h2>
+            <p class="text-muted mb-0">Quick billing interface for products and services</p>
+        </div>
+        <div class="text-end">
+            <div class="text-muted small">
+                <i class="bi bi-calendar3 me-2"></i>{{ "today"|date:"d M Y" }}
             </div>
         </div>
-        <div class="row g-2" id="productGrid">
+    </div>
+</div>
+
+<div class="row g-3">
+    <!-- Product Grid Section -->
+    <div class="col-lg-7">
+        <!-- Search Bar -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-0">
+                <div class="input-group" style="border-radius: 12px; overflow: hidden;">
+                    <span class="input-group-text bg-light border-0">
+                        <i class="bi bi-search" style="color: #64748b; font-size: 1.1rem;"></i>
+                    </span>
+                    <input type="search" id="productSearch" class="form-control border-0 bg-light" 
+                        placeholder="🔍 Search products by name, category, or price..." autocomplete="off" style="padding: 0.8rem 1rem;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid Header -->
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <h5 style="color: #0f172a; font-weight: 600; margin: 0;">
+                <i class="bi bi-box-seam me-2" style="color: #4f46e5;"></i>Available Products
+            </h5>
+            <span class="badge bg-primary" id="productCount">
+                <i class="bi bi-list me-1"></i>
+                <span id="visibleProductCount">0</span> Products
+            </span>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="row g-3" id="productGrid">
             {% for product in products %}
-            <div class="col-6 col-md-4 product-grid-item" data-name="{{ product.name|lower }}"
-                data-id="{{ product.pk }}" data-price="{{ product.selling_price }}"
+            <div class="col-6 col-md-4 product-grid-item" 
+                data-name="{{ product.name|lower }}"
+                data-id="{{ product.pk }}" 
+                data-price="{{ product.selling_price }}"
                 data-stock="{{ product.restored_stock|default:product.stock_qty }}">
                 <div class="product-pos-card"
                     onclick="addToCart({{ product.pk }}, '{{ product.name|escapejs }}', {{ product.selling_price }}, {{ product.restored_stock|default:product.stock_qty }})">
-                    {% if product.image %}
-                    <img src="{{ product.image.url }}" class="pos-product-img">
-                    {% else %}
-                    <div class="pos-product-img-placeholder"><i class="bi bi-gear"></i></div>
-                    {% endif %}
-                    <div class="pos-product-name">{{ product.name }}</div>
-                    <div class="pos-product-price">₹{{ product.selling_price }}</div>
-                    <div class="pos-product-stock text-muted x-small">Stock: {{ product.restored_stock|default:product.stock_qty }}</div>
+                    <div class="product-pos-image">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                        {% else %}
+                            <div class="product-pos-image-placeholder">
+                                <i class="bi bi-package"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="product-pos-info">
+                        <h6 class="product-pos-name">{{ product.name }}</h6>
+                        <div class="product-pos-price">₹{{ product.selling_price }}</div>
+                        <div class="product-pos-stock">
+                            <i class="bi bi-box-seam me-1"></i>
+                            Stock: <strong>{{ product.restored_stock|default:product.stock_qty }}</strong>
+                        </div>
+                    </div>
+                    <div class="product-pos-overlay">
+                        <span class="badge bg-primary"><i class="bi bi-plus me-1"></i>Add</span>
+                    </div>
                 </div>
             </div>
             {% empty %}
             <div class="col-12 text-center py-5 text-muted">
-                No products available. <a href="{% url 'products:product_create' %}">Add products first</a>
+                <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                <p class="mt-2">No products available</p>
+                <a href="{% url 'products:product_create' %}" class="btn btn-sm btn-primary">Add Products First</a>
             </div>
             {% endfor %}
         </div>
     </div>
 
-    <!-- Cart / Invoice Form -->
+    <!-- Invoice Form Sidebar -->
     <div class="col-lg-5">
-        <div class="card sticky-top" style="top: 80px;">
-            <div class="card-header-custom">
-                <i class="bi bi-cart3 me-2"></i>Invoice Cart
+        <div class="card shadow-sm border-0 sticky-top" style="top: 80px; border-radius: 14px;">
+            <div class="card-header">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="p-2" style="background: rgba(255,255,255,0.2); border-radius: 8px;">
+                        <i class="bi bi-receipt" style="font-size: 1.25rem;"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-0">Create Invoice</h5>
+                        <small style="opacity: 0.9;">Fill details and select items</small>
+                    </div>
+                </div>
             </div>
-            <div class="card-body p-3">
+
+            <div class="card-body p-4" style="max-height: calc(100vh - 200px); overflow-y: auto;">
                 <form id="billingForm" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="cart_data" id="cartData">
                     <input type="hidden" name="parts_data" id="partsData">
 
-                    <!-- Customer Info -->
-                    <div class="mb-3">
-                        <div class="row g-2">
-                            <div class="col-12">{{ form.customer_name }}</div>
-                            <div class="col-6">{{ form.customer_phone }}</div>
-                            <div class="col-6">{{ form.vehicle_number }}</div>
-                            <div class="col-12">{{ form.vehicle_model }}</div>
-                            <div class="col-12">{{ form.customer_address }}</div>
+                    <!-- Customer Information Section -->
+                    <div class="section-header mb-3">
+                        <h6 class="mb-0">
+                            <i class="bi bi-person-circle me-2" style="color: #4f46e5; font-size: 1.1rem;"></i>
+                            Customer Information
+                        </h6>
+                    </div>
+
+                    <div class="row g-2 mb-4">
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold">
+                                <i class="bi bi-person me-1" style="color: #4f46e5;"></i>
+                                Customer Name <span class="text-danger">*</span>
+                            </label>
+                            {{ form.customer_name }}
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold">
+                                <i class="bi bi-telephone me-1" style="color: #4f46e5;"></i>
+                                Phone <span class="text-danger">*</span>
+                            </label>
+                            {{ form.customer_phone }}
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold">
+                                <i class="bi bi-fuel-pump me-1" style="color: #4f46e5;"></i>
+                                Vehicle No. <span class="text-danger">*</span>
+                            </label>
+                            {{ form.vehicle_number }}
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold">
+                                <i class="bi bi-car-front me-1" style="color: #4f46e5;"></i>
+                                Vehicle Model
+                            </label>
+                            {{ form.vehicle_model }}
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold">
+                                <i class="bi bi-geo-alt me-1" style="color: #4f46e5;"></i>
+                                Address
+                            </label>
+                            {{ form.customer_address }}
                         </div>
                     </div>
 
                     <!-- Cart Items -->
-                    <div id="cartItems" class="cart-items mb-3">
-                        <div id="emptyCart" class="text-center text-muted py-3">
-                            <i class="bi bi-cart-x fs-2 d-block mb-2"></i>
-                            Click products to add them
+                    <div class="section-header mb-3">
+                        <h6 class="mb-0">
+                            <i class="bi bi-cart-check me-2" style="color: #10b981; font-size: 1.1rem;"></i>
+                            Items (<span id="cartItemCount" style="color: #10b981;">0</span>)
+                        </h6>
+                    </div>
+
+                    <div id="cartItems" class="cart-items mb-4">
+                        <div id="emptyCart" class="text-center text-muted py-4">
+                            <i class="bi bi-cart-x" style="font-size: 2.5rem; opacity: 0.3; display: block; margin-bottom: 0.5rem;"></i>
+                            <small>Select products to add them</small>
                         </div>
                     </div>
 
-                    <!-- ── SERVICE SELECTION ── -->
-                    <div class="card border-0 bg-light rounded-3 mb-3 p-2">
-                        <div class="fw-semibold small text-uppercase text-muted mb-2">
-                            <i class="bi bi-wrench-adjustable me-1"></i>Service
-                        </div>
-                        <div class="row g-2">
-                            <div class="col-12">
-                                <label class="x-small text-muted">Service Type (optional)</label>
-                                <select id="serviceTypeSelect" class="form-select form-select-sm">
-                                    <option value=""> Service Type </option>
-                                    {% for st in service_types %}
-                                    <option value="{{ st.pk }}" data-charge="{{ st.base_charge }}">
-                                        {{ st.name }} — ₹{{ st.base_charge }}
-                                    </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-6">
-                                <label class="x-small text-muted">Service Charge</label>
-                                {{ form.service_charge }}
-                            </div>
-                            <div class="col-6">
-                                <label class="x-small text-muted">Discount</label>
-                                {{ form.discount }}
-                            </div>
-                            <div class="col-6">
-                                <label class="x-small text-muted">GST %</label>
-                                {{ form.gst_percent }}
-                            </div>
-                            <div class="col-6">
-                                <label class="x-small text-muted">Payment</label>
-                                {{ form.payment_method }}
-                            </div>
-                        </div>
+                    <!-- Service Section -->
+                    <div class="section-header mb-3">
+                        <h6 class="mb-0">
+                            <i class="bi bi-tools me-2" style="color: #f59e0b; font-size: 1.1rem;"></i>
+                            Service Details
+                        </h6>
                     </div>
 
-                    <!-- ── SPARE PARTS (predefined + custom) ── -->
-                    <div class="mb-3"
-                        style="border:1px solid #e2e8f0;border-left:4px solid #6366f1;border-radius:8px;background:#f8f9ff;padding:10px 12px;">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <div class="fw-semibold small text-uppercase" style="color:#6366f1;letter-spacing:.06em;">
-                                <i class="bi bi-tools me-1"></i>Spare Parts
-                                <span style="font-size:10px;color:#94a3b8;font-weight:400;"> — check or add
-                                    custom</span>
-                            </div>
-                            <button type="button" onclick="addCustomPartRow()"
-                                style="background:#6366f1;color:#fff;font-size:12px;border:none;border-radius:6px;padding:3px 10px;cursor:pointer;">
-                                <i class="bi bi-plus me-1"></i>Add Part
-                            </button>
-                        </div>
-                        <table class="table table-sm mb-0" id="predefinedPartsTable" style="background:transparent;">
-                            <thead>
-                                <tr style="font-size:11px;color:#94a3b8;border-bottom:1px solid #e2e8f0;">
-                                    <th style="width:30px;padding:3px 5px;"></th>
-                                    <th style="padding:3px 5px;">Part Name</th>
-                                    <th style="width:90px;padding:3px 5px;">Price (₹)</th>
-                                    <th style="width:58px;padding:3px 5px;">Qty</th>
-                                    <th style="width:28px;padding:3px 5px;"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="partsTableBody">
-                                {% for part in spare_parts %}
-                                <tr class="predefined-part-row" data-part-id="{{ part.pk }}" style="border:none;">
-                                    <td style="padding:4px 5px;vertical-align:middle;">
-                                        <input type="checkbox" class="form-check-input part-check"
-                                            id="part_{{ part.pk }}" onchange="togglePredefinedPart(this)">
-                                    </td>
-                                    <td style="padding:4px 5px;vertical-align:middle;">
-                                        <label for="part_{{ part.pk }}"
-                                            style="font-size:13px;cursor:pointer;margin:0;">{{ part.name }}</label>
-                                    </td>
-                                    <td style="padding:4px 5px;vertical-align:middle;">
-                                        <input type="number" class="form-control form-control-sm part-price"
-                                            value="{{ part.default_price }}" min="0" step="0.01" disabled
-                                            oninput="recalcAll()" style="font-size:13px;">
-                                    </td>
-                                    <td style="padding:4px 5px;vertical-align:middle;">
-                                        <input type="number" class="form-control form-control-sm part-qty" value="1"
-                                            min="1" disabled oninput="recalcAll()" style="font-size:13px;">
-                                    </td>
-                                    <td style="padding:4px 5px;vertical-align:middle;"></td>
-                                </tr>
+                    <div class="row g-2 mb-4">
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold">
+                                <i class="bi bi-gear me-1" style="color: #f59e0b;"></i>
+                                Service Type (Optional)
+                            </label>
+                            <select id="serviceTypeSelect" class="form-select">
+                                <option value="">-- Select Service Type --</option>
+                                {% for st in service_types %}
+                                <option value="{{ st.pk }}" data-charge="{{ st.base_charge }}">
+                                    {{ st.name }} (₹{{ st.base_charge }})
+                                </option>
                                 {% endfor %}
-                                <!-- custom part rows injected here by JS -->
-                            </tbody>
-                        </table>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold">
+                                <i class="bi bi-cash me-1" style="color: #10b981;"></i>
+                                Service Charge
+                            </label>
+                            {{ form.service_charge }}
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold">
+                                <i class="bi bi-percent me-1" style="color: #ef4444;"></i>
+                                Discount
+                            </label>
+                            {{ form.discount }}
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold">
+                                <i class="bi bi-receipt-cutoff me-1" style="color: #3b82f6;"></i>
+                                GST %
+                            </label>
+                            {{ form.gst_percent }}
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold">
+                                <i class="bi bi-credit-card me-1" style="color: #8b5cf6;"></i>
+                                Payment
+                            </label>
+                            {{ form.payment_method }}
+                        </div>
                     </div>
 
+                    <!-- Spare Parts Section -->
+                    <div class="section-header mb-3 d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">
+                            <i class="bi bi-hammer me-2" style="color: #f59e0b; font-size: 1.1rem;"></i>
+                            Spare Parts
+                        </h6>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addCustomPartRow()" style="border-radius: 6px;">
+                            <i class="bi bi-plus me-1"></i>Add
+                        </button>
+                    </div>
 
-                    <!-- ── TOTALS ── -->
-                    <div class="totals-section">
-                        <div class="d-flex justify-content-between mb-1">
-                            <span class="text-muted">Items Total</span>
-                            <span id="itemsTotal">₹0.00</span>
-                        </div>
-                        <div class="d-flex justify-content-between mb-1">
-                            <span class="text-muted">Service Charge</span>
-                            <span id="serviceChargeDisplay">₹0.00</span>
-                        </div>
-                        <div class="d-flex justify-content-between mb-1" id="partsRow" style="display:none;">
-                            <span class="text-muted">Parts Total</span>
-                            <span id="partsTotal">₹0.00</span>
-                        </div>
-                        <div class="d-flex justify-content-between mb-1">
-                            <span class="text-muted">GST Amount</span>
-                            <span id="gstAmount">₹0.00</span>
-                        </div>
-                        <div class="d-flex justify-content-between grand-total-row">
-                            <span class="fw-bold">Grand Total</span>
-                            <span class="fw-bold text-primary" id="grandTotal">₹0.00</span>
+                    <div class="spare-parts-container mb-4">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-borderless" id="predefinedPartsTable">
+                                <thead class="table-light">
+                                    <tr style="font-size: 0.8rem;">
+                                        <th style="width: 30px;"></th>
+                                        <th>Part Name</th>
+                                        <th style="width: 70px;" class="text-end">Price (₹)</th>
+                                        <th style="width: 50px;" class="text-center">Qty</th>
+                                        <th style="width: 30px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="partsTableBody">
+                                    {% for part in spare_parts %}
+                                    <tr class="predefined-part-row" data-part-id="{{ part.pk }}" style="font-size: 0.85rem;">
+                                        <td class="py-2">
+                                            <input type="checkbox" class="form-check-input part-check"
+                                                id="part_{{ part.pk }}" onchange="togglePredefinedPart(this)">
+                                        </td>
+                                        <td class="py-2">
+                                            <label for="part_{{ part.pk }}" style="cursor: pointer; margin: 0; font-size: 0.85rem;">
+                                                {{ part.name }}
+                                            </label>
+                                        </td>
+                                        <td class="py-2 text-end">
+                                            <input type="number" class="form-control form-control-sm part-price"
+                                                value="{{ part.default_price }}" min="0" step="0.01" disabled
+                                                oninput="recalcAll()" style="font-size: 0.85rem;">
+                                        </td>
+                                        <td class="py-2 text-center">
+                                            <input type="number" class="form-control form-control-sm part-qty" value="1"
+                                                min="1" disabled oninput="recalcAll()" style="font-size: 0.85rem; width: 50px; margin: 0 auto;">
+                                        </td>
+                                        <td class="py-2"></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
-                    {{ form.notes }}
+                    <!-- Notes -->
+                    <div class="mb-4">
+                        <label class="form-label small fw-semibold">
+                            <i class="bi bi-chat-dots me-1" style="color: #6366f1;"></i>
+                            Notes (Optional)
+                        </label>
+                        {{ form.notes }}
+                    </div>
 
-                    <button type="submit" id="submitBill" class="btn btn-primary w-100 mt-3">
-                        <i class="bi bi-receipt me-1"></i>{% if form.instance.pk %}Update Invoice{% else %}Generate
-                        Invoice{% endif %}
+                    <!-- Totals Section -->
+                    <div class="totals-card mb-4">
+                        <div class="totals-item">
+                            <span class="totals-label">
+                                <i class="bi bi-box me-2" style="color: #4f46e5;"></i>
+                                Items Total
+                            </span>
+                            <span class="totals-value" id="itemsTotal">₹0.00</span>
+                        </div>
+                        <div class="totals-item">
+                            <span class="totals-label">
+                                <i class="bi bi-tools me-2" style="color: #f59e0b;"></i>
+                                Service Charge
+                            </span>
+                            <span class="totals-value" id="serviceChargeDisplay">₹0.00</span>
+                        </div>
+                        <div class="totals-item" id="partsRow" style="display: none;">
+                            <span class="totals-label">
+                                <i class="bi bi-hammer me-2" style="color: #f59e0b;"></i>
+                                Spare Parts
+                            </span>
+                            <span class="totals-value" id="partsTotal">₹0.00</span>
+                        </div>
+                        <div class="totals-item text-warning">
+                            <span class="totals-label">Subtotal</span>
+                            <span class="totals-value" id="subtotal">₹0.00</span>
+                        </div>
+                        <div class="totals-item text-info">
+                            <span class="totals-label">
+                                <i class="bi bi-percent me-2"></i>GST Amount
+                            </span>
+                            <span class="totals-value" id="gstAmount">₹0.00</span>
+                        </div>
+                        <div class="totals-item grand-total-item">
+                            <span class="fw-bold">
+                                <i class="bi bi-cash-coin me-2" style="color: var(--success);"></i>
+                                Grand Total
+                            </span>
+                            <span class="fw-bold text-success grand-total-value" id="grandTotal">₹0.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="submitBill" class="btn btn-success w-100 btn-lg" disabled>
+                        <i class="bi bi-receipt me-2"></i>{% if form.instance.pk %}Update Invoice{% else %}Generate Invoice{% endif %}
                     </button>
                 </form>
             </div>
@@ -195,20 +338,605 @@ POS{% endif %}{% endblock %}
 </div>
 {% endblock %}
 
+{% block extra_css %}
+<style>
+    /* ===== Root Colors ===== */
+    :root {
+        --primary: #4f46e5;
+        --primary-light: #eef2ff;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --info: #3b82f6;
+        --light: #f8fafc;
+        --border: #e2e8f0;
+    }
+
+    /* ===== Form Styling ===== */
+    .form-control, .form-select {
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+        background: white;
+        padding: 0.6rem 0.85rem;
+    }
+
+    .form-control::placeholder {
+        color: #cbd5e1;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        outline: none;
+    }
+
+    .form-label {
+        color: #334155;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    /* ===== Section Headers ===== */
+    .section-header {
+        border-bottom: 2px solid var(--border);
+        padding-bottom: 0.8rem;
+        margin-bottom: 1rem;
+    }
+
+    .section-header h6 {
+        color: #0f172a;
+        font-size: 0.95rem;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+    }
+
+    /* ===== Product Cards - Enhanced ===== */
+    .product-pos-card {
+        border: 2px solid var(--border);
+        border-radius: 14px;
+        padding: 0.85rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        background: white;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .product-pos-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s;
+        z-index: 1;
+    }
+
+    .product-pos-card:hover::before {
+        left: 100%;
+    }
+
+    .product-pos-card:hover {
+        border-color: var(--primary);
+        box-shadow: 0 12px 24px rgba(79, 70, 229, 0.2);
+        transform: translateY(-6px);
+    }
+
+    .product-pos-card:active {
+        transform: translateY(-2px);
+    }
+
+    .product-pos-image {
+        width: 100%;
+        height: 110px;
+        margin-bottom: 0.6rem;
+        overflow: hidden;
+        border-radius: 10px;
+        position: relative;
+    }
+
+    .product-pos-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .product-pos-card:hover .product-pos-image img {
+        transform: scale(1.08);
+    }
+
+    .product-pos-image-placeholder {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2.5rem;
+        position: relative;
+    }
+
+    .product-pos-info {
+        position: relative;
+        z-index: 2;
+    }
+
+    .product-pos-name {
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+        color: #1e293b;
+        line-height: 1.3;
+        height: 1.6em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .product-pos-price {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 0.4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.2rem;
+    }
+
+    .product-pos-stock {
+        font-size: 0.75rem;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.3rem;
+    }
+
+    .product-pos-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0;
+        transition: all 0.2s ease;
+        z-index: 3;
+        pointer-events: none;
+    }
+
+    .product-pos-card:hover .product-pos-overlay {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    .product-pos-overlay .badge {
+        padding: 0.5rem 0.85rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* ===== Cart Items ===== */
+    .cart-items {
+        background: var(--light);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.6rem;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .cart-items::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    .cart-items::-webkit-scrollbar-track {
+        background: var(--light);
+        border-radius: 10px;
+    }
+
+    .cart-items::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+
+    .cart-item {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.7rem;
+        background: white;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        border-left: 4px solid var(--primary);
+        font-size: 0.85rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .cart-item:hover {
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .cart-item-name {
+        flex: 1;
+        font-weight: 500;
+        color: #1e293b;
+        min-width: 0;
+    }
+
+    .cart-item-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        background: var(--light);
+        border-radius: 6px;
+        padding: 0.2rem;
+    }
+
+    .cart-item-controls .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+    }
+
+    .cart-item-controls .btn:hover {
+        background-color: var(--primary) !important;
+        color: white !important;
+        border-color: var(--primary) !important;
+    }
+
+    .cart-item-price {
+        font-weight: 700;
+        color: var(--success);
+        min-width: 60px;
+        text-align: right;
+        font-size: 0.9rem;
+    }
+
+    /* ===== Totals Section ===== */
+    .totals-card {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border: 2px solid #bae6fd;
+        border-radius: 12px;
+        padding: 1.2rem;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+    }
+
+    .totals-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        font-size: 0.95rem;
+        color: #475569;
+        transition: all 0.2s ease;
+    }
+
+    .totals-label {
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .totals-value {
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .totals-item.text-warning {
+        color: #b45309;
+    }
+
+    .totals-item.text-warning .totals-value {
+        color: var(--warning);
+        font-size: 1rem;
+    }
+
+    .totals-item.text-info {
+        color: #1e40af;
+    }
+
+    .totals-item.text-info .totals-value {
+        color: var(--info);
+        font-size: 1rem;
+    }
+
+    .grand-total-item {
+        border-top: 2px solid #94e3f2;
+        border-bottom: 2px solid #94e3f2;
+        padding: 0.8rem 0;
+        font-size: 1.1rem;
+        color: #0c4a6e;
+        margin-top: 0.8rem;
+        margin-bottom: 0.8rem;
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 8px;
+        padding-left: 0.6rem;
+        padding-right: 0.6rem;
+    }
+
+    .grand-total-value {
+        font-size: 1.35rem;
+        color: var(--success) !important;
+    }
+
+    /* ===== Spare Parts Container ===== */
+    .spare-parts-container {
+        background: linear-gradient(135deg, #fef3c7 0%, #fef08a 100%);
+        border: 2px solid #fcd34d;
+        border-radius: 10px;
+        padding: 1rem;
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
+    }
+
+    .spare-parts-container .table {
+        margin-bottom: 0;
+        font-size: 0.85rem;
+    }
+
+    .spare-parts-container thead th {
+        background: linear-gradient(135deg, #fef08a 0%, #fed7aa 100%);
+        color: #854d0e;
+        font-weight: 700;
+        font-size: 0.8rem;
+        border-bottom: 2px solid #fbbf24;
+        padding: 0.6rem;
+    }
+
+    .spare-parts-container tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .spare-parts-container tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .spare-parts-container input[type="checkbox"] {
+        cursor: pointer;
+        width: 18px;
+        height: 18px;
+        accent-color: var(--primary);
+    }
+
+    .spare-parts-container input[type="number"],
+    .spare-parts-container input[type="text"] {
+        border-color: #fcd34d !important;
+    }
+
+    .spare-parts-container input[type="number"]:focus,
+    .spare-parts-container input[type="text"]:focus {
+        border-color: var(--warning) !important;
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1) !important;
+    }
+
+    /* ===== Buttons ===== */
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border: none;
+    }
+
+    .btn-success:hover:not(:disabled) {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-success:disabled {
+        background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+        cursor: not-allowed;
+    }
+
+    .btn-primary {
+        background: var(--primary);
+        border: none;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+        background: #3730a3;
+        transform: translateY(-1px);
+    }
+
+    .btn-xs {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.7rem;
+        border-radius: 4px;
+    }
+
+    /* ===== Search Bar ===== */
+    .input-group {
+        position: relative;
+    }
+
+    .input-group-text {
+        background: var(--light) !important;
+        border: 1px solid var(--border) !important;
+        border-right: none !important;
+        color: #64748b;
+    }
+
+    #productSearch {
+        border-left: none !important;
+    }
+
+    #productSearch:focus {
+        border-color: var(--primary) !important;
+        box-shadow: none !important;
+    }
+
+    /* ===== Empty States ===== */
+    #emptyCart {
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    /* ===== Card Headers ===== */
+    .card-header {
+        border-radius: 12px 12px 0 0 !important;
+        border: none !important;
+        padding: 1.25rem !important;
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
+    }
+
+    .card-header h5 {
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .card {
+        border-radius: 12px !important;
+        border: 1px solid var(--border) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    /* ===== Mobile Responsive ===== */
+    @media (max-width: 991px) {
+        .col-lg-5 .card {
+            position: static !important;
+            top: auto !important;
+            margin-top: 1rem;
+        }
+
+        .card-body {
+            max-height: auto !important;
+            overflow-y: auto !important;
+        }
+
+        .product-pos-card {
+            padding: 0.6rem;
+        }
+
+        .product-pos-image {
+            height: 90px;
+        }
+
+        .product-pos-name {
+            font-size: 0.75rem;
+        }
+
+        .section-header {
+            margin-bottom: 0.75rem;
+        }
+
+        .totals-card {
+            padding: 0.9rem;
+        }
+
+        .totals-item {
+            padding: 0.3rem 0;
+            font-size: 0.85rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .col-lg-7, .col-lg-5 {
+            max-width: 100%;
+        }
+
+        .row.g-3 {
+            --bs-gutter-x: 0.5rem !important;
+            --bs-gutter-y: 0.5rem !important;
+        }
+
+        .product-pos-card {
+            padding: 0.5rem;
+        }
+
+        .cart-item {
+            font-size: 0.8rem;
+            padding: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            font-size: 0.85rem;
+            padding: 0.5rem;
+        }
+    }
+
+    /* ===== Animations ===== */
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .card {
+        animation: slideInDown 0.3s ease;
+    }
+
+    .product-grid-item {
+        animation: slideInDown 0.5s ease backwards;
+    }
+
+    .product-grid-item:nth-child(1) { animation-delay: 0s; }
+    .product-grid-item:nth-child(2) { animation-delay: 0.05s; }
+    .product-grid-item:nth-child(3) { animation-delay: 0.1s; }
+    .product-grid-item:nth-child(4) { animation-delay: 0.15s; }
+    .product-grid-item:nth-child(5) { animation-delay: 0.2s; }
+    .product-grid-item:nth-child(6) { animation-delay: 0.25s; }
+</style>
+{% endblock %}
+
 {% block extra_js %}
 <script>
     let cart = {{ cart_json|safe|default:"[]" }};
     let customRowCount = 0;
 
-    // ── Cart ──────────────────────────────────────────────
+    // ── Cart Functions ────────────────────────────────────
     function addToCart(id, name, price, stock) {
-        if (stock <= 0) { showCustomAlert('This product is out of stock.', 'Out of Stock'); return; }
+        if (stock <= 0) { 
+            showCustomAlert('This product is out of stock.', 'Out of Stock');
+            return;
+        }
         const existing = cart.find(i => i.product_id === id);
         if (existing) {
-            if (existing.quantity < stock) existing.quantity++;
-            else { showCustomAlert('Maximum stock quantity reached for this item.', 'Limit Reached'); return; }
+            if (existing.quantity < stock) {
+                existing.quantity++;
+            } else { 
+                showCustomAlert('Maximum stock quantity reached for this item.', 'Limit Reached');
+                return;
+            }
         } else {
-            cart.push({ product_id: id, name, price: parseFloat(price), quantity: 1, stock: parseInt(stock) });
+            cart.push({ 
+                product_id: id, 
+                name, 
+                price: parseFloat(price), 
+                quantity: 1, 
+                stock: parseInt(stock) 
+            });
         }
         renderCart();
     }
@@ -226,43 +954,51 @@ POS{% endif %}{% endblock %}
             return;
         }
         item.quantity += delta;
-        if (item.quantity <= 0) { removeFromCart(id); return; }
+        if (item.quantity <= 0) { 
+            removeFromCart(id);
+            return;
+        }
         renderCart();
     }
 
     function renderCart() {
         const container = document.getElementById('cartItems');
+        const countEl = document.getElementById('cartItemCount');
+        
+        countEl.textContent = cart.length;
+
         if (cart.length === 0) {
-            container.innerHTML = `<div id="emptyCart" class="text-center text-muted py-3">
-            <i class="bi bi-cart-x fs-2 d-block mb-2"></i>Click products to add them</div>`;
+            container.innerHTML = `<div id="emptyCart" class="text-center text-muted py-4">
+                <i class="bi bi-cart-x fs-3 d-block mb-2"></i>
+                <small>Select products to add them</small>
+            </div>`;
             recalcAll();
             updateButtonState();
             return;
         }
+
         let html = '';
-        let itemsTotal = 0;
         cart.forEach(item => {
             const subtotal = item.price * item.quantity;
-            itemsTotal += subtotal;
             html += `<div class="cart-item">
-            <div class="cart-item-name">${item.name}</div>
-            <div class="cart-item-controls">
-                <button class="btn btn-xs btn-outline-secondary" onclick="changeQty(${item.product_id}, -1)">-</button>
-                <span class="mx-1">${item.quantity}</span>
-                <button class="btn btn-xs btn-outline-secondary" onclick="changeQty(${item.product_id}, 1)">+</button>
-            </div>
-            <div class="cart-item-price">₹${subtotal.toFixed(2)}</div>
-            <button class="btn btn-xs btn-outline-danger" onclick="removeFromCart(${item.product_id})">
-                <i class="bi bi-x"></i>
-            </button>
-        </div>`;
+                <div class="cart-item-name">${item.name}</div>
+                <div class="cart-item-controls">
+                    <button type="button" class="btn btn-xs btn-outline-secondary" onclick="changeQty(${item.product_id}, -1)">−</button>
+                    <span class="mx-1" style="min-width: 25px; text-align: center;">${item.quantity}</span>
+                    <button type="button" class="btn btn-xs btn-outline-secondary" onclick="changeQty(${item.product_id}, 1)">+</button>
+                </div>
+                <div class="cart-item-price">₹${subtotal.toFixed(2)}</div>
+                <button type="button" class="btn btn-xs btn-outline-danger" onclick="removeFromCart(${item.product_id})" title="Remove">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>`;
         });
         container.innerHTML = html;
         recalcAll();
         updateButtonState();
     }
 
-    // ── Service Type auto-fill ────────────────────────────
+    // ── Service Type Auto-fill ────────────────────────────
     document.getElementById('serviceTypeSelect').addEventListener('change', function () {
         const option = this.options[this.selectedIndex];
         const charge = option.dataset.charge || '0';
@@ -271,7 +1007,7 @@ POS{% endif %}{% endblock %}
         updateButtonState();
     });
 
-    // ── Predefined parts toggle ───────────────────────────
+    // ── Predefined Parts Toggle ───────────────────────────
     function togglePredefinedPart(checkbox) {
         const row = checkbox.closest('tr');
         const priceInput = row.querySelector('.part-price');
@@ -282,29 +1018,33 @@ POS{% endif %}{% endblock %}
         updateButtonState();
     }
 
-    // ── Custom parts (appended into the shared parts table) ──
+    // ── Custom Parts Management ───────────────────────────
     function addCustomPartRow() {
         customRowCount++;
         const id = `custom_${customRowCount}`;
         const tr = document.createElement('tr');
         tr.id = id;
         tr.className = 'custom-part-row';
-        tr.style.border = 'none';
+        tr.style.fontSize = '0.85rem';
         tr.innerHTML = `
-            <td style="padding:4px 5px;vertical-align:middle;">
-                <i class="bi bi-pencil-square" style="color:#6366f1;font-size:14px;"></i>
+            <td class="py-2" style="color: #f59e0b;">
+                <i class="bi bi-pencil-square"></i>
             </td>
-            <td style="padding:4px 5px;vertical-align:middle;">
-                <input type="text" class="form-control form-control-sm custom-name" placeholder="Part name..." oninput="recalcAll()" style="font-size:13px;">
+            <td class="py-2">
+                <input type="text" class="form-control form-control-sm custom-name" placeholder="Part name..." 
+                    oninput="recalcAll()" style="font-size: 0.85rem;">
             </td>
-            <td style="padding:4px 5px;vertical-align:middle;">
-                <input type="number" class="form-control form-control-sm custom-price" value="0" min="0" step="0.01" oninput="recalcAll()" style="font-size:13px;">
+            <td class="py-2 text-end">
+                <input type="number" class="form-control form-control-sm custom-price" value="0" min="0" step="0.01" 
+                    oninput="recalcAll()" style="font-size: 0.85rem;">
             </td>
-            <td style="padding:4px 5px;vertical-align:middle;">
-                <input type="number" class="form-control form-control-sm custom-qty" value="1" min="1" oninput="recalcAll()" style="font-size:13px;">
+            <td class="py-2 text-center">
+                <input type="number" class="form-control form-control-sm custom-qty" value="1" min="1" 
+                    oninput="recalcAll()" style="font-size: 0.85rem; width: 50px; margin: 0 auto;">
             </td>
-            <td style="padding:4px 5px;vertical-align:middle;">
-                <button type="button" class="btn btn-xs btn-outline-danger" onclick="removeCustomRow('${id}')" style="padding:2px 6px;">
+            <td class="py-2">
+                <button type="button" class="btn btn-xs btn-outline-danger" onclick="removeCustomRow('${id}')" 
+                    style="padding: 0.2rem 0.4rem; font-size: 0.7rem;">
                     <i class="bi bi-x"></i>
                 </button>
             </td>`;
@@ -319,7 +1059,7 @@ POS{% endif %}{% endblock %}
         updateButtonState();
     }
 
-    // ── Master recalc ─────────────────────────────────────
+    // ── Calculate Parts Total ─────────────────────────────
     function getPartsTotal() {
         let total = 0;
         // Predefined checked parts
@@ -331,7 +1071,7 @@ POS{% endif %}{% endblock %}
                 total += price * qty;
             }
         });
-        // Custom rows appended into the same table
+        // Custom rows
         document.querySelectorAll('#partsTableBody .custom-part-row').forEach(row => {
             const price = parseFloat(row.querySelector('.custom-price')?.value) || 0;
             const qty = parseInt(row.querySelector('.custom-qty')?.value) || 1;
@@ -340,6 +1080,7 @@ POS{% endif %}{% endblock %}
         return total;
     }
 
+    // ── Master Recalculation ──────────────────────────────
     function recalcAll() {
         const itemsTotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
         const serviceCharge = parseFloat(document.querySelector('[name=service_charge]')?.value) || 0;
@@ -354,6 +1095,7 @@ POS{% endif %}{% endblock %}
         document.getElementById('itemsTotal').textContent = '₹' + itemsTotal.toFixed(2);
         document.getElementById('serviceChargeDisplay').textContent = '₹' + serviceCharge.toFixed(2);
         document.getElementById('partsTotal').textContent = '₹' + partsTotal.toFixed(2);
+        document.getElementById('subtotal').textContent = '₹' + subtotal.toFixed(2);
         document.getElementById('gstAmount').textContent = '₹' + gstAmt.toFixed(2);
         document.getElementById('grandTotal').textContent = '₹' + grand.toFixed(2);
 
@@ -370,7 +1112,7 @@ POS{% endif %}{% endblock %}
         submitBtn.disabled = (cart.length === 0 && serviceCharge <= 0 && !hasCheckedParts && !hasCustomParts);
     }
 
-    // ── Build parts payload for submission ────────────────
+    // ── Build Parts Payload ───────────────────────────────
     function buildPartsData() {
         const parts = [];
         // Predefined checked parts
@@ -385,7 +1127,7 @@ POS{% endif %}{% endblock %}
                 });
             }
         });
-        // Custom rows in the same table
+        // Custom rows
         document.querySelectorAll('#partsTableBody .custom-part-row').forEach(row => {
             const name = row.querySelector('.custom-name')?.value?.trim();
             const price = parseFloat(row.querySelector('.custom-price')?.value) || 0;
@@ -397,12 +1139,12 @@ POS{% endif %}{% endblock %}
         return parts;
     }
 
-    // ── Live recalc on number inputs ──────────────────────
+    // ── Live Recalc on Input Changes ──────────────────────
     document.querySelectorAll('[name=service_charge],[name=discount],[name=gst_percent]').forEach(el => {
         el.addEventListener('input', () => { recalcAll(); updateButtonState(); });
     });
 
-    // ── Sync Service Type dropdown with Service Charge input ──
+    // ── Sync Service Type Dropdown ────────────────────────
     const serviceChargeEl = document.querySelector('[name=service_charge]');
     const serviceTypeSelectEl = document.getElementById('serviceTypeSelect');
 
@@ -426,11 +1168,10 @@ POS{% endif %}{% endblock %}
 
     if (serviceChargeEl) {
         serviceChargeEl.addEventListener('input', syncServiceTypeDropdown);
-        // Sync on page load
         syncServiceTypeDropdown();
     }
 
-    // Restrict phone number to 10 digits and numbers only
+    // ── Input Validation ──────────────────────────────────
     const phoneInputEl = document.querySelector('[name=customer_phone]');
     if (phoneInputEl) {
         phoneInputEl.addEventListener('input', function () {
@@ -438,7 +1179,6 @@ POS{% endif %}{% endblock %}
         });
     }
 
-    // Capitalize vehicle number input auto
     const vehicleInputEl = document.querySelector('[name=vehicle_number]');
     if (vehicleInputEl) {
         vehicleInputEl.addEventListener('input', function () {
@@ -446,23 +1186,32 @@ POS{% endif %}{% endblock %}
         });
     }
 
-    // ── Product search ────────────────────────────────────
+    // ── Product Search ────────────────────────────────────
     document.getElementById('productSearch').addEventListener('input', function () {
         const q = this.value.toLowerCase();
+        let visibleCount = 0;
         document.querySelectorAll('.product-grid-item').forEach(el => {
-            el.style.display = el.dataset.name.includes(q) ? '' : 'none';
+            const isVisible = el.dataset.name.includes(q);
+            el.style.display = isVisible ? '' : 'none';
+            if (isVisible) visibleCount++;
         });
+        document.getElementById('visibleProductCount').textContent = visibleCount;
     });
 
-    // ── Form submit ───────────────────────────────────────
+    // Initialize product count
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('visibleProductCount').textContent = document.querySelectorAll('.product-grid-item').length;
+    });
+
+    // ── Form Submission ───────────────────────────────────
     document.getElementById('billingForm').addEventListener('submit', async function (e) {
         e.preventDefault();
 
-        // Phone number validation
+        // Phone validation
         const phoneInput = document.querySelector('[name=customer_phone]');
         const phoneVal = phoneInput ? phoneInput.value.trim() : '';
         if (phoneVal.length === 0) {
-            showCustomAlert('Please enter the customer phone number.', 'Required Input');
+            showCustomAlert('Please enter the customer phone number.', 'Required');
             phoneInput?.focus();
             return;
         }
@@ -476,12 +1225,12 @@ POS{% endif %}{% endblock %}
         const vehicleInput = document.querySelector('[name=vehicle_number]');
         const vehicleVal = vehicleInput ? vehicleInput.value.trim() : '';
         if (vehicleVal.length === 0) {
-            showCustomAlert('Please enter the bike/vehicle number.', 'Required Input');
+            showCustomAlert('Please enter the bike/vehicle number.', 'Required');
             vehicleInput?.focus();
             return;
         }
         if (!/^[A-Z]{2}[ -]?\d{2}[ -]?[A-Z]{1,2}[ -]?\d{4}$/i.test(vehicleVal)) {
-            showCustomAlert('Invalid bike/vehicle number format. Correct format is like RJ 14 AB 3456 or RJ14 AB 3456.', 'Invalid Input');
+            showCustomAlert('Invalid vehicle number format. E.g., RJ 14 AB 3456', 'Invalid Format');
             vehicleInput?.focus();
             return;
         }
@@ -492,28 +1241,28 @@ POS{% endif %}{% endblock %}
         const btn = document.getElementById('submitBill');
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+
         try {
-            const res = await fetch('', { method: 'POST', body: fd, headers: { 'X-CSRFToken': CSRF_TOKEN } });
+            const res = await fetch('', { method: 'POST', body: fd });
             const data = await res.json();
             if (data.success) {
                 window.location.href = `/billing/invoices/${data.invoice_id}/`;
             } else {
-                showCustomAlert(JSON.stringify(data.errors), 'Submission Error');
+                showCustomAlert('Error: ' + JSON.stringify(data.errors), 'Submission Error');
                 btn.disabled = false;
-                btn.innerHTML = '{% if form.instance.pk %}<i class="bi bi-receipt me-1"></i>Update Invoice{% else %}<i class="bi bi-receipt me-1"></i>Generate Invoice{% endif %}';
+                btn.innerHTML = '<i class="bi bi-receipt me-2"></i>{% if form.instance.pk %}Update Invoice{% else %}Generate Invoice{% endif %}';
             }
         } catch (err) {
-            showCustomAlert('A network error occurred. Please check your connection and try again.', 'Network Error');
+            showCustomAlert('Network error: ' + err.message, 'Error');
             btn.disabled = false;
-            btn.innerHTML = '{% if form.instance.pk %}<i class="bi bi-receipt me-1"></i>Update Invoice{% else %}<i class="bi bi-receipt me-1"></i>Generate Invoice{% endif %}';
+            btn.innerHTML = '<i class="bi bi-receipt me-2"></i>{% if form.instance.pk %}Update Invoice{% else %}Generate Invoice{% endif %}';
         }
     });
 
-    // Initial state
+    // ── Load Edit Mode Data ───────────────────────────────
     {% if form.instance.pk %}
     renderCart();
 
-    // Load predefined parts checked values
     const prepParts = {{ predefined_parts_json|safe|default:"{}" }};
     for (const partId in prepParts) {
         const checkbox = document.getElementById('part_' + partId);
@@ -529,7 +1278,6 @@ POS{% endif %}{% endblock %}
         }
     }
 
-    // Load custom parts values
     const custParts = {{ custom_parts_json|safe|default:"[]" }};
     custParts.forEach(part => {
         customRowCount++;
@@ -537,22 +1285,26 @@ POS{% endif %}{% endblock %}
         const tr = document.createElement('tr');
         tr.id = id;
         tr.className = 'custom-part-row';
-        tr.style.border = 'none';
+        tr.style.fontSize = '0.85rem';
         tr.innerHTML = `
-            <td style="padding:4px 5px;vertical-align:middle;">
-                <i class="bi bi-pencil-square" style="color:#6366f1;font-size:14px;"></i>
+            <td class="py-2" style="color: #f59e0b;">
+                <i class="bi bi-pencil-square"></i>
             </td>
-            <td style="padding:4px 5px;vertical-align:middle;">
-                <input type="text" class="form-control form-control-sm custom-name" value="${part.custom_name}" placeholder="Part name..." oninput="recalcAll()" style="font-size:13px;">
+            <td class="py-2">
+                <input type="text" class="form-control form-control-sm custom-name" value="${part.custom_name}" 
+                    placeholder="Part name..." oninput="recalcAll()" style="font-size: 0.85rem;">
             </td>
-            <td style="padding:4px 5px;vertical-align:middle;">
-                <input type="number" class="form-control form-control-sm custom-price" value="${part.unit_price}" min="0" step="0.01" oninput="recalcAll()" style="font-size:13px;">
+            <td class="py-2 text-end">
+                <input type="number" class="form-control form-control-sm custom-price" value="${part.unit_price}" 
+                    min="0" step="0.01" oninput="recalcAll()" style="font-size: 0.85rem;">
             </td>
-            <td style="padding:4px 5px;vertical-align:middle;">
-                <input type="number" class="form-control form-control-sm custom-qty" value="${part.quantity}" min="1" oninput="recalcAll()" style="font-size:13px;">
+            <td class="py-2 text-center">
+                <input type="number" class="form-control form-control-sm custom-qty" value="${part.quantity}" 
+                    min="1" oninput="recalcAll()" style="font-size: 0.85rem; width: 50px; margin: 0 auto;">
             </td>
-            <td style="padding:4px 5px;vertical-align:middle;">
-                <button type="button" class="btn btn-xs btn-outline-danger" onclick="removeCustomRow('${id}')" style="padding:2px 6px;">
+            <td class="py-2">
+                <button type="button" class="btn btn-xs btn-outline-danger" onclick="removeCustomRow('${id}')" 
+                    style="padding: 0.2rem 0.4rem; font-size: 0.7rem;">
                     <i class="bi bi-x"></i>
                 </button>
             </td>`;

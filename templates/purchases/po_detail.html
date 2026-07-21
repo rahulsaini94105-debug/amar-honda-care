@@ -1,54 +1,158 @@
 {% extends 'base.html' %}
 {% block title %}PO-{{ order.pk }} — Amar Honda Care{% endblock %}
-{% block page_title %}Purchase Order Detail{% endblock %}
+{% block page_title %}Purchase Order Details{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
+<div class="row">
     <div class="col-lg-8">
-        <div class="card">
-            <div class="card-body p-4">
-                <div class="d-flex justify-content-between mb-3">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h5 class="fw-bold">PO-{{ order.pk }}</h5>
-                        <div class="text-muted small">{{ order.created_at|date:"d M Y, h:i A" }}</div>
+                        <h5 class="mb-0"><i class="bi bi-box-seam me-2"></i>PO-{{ order.pk }}</h5>
                     </div>
-                    <span
-                        class="badge fs-6 {% if order.status == 'RECEIVED' %}bg-success{% elif order.status == 'CANCELLED' %}bg-danger{% else %}bg-warning text-dark{% endif %}">{{
-                        order.get_status_display }}</span>
+                    <span class="badge fs-6 {% if order.status == 'RECEIVED' %}bg-success{% elif order.status == 'CANCELLED' %}bg-danger{% else %}bg-warning text-white{% endif %}">
+                        {% if order.status == 'RECEIVED' %}
+                            <i class="bi bi-check-circle me-1"></i>Received
+                        {% elif order.status == 'CANCELLED' %}
+                            <i class="bi bi-x-circle me-1"></i>Cancelled
+                        {% else %}
+                            <i class="bi bi-clock me-1"></i>Pending
+                        {% endif %}
+                    </span>
                 </div>
-                <div class="mb-3 row">
-                    <div class="col-6"><strong>Supplier:</strong> {{ order.supplier.name|default:"Direct" }}</div>
-                    <div class="col-6"><strong>Total:</strong> ₹{{ order.total_amount }}</div>
+            </div>
+            <div class="card-body p-4">
+                <!-- Header Info -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <p class="text-muted small mb-1">Order Date</p>
+                        <p class="mb-0"><strong>{{ order.created_at|date:"d M Y, h:i A" }}</strong></p>
+                    </div>
+                    <div class="col-md-6">
+                        {% if order.received_at %}
+                        <p class="text-muted small mb-1">Received Date</p>
+                        <p class="mb-0"><strong>{{ order.received_at|date:"d M Y, h:i A" }}</strong></p>
+                        {% endif %}
+                    </div>
                 </div>
-                <div class="table-responsive mb-3">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Product</th>
-                                <th>Qty</th>
-                                <th>Unit Cost</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>{% for item in order.items.all %}
-                            <tr>
-                                <td>{{ item.product.name }}</td>
-                                <td>{{ item.quantity }}</td>
-                                <td>₹{{ item.unit_cost }}</td>
-                                <td>₹{{ item.total_cost }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+
+                <!-- Supplier Info -->
+                <div class="row mb-4 p-3 bg-light rounded">
+                    <div class="col-md-6">
+                        <p class="text-muted small mb-1"><i class="bi bi-building me-1"></i>Supplier</p>
+                        <p class="mb-0"><strong class="text-dark">{{ order.supplier.name|default:"Direct Purchase" }}</strong></p>
+                        {% if order.supplier.phone %}
+                            <small class="text-muted">{{ order.supplier.phone }}</small><br>
+                        {% endif %}
+                        {% if order.supplier.email %}
+                            <small class="text-muted">{{ order.supplier.email }}</small><br>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <p class="text-muted small mb-1"><i class="bi bi-cash-coin me-1"></i>Total Amount</p>
+                        <p class="mb-0"><strong class="text-success fs-5">₹{{ order.total_amount|floatformat:2 }}</strong></p>
+                    </div>
                 </div>
-                {% if order.notes %}<p><strong>Notes:</strong> {{ order.notes }}</p>{% endif %}
-                <div class="d-flex gap-2">
-                    <a href="{% url 'purchases:po_list' %}" class="btn btn-secondary">Back</a>
+
+                <!-- Items Table -->
+                <div class="mb-4">
+                    <h6 class="mb-3"><i class="bi bi-list-ul me-2"></i>Order Items</h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Product</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-end">Unit Cost</th>
+                                    <th class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order.items.all %}
+                                <tr>
+                                    <td>
+                                        <strong class="text-dark">{{ item.product.name }}</strong>
+                                        <br>
+                                        <small class="text-muted">SKU: {{ item.product.sku|default:"—" }}</small>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-info">{{ item.quantity }}</span>
+                                    </td>
+                                    <td class="text-end">₹{{ item.unit_cost|floatformat:2 }}</td>
+                                    <td class="text-end">
+                                        <strong>₹{{ item.total_cost|floatformat:2 }}</strong>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Grand Total:</strong></td>
+                                    <td class="text-end">
+                                        <strong class="text-success fs-5">₹{{ order.total_amount|floatformat:2 }}</strong>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Notes -->
+                {% if order.notes %}
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <h6 class="mb-2"><i class="bi bi-sticky me-2"></i>Notes</h6>
+                    <p class="mb-0">{{ order.notes }}</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endif %}
+
+                <!-- Created By -->
+                <div class="small text-muted p-2 bg-light rounded">
+                    <i class="bi bi-person me-1"></i>Created by <strong>{{ order.created_by.get_full_name|default:order.created_by.username }}</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 sticky-top" style="top: 20px;">
+            <div class="card-header bg-info bg-opacity-10">
+                <h6 class="mb-0"><i class="bi bi-gear me-2"></i>Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'purchases:po_list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>Back to List
+                    </a>
                     {% if order.status == 'PENDING' %}
                     <button class="btn btn-success receive-btn" data-id="{{ order.pk }}">
                         <i class="bi bi-check-circle me-1"></i>Mark as Received
                     </button>
                     {% endif %}
+                </div>
+
+                <!-- Summary -->
+                <hr>
+                <div>
+                    <p class="small text-muted mb-2"><strong>Order Summary</strong></p>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Items Count:</span>
+                        <strong>{{ order.items.count }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Status:</span>
+                        <span class="badge {% if order.status == 'RECEIVED' %}bg-success{% elif order.status == 'CANCELLED' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </div>
+                    <div class="border-top pt-2 mt-2">
+                        <div class="d-flex justify-content-between">
+                            <span class="fw-bold">Total:</span>
+                            <span class="fw-bold text-success">₹{{ order.total_amount|floatformat:2 }}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -59,9 +163,30 @@
 {% block extra_js %}
 <script>
     document.querySelector('.receive-btn')?.addEventListener('click', async function () {
-        if (!confirm('Mark as received? Stock will be updated.')) return;
-        const res = await fetch(`/purchases/${this.dataset.id}/receive/`, { method: 'POST', headers: { 'X-CSRFToken': CSRF_TOKEN } });
-        if ((await res.json()).success) location.reload();
+        if (!confirm('Mark this order as received? Inventory will be updated.')) return;
+        
+        const btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+        
+        try {
+            const res = await fetch(`/purchases/${this.dataset.id}/receive/`, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': CSRF_TOKEN }
+            });
+            const data = await res.json();
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + (data.message || 'Failed to mark as received'));
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-check-circle me-1"></i>Mark as Received';
+            }
+        } catch (err) {
+            alert('Error: ' + err.message);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check-circle me-1"></i>Mark as Received';
+        }
     });
 </script>
 {% endblock %}
