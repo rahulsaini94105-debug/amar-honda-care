@@ -21,7 +21,7 @@ class ServiceRecordForm(forms.ModelForm):
                   'service_type', 'mechanic', 'estimated_amount', 'notes']
         widgets = {
             'vehicle_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. RJ14AB1234'}),
-            'vehicle_model': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Honda Shine'}),
+            'vehicle_model': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Hero Honda Shine'}),
             'customer_name': forms.TextInput(attrs={'class': 'form-control'}),
             'customer_phone': forms.TextInput(attrs={'class': 'form-control'}),
             'service_type': forms.Select(attrs={'class': 'form-select', 'id': 'id_service_type'}),

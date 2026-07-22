@@ -30,7 +30,7 @@ class CustomerAppointmentForm(forms.ModelForm):
             'customer_email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'john@example.com'}),
             'customer_phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. +91 9876543210'}),
             'vehicle_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. DL3SAY1234'}),
-            'vehicle_model': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Honda Activa 6G'}),
+            'vehicle_model': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Hero Honda Activa 6G'}),
             'service_type': forms.Select(attrs={'class': 'form-select'}),
             'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Any specific issues/requirements?'}),
         }

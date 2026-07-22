@@ -4,93 +4,286 @@
 
 {% block content %}
 {% if low_stock_products %}
-<div class="alert alert-warning small">
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
     <i class="bi bi-exclamation-triangle me-2"></i>
-    <strong>Low/Out-of-stock items suggest restock:</strong>
-    {% for p in low_stock_products %}<span class="badge bg-warning text-dark me-1">{{ p.name }} ({{ p.stock_qty
-        }})</span>{% endfor %}
+    <strong>Low/Out-of-stock items - Suggest Restock:</strong>
+    {% for p in low_stock_products %}<span class="badge bg-warning text-dark me-1">{{ p.name }} (Stock: {{ p.stock_qty }})</span>{% endfor %}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 </div>
 {% endif %}
+
 <div class="row">
-    <div class="col-lg-8">
-        <div class="card mb-3 p-4">
-            <form id="poForm" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="items_data" id="itemsData">
-                <div class="row g-3 mb-4">
-                    <div class="col-md-6"><label class="form-label fw-semibold">Supplier</label>{{ form.supplier }}
+    <div class="col-lg-9">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-plus-circle me-2"></i>New Purchase Order</h5>
+            </div>
+            <div class="card-body p-4">
+                <form id="poForm" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="items_data" id="itemsData">
+                    
+                    <!-- Supplier & Notes Section -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Supplier <span class="text-danger">*</span></label>
+                            {{ form.supplier }}
+                            {% if form.supplier.errors %}
+                                <div class="text-danger small mt-1">{{ form.supplier.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Purchase Date</label>
+                            <input type="date" class="form-control" id="poDate" value="">
+                        </div>
                     </div>
-                    <div class="col-12"><label class="form-label fw-semibold">Notes</label>{{ form.notes }}</div>
-                </div>
-                <!-- Add Item -->
-                <div class="row g-2 mb-3">
-                    <div class="col-md-5">
-                        <select id="poProduct" class="form-select">
-                            <option value="">Select Product...</option>
-                            {% for p in products %}
-                            <option value="{{ p.pk }}" data-name="{{ p.name }}" data-cost="{{ p.purchase_price }}">{{
-                                p.name }} (₹{{ p.purchase_price }})</option>
-                            {% endfor %}
-                        </select>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Notes (Optional)</label>
+                            {{ form.notes }}
+                        </div>
                     </div>
-                    <div class="col-md-3"><input type="number" id="poQty" class="form-control" placeholder="Qty" min="1"
-                            value="1"></div>
-                    <div class="col-md-2"><input type="number" id="poCost" class="form-control" placeholder="Cost"
-                            step="0.01"></div>
-                    <div class="col-md-2"><button type="button" id="addPoItem"
-                            class="btn btn-outline-primary w-100">Add</button></div>
+
+                    <!-- Add Item Section -->
+                    <div class="card bg-light border-0 p-3 mb-4">
+                        <h6 class="mb-3"><i class="bi bi-plus-lg me-2"></i>Add Items</h6>
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-5">
+                                <label class="form-label fw-semibold small">Product <span class="text-danger">*</span></label>
+                                <select id="poProduct" class="form-select">
+                                    <option value="">-- Select Product --</option>
+                                    {% if products %}
+                                        {% for p in products %}
+                                            <option value="{{ p.pk }}" data-name="{{ p.name }}" data-cost="{{ p.purchase_price }}">
+                                                {{ p.name }} (₹{{ p.purchase_price }})
+                                            </option>
+                                        {% endfor %}
+                                    {% else %}
+                                        <option disabled>No products available</option>
+                                    {% endif %}
+                                </select>
+                                <small class="text-muted">Select a product to add</small>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold small">Qty <span class="text-danger">*</span></label>
+                                <input type="number" id="poQty" class="form-control" min="1" value="1">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold small">Unit Cost (₹) <span class="text-danger">*</span></label>
+                                <input type="number" id="poCost" class="form-control" placeholder="0.00" step="0.01">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" id="addPoItem" class="btn btn-primary w-100">
+                                    <i class="bi bi-plus me-1"></i>Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Items table -->
+                    <div id="poItems"></div>
+
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-between gap-2 mt-4">
+                        <a href="{% url 'purchases:po_list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle me-1"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-success btn-lg" id="submitPO" disabled>
+                            <i class="bi bi-check-circle me-1"></i>Create Purchase Order
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Sidebar -->
+    <div class="col-lg-3">
+        <div class="card shadow-sm border-0 sticky-top" style="top: 20px;">
+            <div class="card-header bg-info bg-opacity-10">
+                <h6 class="mb-0"><i class="bi bi-receipt me-2"></i>Order Summary</h6>
+            </div>
+            <div class="card-body">
+                <div id="summaryContainer" class="text-center text-muted">
+                    <p class="small">No items added yet</p>
                 </div>
-                <!-- Items table -->
-                <div id="poItems"></div>
-                <div class="d-flex justify-content-end gap-2 mt-3">
-                    <a href="{% url 'purchases:po_list' %}" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-success" id="submitPO" disabled>
-                        <i class="bi bi-save me-1"></i>Create Purchase Order
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
 {% endblock %}
 
+{% block extra_css %}
+<style>
+    .form-select, .form-control {
+        border-color: #dee2e6;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    .form-select:focus, .form-control:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    .card {
+        border-radius: 0.5rem;
+    }
+    .btn-group-vertical {
+        width: 100%;
+    }
+</style>
+{% endblock %}
+
 {% block extra_js %}
 <script>
     let poItems = [];
+    const CSRF_TOKEN = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    // Auto-fill cost when product is selected
     document.getElementById('poProduct').addEventListener('change', function () {
-        document.getElementById('poCost').value = this.selectedOptions[0]?.dataset.cost || '';
+        const cost = this.selectedOptions[0]?.dataset.cost || '';
+        document.getElementById('poCost').value = cost;
     });
+
+    // Add item to list
     document.getElementById('addPoItem').addEventListener('click', function () {
         const sel = document.getElementById('poProduct');
-        const qty = parseInt(document.getElementById('poQty').value);
-        const cost = parseFloat(document.getElementById('poCost').value);
-        if (!sel.value || !qty || !cost) { alert('Select product, qty and cost.'); return; }
-        const existing = poItems.find(i => i.product_id == sel.value);
-        if (existing) { existing.quantity += qty; }
-        else { poItems.push({ product_id: sel.value, name: sel.selectedOptions[0].dataset.name, quantity: qty, unit_cost: cost }); }
+        const qty = parseInt(document.getElementById('poQty').value) || 0;
+        const cost = parseFloat(document.getElementById('poCost').value) || 0;
+
+        // Validation
+        if (!sel.value) {
+            alert('Please select a product');
+            return;
+        }
+        if (qty <= 0) {
+            alert('Quantity must be greater than 0');
+            return;
+        }
+        if (cost <= 0) {
+            alert('Unit cost must be greater than 0');
+            return;
+        }
+
+        const productName = sel.selectedOptions[0].dataset.name;
+        const productId = sel.value;
+
+        // Check if product already exists
+        const existing = poItems.find(i => i.product_id == productId);
+        if (existing) {
+            existing.quantity += qty;
+        } else {
+            poItems.push({
+                product_id: productId,
+                name: productName,
+                quantity: qty,
+                unit_cost: cost
+            });
+        }
+
+        // Reset form
+        sel.value = '';
+        document.getElementById('poQty').value = '1';
+        document.getElementById('poCost').value = '';
+        sel.focus();
+
         renderPoItems();
     });
+
+    // Render items table and summary
     function renderPoItems() {
         const btn = document.getElementById('submitPO');
-        if (!poItems.length) { document.getElementById('poItems').innerHTML = ''; btn.disabled = true; return; }
+        const itemsDiv = document.getElementById('poItems');
+        const summaryDiv = document.getElementById('summaryContainer');
+
+        if (!poItems.length) {
+            itemsDiv.innerHTML = '';
+            summaryDiv.innerHTML = '<p class="small text-muted">No items added yet</p>';
+            btn.disabled = true;
+            return;
+        }
+
         btn.disabled = false;
-        let total = 0, html = '<table class="table table-sm"><thead><tr><th>Product</th><th>Qty</th><th>Unit Cost</th><th>Total</th><th></th></tr></thead><tbody>';
+
+        // Build table
+        let total = 0;
+        let html = '<div class="table-responsive"><table class="table table-hover">';
+        html += '<thead class="table-light"><tr><th>Product</th><th class="text-center">Qty</th><th class="text-end">Unit Cost</th><th class="text-end">Total</th><th class="text-center">Action</th></tr></thead><tbody>';
+
         poItems.forEach((item, i) => {
-            const t = item.quantity * item.unit_cost; total += t;
-            html += `<tr><td>${item.name}</td><td>${item.quantity}</td><td>₹${item.unit_cost}</td><td>₹${t.toFixed(2)}</td>
-            <td><button class="btn btn-xs btn-outline-danger" onclick="poItems.splice(${i},1);renderPoItems()">×</button></td></tr>`;
+            const itemTotal = item.quantity * item.unit_cost;
+            total += itemTotal;
+            html += `<tr>
+                <td><strong>${item.name}</strong></td>
+                <td class="text-center">${item.quantity}</td>
+                <td class="text-end">₹${parseFloat(item.unit_cost).toFixed(2)}</td>
+                <td class="text-end fw-semibold">₹${itemTotal.toFixed(2)}</td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeItem(${i})" title="Remove">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>`;
         });
-        html += `</tbody><tfoot><tr><td colspan="3"><strong>Total</strong></td><td colspan="2"><strong>₹${total.toFixed(2)}</strong></td></tr></tfoot></table>`;
-        document.getElementById('poItems').innerHTML = html;
+
+        html += '</tbody><tfoot class="table-light"><tr><td colspan="3" class="text-end fw-bold">Grand Total:</td><td class="text-end fw-bold fs-5">₹' + total.toFixed(2) + '</td><td></td></tr></tfoot></table></div>';
+        itemsDiv.innerHTML = html;
+
+        // Update summary
+        summaryDiv.innerHTML = `
+            <div class="text-start">
+                <p class="mb-2"><strong>${poItems.length}</strong> item(s)</p>
+                <hr>
+                <p class="small text-muted mb-1">Total Amount</p>
+                <p class="h4 text-success mb-0">₹<strong>${total.toFixed(2)}</strong></p>
+            </div>
+        `;
     }
+
+    // Remove item function
+    function removeItem(index) {
+        poItems.splice(index, 1);
+        renderPoItems();
+    }
+
+    // Form submission
     document.getElementById('poForm').addEventListener('submit', async function (e) {
         e.preventDefault();
+
+        const supplier = document.getElementById('id_supplier').value;
+        if (!supplier) {
+            alert('Please select a supplier');
+            return;
+        }
+
+        if (!poItems.length) {
+            alert('Please add at least one item');
+            return;
+        }
+
         document.getElementById('itemsData').value = JSON.stringify(poItems);
         const fd = new FormData(this);
-        const res = await fetch('', { method: 'POST', body: fd, headers: { 'X-CSRFToken': CSRF_TOKEN } });
-        const data = await res.json();
-        if (data.success) window.location.href = `/purchases/${data.po_id}/`;
-        else alert('Error: ' + JSON.stringify(data.errors));
+        const submitBtn = document.getElementById('submitPO');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating...';
+
+        try {
+            const res = await fetch('', { method: 'POST', body: fd });
+            const data = await res.json();
+            if (data.success) {
+                window.location.href = `/purchases/${data.po_id}/`;
+            } else {
+                alert('Error: ' + JSON.stringify(data.errors));
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="bi bi-check-circle me-1"></i>Create Purchase Order';
+            }
+        } catch (err) {
+            alert('Error submitting form: ' + err.message);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="bi bi-check-circle me-1"></i>Create Purchase Order';
+        }
     });
+
+    // Set today's date
+    document.getElementById('poDate').valueAsDate = new Date();
 </script>
 {% endblock %}
