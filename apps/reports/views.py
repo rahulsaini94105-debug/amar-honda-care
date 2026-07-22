@@ -12,6 +12,18 @@ from apps.services.models import ServiceRecord
 from apps.inventory.models import Notification
 
 
+class LandingPageView(TemplateView):
+    template_name = 'landing.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['owners'] = [
+            {'name': 'Ashok Kumar Saini', 'phone': '9352135105', 'role': 'Co-Owner & Technical Specialist'},
+            {'name': 'Prabhu Dhyal Saini', 'phone': '9351749674', 'role': 'Co-Owner & Head Manager'}
+        ]
+        return ctx
+
+
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'reports/dashboard.html'
 

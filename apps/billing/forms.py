@@ -22,7 +22,7 @@ class InvoiceForm(forms.ModelForm):
         widgets = {
             'customer_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Customer Name'}),
             'customer_address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Customer Address'}),
-            'vehicle_model': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Honda Shine 125'}),
+            'vehicle_model': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Hero Honda Shine 125'}),
             'service_charge': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'value': '0'}),
             'discount': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'value': '0'}),
             'gst_percent': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'value': '0'}),

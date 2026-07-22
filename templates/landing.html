@@ -1,0 +1,685 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amar Honda Care - Authorized Two-Wheeler Workshop & Hero Honda Service Specialist</title>
+    <meta name="description"
+        content="Amar Honda Care - Best Hero Honda Two-Wheeler Service Center & Workshop. Shop Owners: Ashok Kumar Saini & Prabhu Dhyal Saini. Call 9352135105 / 9351749674. Book bike service online.">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23E60012'/><text y='.9em' font-size='70' x='15'>⚙</text></svg>">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Three.js 3D Library for Background Animation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Custom Landing Page CSS -->
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}?v=1.4">
+</head>
+
+<body class="landing-page">
+
+    <!-- Top Announcement Bar -->
+    <div class="top-announcement-bar">
+        <div class="container-fluid px-xl-5 px-lg-3 d-flex justify-content-between align-items-center gap-3">
+            <div class="d-flex align-items-center overflow-hidden flex-grow-1 me-3" style="min-width: 0;">
+                <i class="bi bi-megaphone-fill text-danger me-2 fs-6 flex-shrink-0"></i>
+                <marquee behavior="scroll" direction="left" scrollamount="4" onmouseover="this.stop();"
+                    onmouseout="this.start();" class="text-white fw-medium">
+                    🔥 <strong>Amar Honda Care</strong> — Authorized <strong>Hero Honda</strong> Workshop &amp; Repair
+                    Specialist | Shop Owners: <strong>Ashok Kumar Saini</strong> (Co-Owner &amp; Technical Specialist)
+                    &amp; <strong>Prabhu Dhyal Saini</strong> (Co-Owner &amp; Head Manager) | Location: Jaipur Road,
+                    Near Nav Durga Mata Mandir, Chomu, Jaipur, Rajasthan - 303702 | Open 7 Days a Week: 8:00 AM – 8:00
+                    PM | Direct Line: 9352135105 / 9351749674
+                </marquee>
+            </div>
+            <div class="d-flex align-items-center gap-3 flex-shrink-0">
+                <a href="tel:9352135105" class="phone-badge-link"><i class="bi bi-telephone-fill"></i> 9352135105</a>
+                <a href="tel:9351749674" class="phone-badge-link"><i class="bi bi-telephone-fill"></i> 9351749674</a>
+                <span class="d-none d-md-inline text-white-50 ps-3 border-start border-secondary"
+                    style="font-size: 0.85rem; line-height: 1;">Mon - Sun: 8:00 AM - 8:00 PM</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <nav class="navbar navbar-expand-lg landing-navbar sticky-top">
+        <div class="container-fluid px-xl-5 px-lg-3">
+            <a class="brand-logo-wrap" href="#">
+                <img src="{% static 'images/logo.png' %}" alt="Amar Hero Honda Logo"
+                    onerror="this.src='/static/images/logo.png'; this.onerror=null;">
+                <div>
+                    <h1 class="brand-title-text">AMAR <span> HONDA CARE </h1>
+                    <span class="brand-subtitle-text"> Workshop Specialist</span>
+                </div>
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                data-bs-target="#landingNav">
+                <i class="bi bi-list fs-2 text-dark"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="landingNav">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1">
+                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#services">Services & Pricing</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#owners">Owners</a></li>
+                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#calculator">Cost Estimator</a></li>
+                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#status">Service Status</a></li>
+                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#models">Hero Models</a></li>
+                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#contact">Contact</a></li>
+                </ul>
+
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{% url 'appointments:book' %}" class="btn btn-honda-primary py-2 px-3 fs-6">
+                        <i class="bi bi-calendar2-check-fill"></i> Book Service
+                    </a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'reports:dashboard' %}" class="btn btn-outline-dark py-2 px-3 fw-bold">
+                        <i class="bi bi-speedometer2"></i> Staff Dashboard
+                    </a>
+                    {% else %}
+                    <a href="{% url 'accounts:login' %}" class="btn btn-outline-secondary py-2 px-3 fw-semibold">
+                        <i class="bi bi-box-arrow-in-right"></i> Staff Login
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <canvas id="hero-3d-canvas"></canvas>
+        <div class="hero-bg-overlay"></div>
+        <div class="container hero-content">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <div class="hero-badge">
+                        <i class="bi bi-award-fill"></i> Authorized Hero Honda Bike Care & Repair Specialist
+                    </div>
+                    <h2 class="hero-title">
+                        Premium Care For Your <span>Hero Honda Bike & Scooter</span>
+                    </h2>
+                    <p class="hero-lead">
+                        Welcome to <strong>Amar Honda Care</strong>. Operated by <strong>Ashok Kumar Saini</strong> and
+                        <strong>Prabhu Dhyal Saini</strong>.
+                        We deliver certified multi-point Hero Honda servicing, 100% genuine spare parts, precision
+                        engine tuning, and quick breakdown pickup across the region.
+                    </p>
+
+                    <div class="hero-cta-group">
+                        <a href="{% url 'appointments:book' %}" class="btn btn-honda-primary">
+                            <i class="bi bi-lightning-charge-fill"></i> Book Online Appointment
+                        </a>
+                        <a href="tel:9352135105" class="btn btn-honda-outline">
+                            <i class="bi bi-telephone-outbound-fill"></i> Call Ashok Kumar: 9352135105
+                        </a>
+                    </div>
+
+                    <div class="hero-stats-row">
+                        <div class="hero-stat-item">
+                            <div class="hero-stat-number">10,000<span>+</span></div>
+                            <div class="hero-stat-label">Bikes Serviced</div>
+                        </div>
+                        <div class="hero-stat-item">
+                            <div class="hero-stat-number">15<span>+</span></div>
+                            <div class="hero-stat-label">Years Experience</div>
+                        </div>
+                        <div class="hero-stat-item">
+                            <div class="hero-stat-number">100<span>%</span></div>
+                            <div class="hero-stat-label">Genuine Hero Honda Parts</div>
+                        </div>
+                        <div class="hero-stat-item">
+                            <div class="hero-stat-number">4.9<span>★</span></div>
+                            <div class="hero-stat-label">Customer Rating</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5 d-none d-lg-block">
+                    <div class="p-4 rounded-4 bg-white border border-2 shadow-lg card-3d-tilt"
+                        style="backdrop-filter: blur(12px);">
+                        <h4 class="font-heading fw-bold mb-3 text-danger"><i class="bi bi-calendar-event me-2"></i>Quick
+                            Service Booking</h4>
+                        <p class="text-secondary small mb-4">Book your Hero Honda Activa, Shine, Unicorn or SP125
+                            service
+                            slot in less than 60 seconds.</p>
+
+                        <a href="{% url 'appointments:book' %}" class="btn btn-honda-primary w-100 py-3 mb-3">
+                            <i class="bi bi-arrow-right-circle-fill me-2"></i> Launch Interactive Booking Form
+                        </a>
+
+                        <div class="p-3 rounded-3 bg-light border border-secondary border-opacity-25 text-start">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="bi bi-clock-history fs-3 text-danger"></i>
+                                <div>
+                                    <strong class="d-block text-dark">Express Same-Day Turnaround</strong>
+                                    <span class="text-secondary small">Regular service completed within 90
+                                        minutes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shop Owners Showcase Section -->
+    <section class="owners-section" id="owners">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">Leadership & Commitment</span>
+                <h3 class="section-title">Meet Amar Hero Honda Shop Owners</h3>
+                <p class="text-secondary mt-2">Dedicated to providing reliable, transparent, and top-tier two-wheeler
+                    service with 100% customer satisfaction.</p>
+            </div>
+
+            <div class="row g-4 justify-content-center">
+                <!-- Owner 1: Ashok Kumar Saini -->
+                <div class="col-md-6 col-lg-5">
+                    <div class="owners-card-glass">
+                        <div class="owners-card-header">
+                            <div class="owner-avatar-icon">
+                                <i class="bi bi-person-fill-check"></i>
+                            </div>
+                            <div>
+                                <h4 class="owner-info-title">Ashok Kumar Saini</h4>
+                                <span class="owner-role-badge">Co-Owner & Technical Specialist</span>
+                            </div>
+                        </div>
+                        <p class="text-secondary small mb-4">
+                            Overseeing master mechanic diagnostics, engine tuning, electrical troubleshooting, and
+                            emergency customer breakdown support.
+                        </p>
+                        <a href="tel:9352135105" class="phone-action-btn">
+                            <span><i class="bi bi-telephone-fill me-2 text-danger"></i> Call Direct</span>
+                            <span class="phone-num">9352135105</span>
+                        </a>
+                        <a href="https://wa.me/919352135105?text=Hello%20Ashok%20Kumar%20Saini%20ji,%20I%20want%20to%20inquire%20about%20Hero%20Honda%20bike%20service."
+                            target="_blank" class="btn btn-outline-success w-100 mt-2 py-2 fw-semibold">
+                            <i class="bi bi-whatsapp me-2"></i> Chat on WhatsApp
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Owner 2: Prabhu Dhyal Saini -->
+                <div class="col-md-6 col-lg-5">
+                    <div class="owners-card-glass">
+                        <div class="owners-card-header">
+                            <div class="owner-avatar-icon"
+                                style="background: linear-gradient(135deg, #0F172A 0%, #E60012 100%);">
+                                <i class="bi bi-person-badge-fill"></i>
+                            </div>
+                            <div>
+                                <h4 class="owner-info-title">Prabhu Dhyal Saini</h4>
+                                <span class="owner-role-badge">Co-Owner & Head Manager</span>
+                            </div>
+                        </div>
+                        <p class="text-secondary small mb-4">
+                            Leading technical operations, customer relationships, and genuine Hero Hero Honda spare
+                            parts management with over 15 years of workshop expertise.
+                        </p>
+                        <a href="tel:9351749674" class="phone-action-btn">
+                            <span><i class="bi bi-telephone-fill me-2 text-danger"></i> Call Direct</span>
+                            <span class="phone-num">9351749674</span>
+                        </a>
+                        <a href="https://wa.me/919351749674?text=Hello%20Prabhu%20Dhyal%20Saini%20ji,%20I%20want%20to%20inquire%20about%20Hero%20Honda%20bike%20service."
+                            target="_blank" class="btn btn-outline-success w-100 mt-2 py-2 fw-semibold">
+                            <i class="bi bi-whatsapp me-2"></i> Chat on WhatsApp
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services & Pricing Section -->
+    <section class="services-section" id="services">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">Transparent Pricing</span>
+                <h3 class="section-title">Hero Honda Service Packages</h3>
+                <p class="text-secondary mt-2">Comprehensive service plans backed by genuine Hero Honda parts and
+                    digital
+                    invoices.</p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Package 1 -->
+                <div class="col-md-4">
+                    <div class="service-package-card">
+                        <div class="fw-bold text-danger text-uppercase fs-6 tracking-wide">Essential Maintenance</div>
+                        <h4 class="fw-bold mt-1">General Bike Service</h4>
+                        <div class="package-price">₹450 <span>+ Oil extra</span></div>
+                        <ul class="package-feature-list">
+                            <li><i class="bi bi-check-circle-fill"></i> Complete 32-point inspection</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Carburetor / FI throttle body clean</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Brake adjustment & pad clean</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Chain cleaning & lubrication</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Spark plug & air filter check</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Pressure foam wash</li>
+                        </ul>
+                        <a href="{% url 'appointments:book' %}"
+                            class="btn btn-outline-danger w-100 py-2 fw-bold mt-auto">Choose Package</a>
+                    </div>
+                </div>
+
+                <!-- Package 2 Popular -->
+                <div class="col-md-4">
+                    <div class="service-package-card popular">
+                        <div class="popular-ribbon">Most Popular</div>
+                        <div class="fw-bold text-danger text-uppercase fs-6 tracking-wide">Recommended</div>
+                        <h4 class="fw-bold mt-1">Full Synthetic Care</h4>
+                        <div class="package-price">₹750 <span>+ Hero Honda Genuine Oil</span></div>
+                        <ul class="package-feature-list">
+                            <li><i class="bi bi-check-circle-fill"></i> All General Service points included</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Hero Honda Genuine Engine Oil flush & fill</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Battery voltage & electrical test</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Clutch & throttle cable greasing</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Wheel alignment & tyre pressure</li>
+                            <li><i class="bi bi-check-circle-fill"></i> High gloss body wax polish</li>
+                        </ul>
+                        <a href="{% url 'appointments:book' %}"
+                            class="btn btn-honda-primary w-100 py-2 fw-bold mt-auto">Choose Package</a>
+                    </div>
+                </div>
+
+                <!-- Package 3 -->
+                <div class="col-md-4">
+                    <div class="service-package-card">
+                        <div class="fw-bold text-danger text-uppercase fs-6 tracking-wide">Heavy Duty</div>
+                        <h4 class="fw-bold mt-1">Engine & Overhaul Care</h4>
+                        <div class="package-price">₹2,200 <span>+ Spare parts</span></div>
+                        <ul class="package-feature-list">
+                            <li><i class="bi bi-check-circle-fill"></i> Complete engine head & piston overhaul</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Clutch plate replacement & tuning</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Front fork oil seal & damper service</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Bearing replacement & greasing</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Computerized diagnostic tune-up</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Complete deep wash & ceramic coat</li>
+                        </ul>
+                        <a href="{% url 'appointments:book' %}"
+                            class="btn btn-outline-danger w-100 py-2 fw-bold mt-auto">Choose Package</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Cost Calculator Section -->
+    <section class="py-5 bg-light" id="calculator">
+        <div class="container py-4">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6">
+                    <span class="section-subtitle">Instant Transparency</span>
+                    <h3 class="section-title mb-3">Interactive Service Cost Estimator</h3>
+                    <p class="text-secondary mb-4">
+                        Select your Hero Honda bike model and service add-ons below to see an instant, transparent
+                        estimate for your vehicle.
+                    </p>
+
+                    <div class="calculator-card">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-uppercase text-secondary">1. Select Hero Honda
+                                Bike / Scooter</label>
+                            <select class="form-select form-select-lg fw-bold" id="calcBikeModel">
+                                <option value="activa" selected>Hero Honda Activa (5G / 6G / 125)</option>
+                                <option value="dio">Hero Honda Dio</option>
+                                <option value="shine">Hero Honda Shine 125</option>
+                                <option value="sp125">Hero Honda SP 125</option>
+                                <option value="unicorn">Hero Honda Unicorn 160</option>
+                                <option value="hornet">Hero Honda Hornet 2.0</option>
+                                <option value="cb350">Hero Honda H'ness CB350</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-uppercase text-secondary">2. Select Service
+                                Package</label>
+                            <select class="form-select form-select-lg fw-bold" id="calcServiceType">
+                                <option value="general" selected>General Periodical Service (₹450)</option>
+                                <option value="full_tune">Full Tuning & Electrical Care (₹750)</option>
+                                <option value="brake_clutch">Brake & Clutch Overhaul (₹350)</option>
+                                <option value="engine_overhaul">Engine Overhaul & Tuning (₹2,200)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-uppercase text-secondary">3. Select
+                                Add-ons</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="addonOil" checked>
+                                <label class="form-check-label text-secondary small" for="addonOil">Hero Honda 10W-30
+                                    Genuine Engine Oil (+₹380)</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="addonPolish" checked>
+                                <label class="form-check-label text-secondary small" for="addonPolish">High Gloss Body
+                                    Wax
+                                    Polish (+₹200)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="addonBreakdown">
+                                <label class="form-check-label text-secondary small" for="addonBreakdown">Home Doorstep
+                                    Pickup Service (+₹150)</label>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded-3 bg-light border d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="d-block text-secondary small">Estimated Total</span>
+                                <span class="fs-2 font-heading fw-bold text-danger" id="calcGrandTotal">₹1,030</span>
+                            </div>
+                            <a href="{% url 'appointments:book' %}" class="btn btn-honda-primary py-2 px-4">
+                                Book This Rate
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6" id="status">
+                    <!-- Live Status Tracker -->
+                    <div class="status-tracker-card">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <i class="bi bi-geo-alt-fill fs-1 text-white"></i>
+                            <div>
+                                <h4 class="font-heading fw-bold mb-0">Live Service Tracker</h4>
+                                <p class="mb-0 text-white-50 small">Check current repair status of your bike</p>
+                            </div>
+                        </div>
+
+                        <form id="statusCheckForm" class="mb-3">
+                            <label class="form-label fw-semibold small text-uppercase">Enter Vehicle Reg. Number</label>
+                            <div class="status-input-group">
+                                <input type="text" id="statusRegInput" class="form-control"
+                                    placeholder="e.g. RJ-14-AB-1234" required>
+                                <button type="submit" class="btn btn-dark fw-bold px-4">
+                                    <i class="bi bi-search"></i> Check
+                                </button>
+                            </div>
+                        </form>
+
+                        <div id="statusResultBox">
+                            <p class="text-white-50 small mb-0"><i class="bi bi-info-circle me-1"></i> Enter your bike
+                                registration number above to check if your service is completed or in progress.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 p-4 rounded-4 bg-white border border-2 shadow-sm">
+                        <h5 class="fw-bold text-dark mb-2"><i class="bi bi-truck text-danger me-2"></i>Emergency
+                            Breakdown Assistance</h5>
+                        <p class="text-secondary small mb-3">Stuck on the road with a puncture, dead battery, or broken
+                            clutch cable? Call our direct emergency lines.</p>
+                        <div class="d-flex gap-2">
+                            <a href="tel:9352135105" class="btn btn-outline-danger w-50 fw-bold py-2"><i
+                                    class="bi bi-telephone-fill me-1"></i> 9352135105</a>
+                            <a href="tel:9351749674" class="btn btn-outline-danger w-50 fw-bold py-2"><i
+                                    class="bi bi-telephone-fill me-1"></i> 9351749674</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hero Honda Models Showcase -->
+    <section class="py-5 bg-white" id="models">
+        <div class="container py-4">
+            <div class="section-header">
+                <span class="section-subtitle">We Service All Models</span>
+                <h3 class="section-title">Popular Hero Honda Two-Wheelers</h3>
+                <p class="text-secondary">Specialized tools, diagnostic scanners, and genuine spares for all Hero Honda
+                    models.</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="bike-model-card">
+                        <div class="bike-model-icon"><i class="bi bi-scooter"></i></div>
+                        <h5 class="bike-model-title">Activa 6G</h5>
+                        <span class="bike-spec-badge">110cc Automatic</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="bike-model-card">
+                        <div class="bike-model-icon"><i class="bi bi-scooter"></i></div>
+                        <h5 class="bike-model-title">Dio 125</h5>
+                        <span class="bike-spec-badge">125cc Sporty</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="bike-model-card">
+                        <div class="bike-model-icon"><i class="bi bi-bicycle"></i></div>
+                        <h5 class="bike-model-title">Shine 125</h5>
+                        <span class="bike-spec-badge">125cc Executive</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="bike-model-card">
+                        <div class="bike-model-icon"><i class="bi bi-bicycle"></i></div>
+                        <h5 class="bike-model-title">SP 125</h5>
+                        <span class="bike-spec-badge">Digital Console</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="bike-model-card">
+                        <div class="bike-model-icon"><i class="bi bi-bicycle"></i></div>
+                        <h5 class="bike-model-title">Unicorn</h5>
+                        <span class="bike-spec-badge">160cc Monoshock</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="bike-model-card">
+                        <div class="bike-model-icon"><i class="bi bi-bicycle"></i></div>
+                        <h5 class="bike-model-title">CB350</h5>
+                        <span class="bike-spec-badge">350cc Cruiser</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Customer Testimonials -->
+    <section class="py-5 bg-light">
+        <div class="container py-4">
+            <div class="section-header">
+                <span class="section-subtitle">Customer Trust</span>
+                <h3 class="section-title">What Hero Honda Owners Say</h3>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="review-card">
+                        <div class="stars-rating">★★★★★</div>
+                        <p class="review-quote">"Best Hero Honda service shop in the area! Ashok Kumar Saini ji
+                            explained every part replacement clearly and charges were very genuine compared to
+                            showroom."</p>
+                        <h6 class="reviewer-name">Vikram Sharma</h6>
+                        <span class="reviewer-city">Hero Honda Activa 6G Owner</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="review-card">
+                        <div class="stars-rating">★★★★★</div>
+                        <p class="review-quote">"Prabhu Dhyal Saini fixed my Hero Honda Unicorn engine noise issue which
+                            2 other mechanics couldn't diagnose. Runs like brand new now!"</p>
+                        <h6 class="reviewer-name">Rajesh Verma</h6>
+                        <span class="reviewer-city">Hero Honda Unicorn Owner</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="review-card">
+                        <div class="stars-rating">★★★★★</div>
+                        <p class="review-quote">"Super fast online appointment booking and breakdown pickup support.
+                            Saved me so much time. Highly recommended Amar Honda Care!"</p>
+                        <h6 class="reviewer-name">Sunil Choudhary</h6>
+                        <span class="reviewer-city">Hero Honda SP 125 Owner</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact & Map Section -->
+    <section class="py-5 bg-white" id="contact">
+        <div class="container py-4">
+            <div class="row g-5">
+                <div class="col-lg-5">
+                    <span class="section-subtitle">Get In Touch</span>
+                    <h3 class="section-title mb-4">Visit Amar Hero Honda Shop</h3>
+
+                    <div class="d-flex align-items-start gap-3 mb-4">
+                        <div class="p-3 rounded-3 bg-danger bg-opacity-10 text-danger fs-4"><i
+                                class="bi bi-geo-alt-fill"></i></div>
+                        <div>
+                            <h6 class="fw-bold text-dark mb-1">Shop Address</h6>
+                            <p class="text-secondary small mb-0">Jaipur Road, Near Nav Durga Mata Mandir, Chomu, Jaipur,
+                                Rajasthan - 303702 (Authorized Two-Wheeler Repair Hub)</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-start gap-3 mb-4">
+                        <div class="p-3 rounded-3 bg-danger bg-opacity-10 text-danger fs-4"><i
+                                class="bi bi-telephone-fill"></i></div>
+                        <div>
+                            <h6 class="fw-bold text-dark mb-1">Direct Owner Contacts</h6>
+                            <p class="text-secondary small mb-1"><strong>Ashok Kumar Saini:</strong> <a
+                                    href="tel:9352135105"
+                                    class="text-danger fw-bold text-decoration-none">9352135105</a></p>
+                            <p class="text-secondary small mb-0"><strong>Prabhu Dhyal Saini:</strong> <a
+                                    href="tel:9351749674"
+                                    class="text-danger fw-bold text-decoration-none">9351749674</a></p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-start gap-3 mb-4">
+                        <div class="p-3 rounded-3 bg-danger bg-opacity-10 text-danger fs-4"><i
+                                class="bi bi-clock-fill"></i></div>
+                        <div>
+                            <h6 class="fw-bold text-dark mb-1">Working Hours</h6>
+                            <p class="text-secondary small mb-0">Monday – Sunday: <strong>8:00 AM – 8:00 PM</strong>
+                                (Open 7 Days a Week)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-7">
+                    <div class="p-4 rounded-4 bg-light border border-2 shadow-sm">
+                        <h4 class="font-heading fw-bold mb-3">Send Quick Inquiry</h4>
+                        <form>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-secondary small">Your Name</label>
+                                    <input type="text" class="form-control" placeholder="Enter your full name" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-secondary small">Mobile Number</label>
+                                    <input type="tel" class="form-control" placeholder="Enter 10-digit mobile number"
+                                        required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-secondary small">Bike Model</label>
+                                    <input type="text" class="form-control" placeholder="e.g. Activa 6G / Shine">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-secondary small">Preferred Contact
+                                        Person</label>
+                                    <select class="form-select">
+                                        <option>Ashok Kumar Saini (9352135105)</option>
+                                        <option>Prabhu Dhyal Saini (9351749674)</option>
+                                        <option>General Workshop Line</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold text-secondary small">Issue / Service
+                                        Required</label>
+                                    <textarea class="form-control" rows="3"
+                                        placeholder="Describe issue or service required..."></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-honda-primary w-100 py-3 font-heading fw-bold">
+                                        <i class="bi bi-send-fill me-2"></i> Submit Inquiry To Workshop
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+        <div class="container">
+            <div class="row g-4 mb-5">
+                <div class="col-lg-4">
+                    <h4 class="footer-brand-title mb-2">AMAR <span class="text-danger">HERO HONDA</span></h4>
+                    <p class="text-white-50 small mb-3">
+                        Premier Two-Wheeler Care & Repair Workshop. Managed by Ashok Kumar Saini & Prabhu Dhyal Saini.
+                        Genuine Hero Honda Spares, Diagnostic Tuning & Express Servicing.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <a href="tel:9352135105" class="btn btn-sm btn-outline-light"><i
+                                class="bi bi-telephone-fill me-1"></i> 9352135105</a>
+                        <a href="tel:9351749674" class="btn btn-sm btn-outline-light"><i
+                                class="bi bi-telephone-fill me-1"></i> 9351749674</a>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <h6 class="text-white font-heading mb-3">Quick Links</h6>
+                    <ul class="footer-link-list small">
+                        <li><a href="#services">Service Packages</a></li>
+                        <li><a href="#owners">Shop Owners</a></li>
+                        <li><a href="#calculator">Price Estimator</a></li>
+                        <li><a href="#status">Track Vehicle</a></li>
+                        <li><a href="{% url 'appointments:book' %}">Book Appointment</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <h6 class="text-white font-heading mb-3">Hero Honda Models</h6>
+                    <ul class="footer-link-list small">
+                        <li><a href="#models">Hero Honda Activa 6G</a></li>
+                        <li><a href="#models">Hero Honda Shine 125</a></li>
+                        <li><a href="#models">Hero Honda SP 125</a></li>
+                        <li><a href="#models">Hero Honda Unicorn</a></li>
+                        <li><a href="#models">Hero Honda Dio 125</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <h6 class="text-white font-heading mb-3">Staff Management Portal</h6>
+                    <p class="text-white-50 small mb-3">Authorized workshop staff and mechanics can log in to access the
+                        billing, service queue, and inventory management system.</p>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'reports:dashboard' %}"
+                        class="btn btn-danger btn-sm font-heading fw-bold px-4 py-2">Go To Management Dashboard</a>
+                    {% else %}
+                    <a href="{% url 'accounts:login' %}"
+                        class="btn btn-outline-light btn-sm font-heading fw-semibold px-4 py-2">Staff Portal Login</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="border-top border-secondary pt-3 text-center small text-white-50">
+                © {% now "Y" %} Amar Honda Care. All Rights Reserved. Designed with Excellence.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating WhatsApp Action Button -->
+    <a href="https://wa.me/919352135105?text=Hello%20Amar%20Honda%20Shop,%20I%20need%20information%20about%20bike%20service."
+        class="whatsapp-float-btn" target="_blank" title="Chat on WhatsApp">
+        <i class="bi bi-whatsapp"></i>
+    </a>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/landing.js' %}"></script>
+</body>
+
+</html>
