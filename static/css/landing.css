@@ -630,6 +630,32 @@ h1, h2, h3, h4, h5, h6, .font-heading {
     border-radius: var(--radius-sm);
 }
 
+/* Bike Model Image Styles */
+.bike-model-img-wrap {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    margin-bottom: 14px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bike-model-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 8px;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.12));
+}
+
+.bike-model-card:hover .bike-model-img {
+    transform: scale(1.08);
+}
+
 /* Reviews & Testimonials */
 .review-card {
     background: #FFFFFF;
