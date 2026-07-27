@@ -1,13 +1,13 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="html-root">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amar Honda Care - Authorized Two-Wheeler Workshop & Hero Honda Service Specialist</title>
+    <title>Amar Honda Care - Authorized Two-Wheeler Workshop &amp; Hero Honda Service Specialist</title>
     <meta name="description"
-        content="Amar Honda Care - Best Hero Honda Two-Wheeler Service Center & Workshop. Shop Owners: Ashok Kumar Saini & Prabhu Dhyal Saini. Call 9352135105 / 9351749674. Book bike service online.">
+        content="Amar Honda Care - Best Hero Honda Two-Wheeler Service Center &amp; Workshop. Shop Owners: Ashok Kumar Saini &amp; Prabhu Dhyal Saini. Call 9352135105 / 9351749674. Book bike service online.">
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23E60012'/><text y='.9em' font-size='70' x='15'>⚙</text></svg>">
 
@@ -15,10 +15,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Google Noto Sans Devanagari for Hindi rendering -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Three.js 3D Library for Background Animation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <!-- Custom Landing Page CSS -->
-    <link rel="stylesheet" href="{% static 'css/landing.css' %}?v=1.4">
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}?v=1.5">
 </head>
 
 <body class="landing-page">
@@ -30,17 +32,22 @@
                 <i class="bi bi-megaphone-fill text-danger me-2 fs-6 flex-shrink-0"></i>
                 <marquee behavior="scroll" direction="left" scrollamount="4" onmouseover="this.stop();"
                     onmouseout="this.start();" class="text-white fw-medium">
-                    🔥 <strong>Amar Honda Care</strong> — Authorized <strong>Hero Honda</strong> Workshop &amp; Repair
-                    Specialist | Shop Owners: <strong>Ashok Kumar Saini</strong> (Co-Owner &amp; Technical Specialist)
-                    &amp; <strong>Prabhu Dhyal Saini</strong> (Co-Owner &amp; Head Manager) | Location: Jaipur Road,
-                    Near Nav Durga Mata Mandir, Chomu, Jaipur, Rajasthan - 303702 | Open 7 Days a Week: 8:00 AM – 8:00
-                    PM | Direct Line: 9352135105 / 9351749674
+                    <span data-en="🔥 <strong>Amar Honda Care</strong> — Authorized <strong>Hero Honda</strong> Workshop &amp; Repair Specialist | Shop Owners: <strong>Ashok Kumar Saini</strong> (Co-Owner &amp; Technical Specialist) &amp; <strong>Prabhu Dhyal Saini</strong> (Co-Owner &amp; Head Manager) | Location: Jaipur Road, Near Nav Durga Mata Mandir, Chomu, Jaipur, Rajasthan - 303702 | Open 7 Days a Week: 8:00 AM – 8:00 PM | Direct Line: 9352135105 / 9351749674"
+                          data-hi="🔥 <strong>अमर होंडा केयर</strong> — अधिकृत <strong>हीरो होंडा</strong> वर्कशॉप एवं रिपेयर विशेषज्ञ | दुकान मालिक: <strong>अशोक कुमार सैनी</strong> (सह-मालिक एवं तकनीकी विशेषज्ञ) एवं <strong>प्रभु ध्याल सैनी</strong> (सह-मालिक एवं प्रमुख प्रबंधक) | स्थान: जयपुर रोड, नव दुर्गा माता मंदिर के पास, चोमू, जयपुर, राजस्थान - 303702 | सप्ताह के 7 दिन खुला: सुबह 8:00 – रात 8:00 | डायरेक्ट लाइन: 9352135105 / 9351749674">
+                        🔥 <strong>Amar Honda Care</strong> — Authorized <strong>Hero Honda</strong> Workshop &amp; Repair
+                        Specialist | Shop Owners: <strong>Ashok Kumar Saini</strong> (Co-Owner &amp; Technical Specialist)
+                        &amp; <strong>Prabhu Dhyal Saini</strong> (Co-Owner &amp; Head Manager) | Location: Jaipur Road,
+                        Near Nav Durga Mata Mandir, Chomu, Jaipur, Rajasthan - 303702 | Open 7 Days a Week: 8:00 AM – 8:00
+                        PM | Direct Line: 9352135105 / 9351749674
+                    </span>
                 </marquee>
             </div>
             <div class="d-flex align-items-center gap-3 flex-shrink-0">
                 <a href="tel:9352135105" class="phone-badge-link"><i class="bi bi-telephone-fill"></i> 9352135105</a>
                 <a href="tel:9351749674" class="phone-badge-link"><i class="bi bi-telephone-fill"></i> 9351749674</a>
                 <span class="d-none d-md-inline text-white-50 ps-3 border-start border-secondary"
+                    data-en="Mon - Sun: 8:00 AM - 8:00 PM"
+                    data-hi="सोम - रवि: सुबह 8:00 - रात 8:00"
                     style="font-size: 0.85rem; line-height: 1;">Mon - Sun: 8:00 AM - 8:00 PM</span>
             </div>
         </div>
@@ -54,7 +61,9 @@
                     onerror="this.src='/static/images/logo.png'; this.onerror=null;">
                 <div>
                     <h1 class="brand-title-text">AMAR <span> HONDA CARE </h1>
-                    <span class="brand-subtitle-text"> Workshop Specialist</span>
+                    <span class="brand-subtitle-text"
+                        data-en="Workshop Specialist"
+                        data-hi="वर्कशॉप विशेषज्ञ">Workshop Specialist</span>
                 </div>
             </a>
 
@@ -65,26 +74,41 @@
 
             <div class="collapse navbar-collapse" id="landingNav">
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1">
-                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#services">Services & Pricing</a>
-                    </li>
-                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#owners">Owners</a></li>
-                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#calculator">Cost Estimator</a></li>
-                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#status">Service Status</a></li>
-                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#models">Hero Models</a></li>
-                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#contact">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#services"
+                        data-en="Services &amp; Pricing" data-hi="सेवाएं और मूल्य">Services &amp; Pricing</a></li>
+                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#owners"
+                        data-en="Owners" data-hi="मालिक">Owners</a></li>
+                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#calculator"
+                        data-en="Cost Estimator" data-hi="लागत अनुमान">Cost Estimator</a></li>
+                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#status"
+                        data-en="Service Status" data-hi="सेवा स्थिति">Service Status</a></li>
+                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#models"
+                        data-en="Hero Models" data-hi="हीरो मॉडल">Hero Models</a></li>
+                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#contact"
+                        data-en="Contact" data-hi="संपर्क">Contact</a></li>
                 </ul>
 
                 <div class="d-flex align-items-center gap-2">
+
+                    <!-- Language Toggle Pill -->
+                    <button class="lang-toggle-btn" id="langToggleBtn" aria-label="Switch Language" title="Switch Language">
+                        <span class="lang-option active" id="langOptEN">EN</span>
+                        <span class="lang-option" id="langOptHI">हिं</span>
+                    </button>
+
                     <a href="{% url 'appointments:book' %}" class="btn btn-honda-primary py-2 px-3 fs-6">
-                        <i class="bi bi-calendar2-check-fill"></i> Book Service
+                        <i class="bi bi-calendar2-check-fill"></i>
+                        <span data-en="Book Service" data-hi="सेवा बुक करें">Book Service</span>
                     </a>
                     {% if user.is_authenticated %}
                     <a href="{% url 'reports:dashboard' %}" class="btn btn-outline-dark py-2 px-3 fw-bold">
-                        <i class="bi bi-speedometer2"></i> Staff Dashboard
+                        <i class="bi bi-speedometer2"></i>
+                        <span data-en="Staff Dashboard" data-hi="स्टाफ डैशबोर्ड">Staff Dashboard</span>
                     </a>
                     {% else %}
                     <a href="{% url 'accounts:login' %}" class="btn btn-outline-secondary py-2 px-3 fw-semibold">
-                        <i class="bi bi-box-arrow-in-right"></i> Staff Login
+                        <i class="bi bi-box-arrow-in-right"></i>
+                        <span data-en="Staff Login" data-hi="स्टाफ लॉगिन">Staff Login</span>
                     </a>
                     {% endif %}
                 </div>
@@ -100,12 +124,18 @@
             <div class="row align-items-center">
                 <div class="col-lg-7">
                     <div class="hero-badge">
-                        <i class="bi bi-award-fill"></i> Authorized Hero Honda Bike Care & Repair Specialist
+                        <i class="bi bi-award-fill"></i>
+                        <span data-en="Authorized Hero Honda Bike Care &amp; Repair Specialist"
+                              data-hi="अधिकृत हीरो होंडा बाइक केयर एवं रिपेयर विशेषज्ञ">Authorized Hero Honda Bike Care &amp; Repair Specialist</span>
                     </div>
                     <h2 class="hero-title">
-                        Premium Care For Your <span>Hero Honda Bike & Scooter</span>
+                        <span data-en="Premium Care For Your" data-hi="आपके लिए प्रीमियम देखभाल">Premium Care For Your</span>
+                        <span data-en=" <span>Hero Honda Bike &amp; Scooter</span>"
+                              data-hi=" <span>हीरो होंडा बाइक और स्कूटर</span>"> <span>Hero Honda Bike &amp; Scooter</span></span>
                     </h2>
-                    <p class="hero-lead">
+                    <p class="hero-lead"
+                        data-en="Welcome to <strong>Amar Honda Care</strong>. Operated by <strong>Ashok Kumar Saini</strong> and <strong>Prabhu Dhyal Saini</strong>. We deliver certified multi-point Hero Honda servicing, 100% genuine spare parts, precision engine tuning, and quick breakdown pickup across the region."
+                        data-hi="<strong>अमर होंडा केयर</strong> में आपका स्वागत है। संचालित <strong>अशोक कुमार सैनी</strong> और <strong>प्रभु ध्याल सैनी</strong> द्वारा। हम प्रमाणित मल्टी-पॉइंट हीरो होंडा सर्विसिंग, 100% असली स्पेयर पार्ट्स, सटीक इंजन ट्यूनिंग और क्षेत्र में त्वरित ब्रेकडाउन पिकअप प्रदान करते हैं।">
                         Welcome to <strong>Amar Honda Care</strong>. Operated by <strong>Ashok Kumar Saini</strong> and
                         <strong>Prabhu Dhyal Saini</strong>.
                         We deliver certified multi-point Hero Honda servicing, 100% genuine spare parts, precision
@@ -114,29 +144,35 @@
 
                     <div class="hero-cta-group">
                         <a href="{% url 'appointments:book' %}" class="btn btn-honda-primary">
-                            <i class="bi bi-lightning-charge-fill"></i> Book Online Appointment
+                            <i class="bi bi-lightning-charge-fill"></i>
+                            <span data-en="Book Online Appointment" data-hi="ऑनलाइन अपॉइंटमेंट बुक करें">Book Online Appointment</span>
                         </a>
                         <a href="tel:9352135105" class="btn btn-honda-outline">
-                            <i class="bi bi-telephone-outbound-fill"></i> Call Ashok Kumar: 9352135105
+                            <i class="bi bi-telephone-outbound-fill"></i>
+                            <span data-en="Call Ashok Kumar: 9352135105" data-hi="अशोक कुमार को कॉल करें: 9352135105">Call Ashok Kumar: 9352135105</span>
                         </a>
                     </div>
 
                     <div class="hero-stats-row">
                         <div class="hero-stat-item">
                             <div class="hero-stat-number">10,000<span>+</span></div>
-                            <div class="hero-stat-label">Bikes Serviced</div>
+                            <div class="hero-stat-label"
+                                data-en="Bikes Serviced" data-hi="बाइक्स सर्विस की गई">Bikes Serviced</div>
                         </div>
                         <div class="hero-stat-item">
                             <div class="hero-stat-number">15<span>+</span></div>
-                            <div class="hero-stat-label">Years Experience</div>
+                            <div class="hero-stat-label"
+                                data-en="Years Experience" data-hi="वर्षों का अनुभव">Years Experience</div>
                         </div>
                         <div class="hero-stat-item">
                             <div class="hero-stat-number">100<span>%</span></div>
-                            <div class="hero-stat-label">Genuine Hero Honda Parts</div>
+                            <div class="hero-stat-label"
+                                data-en="Genuine Hero Honda Parts" data-hi="असली हीरो होंडा पार्ट्स">Genuine Hero Honda Parts</div>
                         </div>
                         <div class="hero-stat-item">
                             <div class="hero-stat-number">4.9<span>★</span></div>
-                            <div class="hero-stat-label">Customer Rating</div>
+                            <div class="hero-stat-label"
+                                data-en="Customer Rating" data-hi="ग्राहक रेटिंग">Customer Rating</div>
                         </div>
                     </div>
                 </div>
@@ -144,22 +180,29 @@
                 <div class="col-lg-5 d-none d-lg-block">
                     <div class="p-4 rounded-4 bg-white border border-2 shadow-lg card-3d-tilt"
                         style="backdrop-filter: blur(12px);">
-                        <h4 class="font-heading fw-bold mb-3 text-danger"><i class="bi bi-calendar-event me-2"></i>Quick
-                            Service Booking</h4>
-                        <p class="text-secondary small mb-4">Book your Hero Honda Activa, Shine, Unicorn or SP125
-                            service
+                        <h4 class="font-heading fw-bold mb-3 text-danger"><i class="bi bi-calendar-event me-2"></i>
+                            <span data-en="Quick Service Booking" data-hi="त्वरित सेवा बुकिंग">Quick Service Booking</span>
+                        </h4>
+                        <p class="text-secondary small mb-4"
+                            data-en="Book your Hero Honda Activa, Shine, Unicorn or SP125 service slot in less than 60 seconds."
+                            data-hi="अपने हीरो होंडा एक्टिवा, शाइन, यूनिकॉर्न या SP125 का सर्विस स्लॉट 60 सेकंड से कम में बुक करें।">Book your Hero Honda Activa, Shine, Unicorn or SP125 service
                             slot in less than 60 seconds.</p>
 
                         <a href="{% url 'appointments:book' %}" class="btn btn-honda-primary w-100 py-3 mb-3">
-                            <i class="bi bi-arrow-right-circle-fill me-2"></i> Launch Interactive Booking Form
+                            <i class="bi bi-arrow-right-circle-fill me-2"></i>
+                            <span data-en="Launch Interactive Booking Form" data-hi="इंटरएक्टिव बुकिंग फॉर्म खोलें">Launch Interactive Booking Form</span>
                         </a>
 
                         <div class="p-3 rounded-3 bg-light border border-secondary border-opacity-25 text-start">
                             <div class="d-flex align-items-center gap-3">
                                 <i class="bi bi-clock-history fs-3 text-danger"></i>
                                 <div>
-                                    <strong class="d-block text-dark">Express Same-Day Turnaround</strong>
-                                    <span class="text-secondary small">Regular service completed within 90
+                                    <strong class="d-block text-dark"
+                                        data-en="Express Same-Day Turnaround"
+                                        data-hi="एक्सप्रेस सेम-डे सर्विस">Express Same-Day Turnaround</strong>
+                                    <span class="text-secondary small"
+                                        data-en="Regular service completed within 90 minutes"
+                                        data-hi="नियमित सर्विस 90 मिनट के भीतर पूरी">Regular service completed within 90
                                         minutes</span>
                                 </div>
                             </div>
@@ -174,9 +217,13 @@
     <section class="owners-section" id="owners">
         <div class="container">
             <div class="section-header">
-                <span class="section-subtitle">Leadership & Commitment</span>
-                <h3 class="section-title">Meet Amar Hero Honda Shop Owners</h3>
-                <p class="text-secondary mt-2">Dedicated to providing reliable, transparent, and top-tier two-wheeler
+                <span class="section-subtitle"
+                    data-en="Leadership &amp; Commitment" data-hi="नेतृत्व और प्रतिबद्धता">Leadership &amp; Commitment</span>
+                <h3 class="section-title"
+                    data-en="Meet Amar Hero Honda Shop Owners" data-hi="अमर हीरो होंडा के दुकान मालिकों से मिलें">Meet Amar Hero Honda Shop Owners</h3>
+                <p class="text-secondary mt-2"
+                    data-en="Dedicated to providing reliable, transparent, and top-tier two-wheeler service with 100% customer satisfaction."
+                    data-hi="विश्वसनीय, पारदर्शी और उच्च-स्तरीय दोपहिया सर्विस प्रदान करने के लिए समर्पित, 100% ग्राहक संतुष्टि के साथ।">Dedicated to providing reliable, transparent, and top-tier two-wheeler
                     service with 100% customer satisfaction.</p>
             </div>
 
@@ -190,20 +237,27 @@
                             </div>
                             <div>
                                 <h4 class="owner-info-title">Ashok Kumar Saini</h4>
-                                <span class="owner-role-badge">Co-Owner & Technical Specialist</span>
+                                <span class="owner-role-badge"
+                                    data-en="Co-Owner &amp; Technical Specialist"
+                                    data-hi="सह-मालिक एवं तकनीकी विशेषज्ञ">Co-Owner &amp; Technical Specialist</span>
                             </div>
                         </div>
-                        <p class="text-secondary small mb-4">
+                        <p class="text-secondary small mb-4"
+                            data-en="Overseeing master mechanic diagnostics, engine tuning, electrical troubleshooting, and emergency customer breakdown support."
+                            data-hi="मास्टर मैकेनिक डायग्नोस्टिक्स, इंजन ट्यूनिंग, इलेक्ट्रिकल समस्या निवारण और ग्राहक आपातकालीन ब्रेकडाउन सहायता की निगरानी करते हैं।">
                             Overseeing master mechanic diagnostics, engine tuning, electrical troubleshooting, and
                             emergency customer breakdown support.
                         </p>
                         <a href="tel:9352135105" class="phone-action-btn">
-                            <span><i class="bi bi-telephone-fill me-2 text-danger"></i> Call Direct</span>
+                            <span><i class="bi bi-telephone-fill me-2 text-danger"></i>
+                                <span data-en="Call Direct" data-hi="सीधे कॉल करें">Call Direct</span>
+                            </span>
                             <span class="phone-num">9352135105</span>
                         </a>
                         <a href="https://wa.me/919352135105?text=Hello%20Ashok%20Kumar%20Saini%20ji,%20I%20want%20to%20inquire%20about%20Hero%20Honda%20bike%20service."
                             target="_blank" class="btn btn-outline-success w-100 mt-2 py-2 fw-semibold">
-                            <i class="bi bi-whatsapp me-2"></i> Chat on WhatsApp
+                            <i class="bi bi-whatsapp me-2"></i>
+                            <span data-en="Chat on WhatsApp" data-hi="WhatsApp पर चैट करें">Chat on WhatsApp</span>
                         </a>
                     </div>
                 </div>
@@ -218,20 +272,27 @@
                             </div>
                             <div>
                                 <h4 class="owner-info-title">Prabhu Dhyal Saini</h4>
-                                <span class="owner-role-badge">Co-Owner & Head Manager</span>
+                                <span class="owner-role-badge"
+                                    data-en="Co-Owner &amp; Head Manager"
+                                    data-hi="सह-मालिक एवं प्रमुख प्रबंधक">Co-Owner &amp; Head Manager</span>
                             </div>
                         </div>
-                        <p class="text-secondary small mb-4">
+                        <p class="text-secondary small mb-4"
+                            data-en="Leading technical operations, customer relationships, and genuine Hero Honda spare parts management with over 15 years of workshop expertise."
+                            data-hi="15 से अधिक वर्षों की वर्कशॉप विशेषज्ञता के साथ तकनीकी संचालन, ग्राहक संबंध और असली हीरो होंडा स्पेयर पार्ट्स प्रबंधन का नेतृत्व करते हैं।">
                             Leading technical operations, customer relationships, and genuine Hero Honda spare
                             parts management with over 15 years of workshop expertise.
                         </p>
                         <a href="tel:9351749674" class="phone-action-btn">
-                            <span><i class="bi bi-telephone-fill me-2 text-danger"></i> Call Direct</span>
+                            <span><i class="bi bi-telephone-fill me-2 text-danger"></i>
+                                <span data-en="Call Direct" data-hi="सीधे कॉल करें">Call Direct</span>
+                            </span>
                             <span class="phone-num">9351749674</span>
                         </a>
                         <a href="https://wa.me/919351749674?text=Hello%20Prabhu%20Dhyal%20Saini%20ji,%20I%20want%20to%20inquire%20about%20Hero%20Honda%20bike%20service."
                             target="_blank" class="btn btn-outline-success w-100 mt-2 py-2 fw-semibold">
-                            <i class="bi bi-whatsapp me-2"></i> Chat on WhatsApp
+                            <i class="bi bi-whatsapp me-2"></i>
+                            <span data-en="Chat on WhatsApp" data-hi="WhatsApp पर चैट करें">Chat on WhatsApp</span>
                         </a>
                     </div>
                 </div>
@@ -243,9 +304,13 @@
     <section class="services-section" id="services">
         <div class="container">
             <div class="section-header">
-                <span class="section-subtitle">Transparent Pricing</span>
-                <h3 class="section-title">Hero Honda Service Packages</h3>
-                <p class="text-secondary mt-2">Comprehensive service plans backed by genuine Hero Honda parts and
+                <span class="section-subtitle"
+                    data-en="Transparent Pricing" data-hi="पारदर्शी मूल्य निर्धारण">Transparent Pricing</span>
+                <h3 class="section-title"
+                    data-en="Hero Honda Service Packages" data-hi="हीरो होंडा सर्विस पैकेज">Hero Honda Service Packages</h3>
+                <p class="text-secondary mt-2"
+                    data-en="Comprehensive service plans backed by genuine Hero Honda parts and digital invoices."
+                    data-hi="असली हीरो होंडा पार्ट्स और डिजिटल बिल द्वारा समर्थित व्यापक सर्विस योजनाएं।">Comprehensive service plans backed by genuine Hero Honda parts and
                     digital
                     invoices.</p>
             </div>
@@ -254,58 +319,89 @@
                 <!-- Package 1 -->
                 <div class="col-md-4">
                     <div class="service-package-card">
-                        <div class="fw-bold text-danger text-uppercase fs-6 tracking-wide">Essential Maintenance</div>
-                        <h4 class="fw-bold mt-1">General Bike Service</h4>
-                        <div class="package-price">₹750 <span>+ Oil extra</span></div>
+                        <div class="fw-bold text-danger text-uppercase fs-6 tracking-wide"
+                            data-en="Essential Maintenance" data-hi="आवश्यक रखरखाव">Essential Maintenance</div>
+                        <h4 class="fw-bold mt-1"
+                            data-en="General Bike Service" data-hi="सामान्य बाइक सर्विस">General Bike Service</h4>
+                        <div class="package-price">₹750 <span
+                            data-en="+ Oil extra" data-hi="+ तेल अतिरिक्त">+ Oil extra</span></div>
                         <ul class="package-feature-list">
-                            <li><i class="bi bi-check-circle-fill"></i> Complete 32-point inspection</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Carburetor / FI throttle body clean</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Brake adjustment & pad clean</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Chain cleaning & lubrication</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Spark plug & air filter check</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Pressure foam wash</li>
+                            <li><i class="bi bi-check-circle-fill"></i>
+                                <span data-en="Complete 32-point inspection" data-hi="संपूर्ण 32-पॉइंट निरीक्षण">Complete 32-point inspection</span></li>
+                            <li><i class="bi bi-check-circle-fill"></i>
+                                <span data-en="Carburetor / FI throttle body clean" data-hi="कार्बोरेटर / FI थ्रॉटल बॉडी सफाई">Carburetor / FI throttle body clean</span></li>
+                            <li><i class="bi bi-check-circle-fill"></i>
+                                <span data-en="Brake adjustment &amp; pad clean" data-hi="ब्रेक समायोजन एवं पैड सफाई">Brake adjustment &amp; pad clean</span></li>
+                            <li><i class="bi bi-check-circle-fill"></i>
+                                <span data-en="Chain cleaning &amp; lubrication" data-hi="चेन सफाई एवं चिकनाई">Chain cleaning &amp; lubrication</span></li>
+                            <li><i class="bi bi-check-circle-fill"></i>
+                                <span data-en="Spark plug &amp; air filter check" data-hi="स्पार्क प्लग एवं एयर फिल्टर जांच">Spark plug &amp; air filter check</span></li>
+                            <li><i class="bi bi-check-circle-fill"></i>
+                                <span data-en="Pressure foam wash" data-hi="प्रेशर फोम वॉश">Pressure foam wash</span></li>
                         </ul>
                         <a href="{% url 'appointments:book' %}"
-                            class="btn btn-outline-danger w-100 py-2 fw-bold mt-auto">Choose Package</a>
+                            class="btn btn-outline-danger w-100 py-2 fw-bold mt-auto"
+                            data-en="Choose Package" data-hi="पैकेज चुनें">Choose Package</a>
                     </div>
                 </div>
 
                 <!-- Package 2 Popular -->
                 <div class="col-md-4">
                     <div class="service-package-card popular">
-                        <div class="popular-ribbon">Most Popular</div>
-                        <div class="fw-bold text-danger text-uppercase fs-6 tracking-wide">Recommended</div>
-                        <h4 class="fw-bold mt-1">Full Synthetic Care</h4>
-                        <div class="package-price">₹850<span>+ Hero Honda Genuine Oil</span></div>
+                        <div class="popular-ribbon"
+                            data-en="Most Popular" data-hi="सबसे लोकप्रिय">Most Popular</div>
+                        <div class="fw-bold text-danger text-uppercase fs-6 tracking-wide"
+                            data-en="Recommended" data-hi="अनुशंसित">Recommended</div>
+                        <h4 class="fw-bold mt-1"
+                            data-en="Full Synthetic Care" data-hi="फुल सिंथेटिक केयर">Full Synthetic Care</h4>
+                        <div class="package-price">₹850<span
+                            data-en="+ Hero Honda Genuine Oil" data-hi="+ हीरो होंडा असली तेल">+ Hero Honda Genuine Oil</span></div>
                         <ul class="package-feature-list">
-                            <li><i class="bi bi-check-circle-fill"></i> All General Service points included</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Hero Honda Genuine Engine Oil flush & fill</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Battery voltage & electrical test</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Clutch & throttle cable greasing</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Wheel alignment & tyre pressure</li>
-                            <li><i class="bi bi-check-circle-fill"></i> High gloss body wax polish</li>
+                            <li><i class="bi bi-check-circle-fill"></i>
+                                <span data-en="All General Service points included" data-hi="सभी सामान्य सर्विस पॉइंट शामिल">All General Service points included</span></li>
+                            <li><i class="bi bi-check-circle-fill"></i>
+                                <span data-en="Hero Honda Genuine Engine Oil flush &amp; fill" data-hi="हीरो होंडा असली इंजन ऑयल फ्लश एवं भरना">Hero Honda Genuine Engine Oil flush &amp; fill</span></li>
+                            <li><i class="bi bi-check-circle-fill"></i>
+                                <span data-en="Battery voltage &amp; electrical test" data-hi="बैटरी वोल्टेज एवं इलेक्ट्रिकल टेस्ट">Battery voltage &amp; electrical test</span></li>
+                            <li><i class="bi bi-check-circle-fill"></i>
+                                <span data-en="Clutch &amp; throttle cable greasing" data-hi="क्लच एवं थ्रॉटल केबल ग्रीसिंग">Clutch &amp; throttle cable greasing</span></li>
+                            <li><i class="bi bi-check-circle-fill"></i>
+                                <span data-en="Wheel alignment &amp; tyre pressure" data-hi="व्हील अलाइनमेंट एवं टायर प्रेशर">Wheel alignment &amp; tyre pressure</span></li>
+                            <li><i class="bi bi-check-circle-fill"></i>
+                                <span data-en="High gloss body wax polish" data-hi="हाई ग्लॉस बॉडी वैक्स पॉलिश">High gloss body wax polish</span></li>
                         </ul>
                         <a href="{% url 'appointments:book' %}"
-                            class="btn btn-honda-primary w-100 py-2 fw-bold mt-auto">Choose Package</a>
+                            class="btn btn-honda-primary w-100 py-2 fw-bold mt-auto"
+                            data-en="Choose Package" data-hi="पैकेज चुनें">Choose Package</a>
                     </div>
                 </div>
 
                 <!-- Package 3 -->
                 <div class="col-md-4">
                     <div class="service-package-card">
-                        <div class="fw-bold text-danger text-uppercase fs-6 tracking-wide">Heavy Duty</div>
-                        <h4 class="fw-bold mt-1">Engine & Overhaul Care</h4>
-                        <div class="package-price">₹5,200 <span>+ Spare parts</span></div>
+                        <div class="fw-bold text-danger text-uppercase fs-6 tracking-wide"
+                            data-en="Heavy Duty" data-hi="हेवी ड्यूटी">Heavy Duty</div>
+                        <h4 class="fw-bold mt-1"
+                            data-en="Engine &amp; Overhaul Care" data-hi="इंजन एवं ओवरहॉल केयर">Engine &amp; Overhaul Care</h4>
+                        <div class="package-price">₹5,200 <span
+                            data-en="+ Spare parts" data-hi="+ स्पेयर पार्ट्स">+ Spare parts</span></div>
                         <ul class="package-feature-list">
-                            <li><i class="bi bi-check-circle-fill"></i> Complete engine head & piston overhaul</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Clutch plate replacement & tuning</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Front fork oil seal & damper service</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Bearing replacement & greasing</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Computerized diagnostic tune-up</li>
-                            <li><i class="bi bi-check-circle-fill"></i> Complete deep wash & ceramic coat</li>
+                            <li><i class="bi bi-check-circle-fill"></i>
+                                <span data-en="Complete engine head &amp; piston overhaul" data-hi="संपूर्ण इंजन हेड एवं पिस्टन ओवरहॉल">Complete engine head &amp; piston overhaul</span></li>
+                            <li><i class="bi bi-check-circle-fill"></i>
+                                <span data-en="Clutch plate replacement &amp; tuning" data-hi="क्लच प्लेट बदलना एवं ट्यूनिंग">Clutch plate replacement &amp; tuning</span></li>
+                            <li><i class="bi bi-check-circle-fill"></i>
+                                <span data-en="Front fork oil seal &amp; damper service" data-hi="फ्रंट फोर्क ऑयल सील एवं डैम्पर सर्विस">Front fork oil seal &amp; damper service</span></li>
+                            <li><i class="bi bi-check-circle-fill"></i>
+                                <span data-en="Bearing replacement &amp; greasing" data-hi="बेयरिंग बदलना एवं ग्रीसिंग">Bearing replacement &amp; greasing</span></li>
+                            <li><i class="bi bi-check-circle-fill"></i>
+                                <span data-en="Computerized diagnostic tune-up" data-hi="कंप्यूटरीकृत डायग्नोस्टिक ट्यून-अप">Computerized diagnostic tune-up</span></li>
+                            <li><i class="bi bi-check-circle-fill"></i>
+                                <span data-en="Complete deep wash &amp; ceramic coat" data-hi="संपूर्ण डीप वॉश एवं सिरेमिक कोट">Complete deep wash &amp; ceramic coat</span></li>
                         </ul>
                         <a href="{% url 'appointments:book' %}"
-                            class="btn btn-outline-danger w-100 py-2 fw-bold mt-auto">Choose Package</a>
+                            class="btn btn-outline-danger w-100 py-2 fw-bold mt-auto"
+                            data-en="Choose Package" data-hi="पैकेज चुनें">Choose Package</a>
                     </div>
                 </div>
             </div>
@@ -317,17 +413,22 @@
         <div class="container py-4">
             <div class="row align-items-center g-5">
                 <div class="col-lg-6">
-                    <span class="section-subtitle">Instant Transparency</span>
-                    <h3 class="section-title mb-3">Interactive Service Cost Estimator</h3>
-                    <p class="text-secondary mb-4">
+                    <span class="section-subtitle"
+                        data-en="Instant Transparency" data-hi="तत्काल पारदर्शिता">Instant Transparency</span>
+                    <h3 class="section-title mb-3"
+                        data-en="Interactive Service Cost Estimator" data-hi="इंटरएक्टिव सर्विस लागत अनुमानक">Interactive Service Cost Estimator</h3>
+                    <p class="text-secondary mb-4"
+                        data-en="Select your Hero Honda bike model and service add-ons below to see an instant, transparent estimate for your vehicle."
+                        data-hi="अपने हीरो होंडा बाइक मॉडल और सर्विस ऐड-ऑन चुनें और अपने वाहन के लिए तत्काल, पारदर्शी अनुमान देखें।">
                         Select your Hero Honda bike model and service add-ons below to see an instant, transparent
                         estimate for your vehicle.
                     </p>
 
                     <div class="calculator-card">
                         <div class="mb-3">
-                            <label class="form-label fw-bold small text-uppercase text-secondary">1. Select Hero Honda
-                                Bike / Scooter</label>
+                            <label class="form-label fw-bold small text-uppercase text-secondary"
+                                data-en="1. Select Hero Honda Bike / Scooter"
+                                data-hi="1. हीरो होंडा बाइक / स्कूटर चुनें">1. Select Hero Honda Bike / Scooter</label>
                             <select class="form-select form-select-lg fw-bold" id="calcBikeModel">
                                 <option value="activa" selected>Hero Honda Activa (5G / 6G / 125)</option>
                                 <option value="dio">Hero Honda Dio</option>
@@ -340,44 +441,52 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-bold small text-uppercase text-secondary">2. Select Service
-                                Package</label>
+                            <label class="form-label fw-bold small text-uppercase text-secondary"
+                                data-en="2. Select Service Package"
+                                data-hi="2. सर्विस पैकेज चुनें">2. Select Service Package</label>
                             <select class="form-select form-select-lg fw-bold" id="calcServiceType">
-                                <option value="general" selected>General Periodical Service (₹450)</option>
-                                <option value="full_tune">Full Tuning & Electrical Care (₹750)</option>
-                                <option value="brake_clutch">Brake & Clutch Overhaul (₹350)</option>
-                                <option value="engine_overhaul">Engine Overhaul & Tuning (₹2,200)</option>
+                                <option value="general" selected data-en="General Periodical Service (₹450)" data-hi="सामान्य आवधिक सर्विस (₹450)">General Periodical Service (₹450)</option>
+                                <option value="full_tune" data-en="Full Tuning &amp; Electrical Care (₹750)" data-hi="फुल ट्यूनिंग एवं इलेक्ट्रिकल केयर (₹750)">Full Tuning &amp; Electrical Care (₹750)</option>
+                                <option value="brake_clutch" data-en="Brake &amp; Clutch Overhaul (₹350)" data-hi="ब्रेक एवं क्लच ओवरहॉल (₹350)">Brake &amp; Clutch Overhaul (₹350)</option>
+                                <option value="engine_overhaul" data-en="Engine Overhaul &amp; Tuning (₹2,200)" data-hi="इंजन ओवरहॉल एवं ट्यूनिंग (₹2,200)">Engine Overhaul &amp; Tuning (₹2,200)</option>
                             </select>
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold small text-uppercase text-secondary">3. Select
-                                Add-ons</label>
+                            <label class="form-label fw-bold small text-uppercase text-secondary"
+                                data-en="3. Select Add-ons"
+                                data-hi="3. ऐड-ऑन चुनें">3. Select Add-ons</label>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" id="addonOil" checked>
-                                <label class="form-check-label text-secondary small" for="addonOil">Hero Honda 10W-30
+                                <label class="form-check-label text-secondary small" for="addonOil"
+                                    data-en="Hero Honda 10W-30 Genuine Engine Oil (+₹380)"
+                                    data-hi="हीरो होंडा 10W-30 असली इंजन ऑयल (+₹380)">Hero Honda 10W-30
                                     Genuine Engine Oil (+₹380)</label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" id="addonPolish" checked>
-                                <label class="form-check-label text-secondary small" for="addonPolish">High Gloss Body
-                                    Wax
+                                <label class="form-check-label text-secondary small" for="addonPolish"
+                                    data-en="High Gloss Body Wax Polish (+₹200)"
+                                    data-hi="हाई ग्लॉस बॉडी वैक्स पॉलिश (+₹200)">High Gloss Body Wax
                                     Polish (+₹200)</label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="addonBreakdown">
-                                <label class="form-check-label text-secondary small" for="addonBreakdown">Home Doorstep
+                                <label class="form-check-label text-secondary small" for="addonBreakdown"
+                                    data-en="Home Doorstep Pickup Service (+₹150)"
+                                    data-hi="होम डोरस्टेप पिकअप सर्विस (+₹150)">Home Doorstep
                                     Pickup Service (+₹150)</label>
                             </div>
                         </div>
 
                         <div class="p-3 rounded-3 bg-light border d-flex justify-content-between align-items-center">
                             <div>
-                                <span class="d-block text-secondary small">Estimated Total</span>
+                                <span class="d-block text-secondary small"
+                                    data-en="Estimated Total" data-hi="अनुमानित कुल">Estimated Total</span>
                                 <span class="fs-2 font-heading fw-bold text-danger" id="calcGrandTotal">₹1,030</span>
                             </div>
                             <a href="{% url 'appointments:book' %}" class="btn btn-honda-primary py-2 px-4">
-                                Book This Rate
+                                <span data-en="Book This Rate" data-hi="यह दर बुक करें">Book This Rate</span>
                             </a>
                         </div>
                     </div>
@@ -389,32 +498,46 @@
                         <div class="d-flex align-items-center gap-3 mb-3">
                             <i class="bi bi-geo-alt-fill fs-1 text-white"></i>
                             <div>
-                                <h4 class="font-heading fw-bold mb-0">Live Service Tracker</h4>
-                                <p class="mb-0 text-white-50 small">Check current repair status of your bike</p>
+                                <h4 class="font-heading fw-bold mb-0"
+                                    data-en="Live Service Tracker" data-hi="लाइव सर्विस ट्रैकर">Live Service Tracker</h4>
+                                <p class="mb-0 text-white-50 small"
+                                    data-en="Check current repair status of your bike"
+                                    data-hi="अपनी बाइक की वर्तमान मरम्मत स्थिति जांचें">Check current repair status of your bike</p>
                             </div>
                         </div>
 
                         <form id="statusCheckForm" class="mb-3">
-                            <label class="form-label fw-semibold small text-uppercase">Enter Vehicle Reg. Number</label>
+                            <label class="form-label fw-semibold small text-uppercase"
+                                data-en="Enter Vehicle Reg. Number"
+                                data-hi="वाहन पंजीकरण संख्या दर्ज करें">Enter Vehicle Reg. Number</label>
                             <div class="status-input-group">
                                 <input type="text" id="statusRegInput" class="form-control"
+                                    data-en-placeholder="e.g. RJ-14-AB-1234"
+                                    data-hi-placeholder="उदा. RJ-14-AB-1234"
                                     placeholder="e.g. RJ-14-AB-1234" required>
                                 <button type="submit" class="btn btn-dark fw-bold px-4">
-                                    <i class="bi bi-search"></i> Check
+                                    <i class="bi bi-search"></i>
+                                    <span data-en="Check" data-hi="जांचें">Check</span>
                                 </button>
                             </div>
                         </form>
 
                         <div id="statusResultBox">
-                            <p class="text-white-50 small mb-0"><i class="bi bi-info-circle me-1"></i> Enter your bike
+                            <p class="text-white-50 small mb-0"
+                                data-en="<i class='bi bi-info-circle me-1'></i> Enter your bike registration number above to check if your service is completed or in progress."
+                                data-hi="<i class='bi bi-info-circle me-1'></i> अपनी बाइक का पंजीकरण नंबर ऊपर दर्ज करें यह जांचने के लिए कि आपकी सर्विस पूरी हुई है या प्रगति में है।">
+                                <i class="bi bi-info-circle me-1"></i> Enter your bike
                                 registration number above to check if your service is completed or in progress.</p>
                         </div>
                     </div>
 
                     <div class="mt-4 p-4 rounded-4 bg-white border border-2 shadow-sm">
-                        <h5 class="fw-bold text-dark mb-2"><i class="bi bi-truck text-danger me-2"></i>Emergency
-                            Breakdown Assistance</h5>
-                        <p class="text-secondary small mb-3">Stuck on the road with a puncture, dead battery, or broken
+                        <h5 class="fw-bold text-dark mb-2"><i class="bi bi-truck text-danger me-2"></i>
+                            <span data-en="Emergency Breakdown Assistance" data-hi="आपातकालीन ब्रेकडाउन सहायता">Emergency Breakdown Assistance</span>
+                        </h5>
+                        <p class="text-secondary small mb-3"
+                            data-en="Stuck on the road with a puncture, dead battery, or broken clutch cable? Call our direct emergency lines."
+                            data-hi="पंचर, डेड बैटरी या टूटी क्लच केबल से सड़क पर फंसे हैं? हमारी सीधी आपातकालीन लाइनों पर कॉल करें।">Stuck on the road with a puncture, dead battery, or broken
                             clutch cable? Call our direct emergency lines.</p>
                         <div class="d-flex gap-2">
                             <a href="tel:9352135105" class="btn btn-outline-danger w-50 fw-bold py-2"><i
@@ -432,9 +555,13 @@
     <section class="py-5 bg-white" id="models">
         <div class="container py-4">
             <div class="section-header">
-                <span class="section-subtitle">We Service All Models</span>
-                <h3 class="section-title">Popular Hero MotoCorp Two-Wheelers</h3>
-                <p class="text-secondary">Specialized tools, diagnostic scanners, and genuine spares for all Hero
+                <span class="section-subtitle"
+                    data-en="We Service All Models" data-hi="हम सभी मॉडल सर्विस करते हैं">We Service All Models</span>
+                <h3 class="section-title"
+                    data-en="Popular Hero MotoCorp Two-Wheelers" data-hi="लोकप्रिय हीरो मोटोकॉर्प दोपहिया वाहन">Popular Hero MotoCorp Two-Wheelers</h3>
+                <p class="text-secondary"
+                    data-en="Specialized tools, diagnostic scanners, and genuine spares for all Hero MotoCorp models."
+                    data-hi="सभी हीरो मोटोकॉर्प मॉडलों के लिए विशेष उपकरण, डायग्नोस्टिक स्कैनर और असली स्पेयर पार्ट्स।">Specialized tools, diagnostic scanners, and genuine spares for all Hero
                     MotoCorp models.</p>
             </div>
 
@@ -446,8 +573,10 @@
                             <img src="{% static 'images/hero_splendor.png' %}" alt="Hero Splendor Plus"
                                 class="bike-model-img">
                         </div>
-                        <h5 class="bike-model-title">Splendor Plus</h5>
-                        <span class="bike-spec-badge">97.2cc · Commuter</span>
+                        <h5 class="bike-model-title"
+                            data-en="Splendor Plus" data-hi="स्प्लेंडर प्लस">Splendor Plus</h5>
+                        <span class="bike-spec-badge"
+                            data-en="97.2cc · Commuter" data-hi="97.2cc · कम्यूटर">97.2cc · Commuter</span>
                     </div>
                 </div>
                 <!-- HF Deluxe -->
@@ -457,8 +586,10 @@
                             <img src="{% static 'images/hero_hf_deluxe.png' %}" alt="Hero HF Deluxe"
                                 class="bike-model-img">
                         </div>
-                        <h5 class="bike-model-title">HF Deluxe</h5>
-                        <span class="bike-spec-badge">97.2cc · Economy</span>
+                        <h5 class="bike-model-title"
+                            data-en="HF Deluxe" data-hi="HF डीलक्स">HF Deluxe</h5>
+                        <span class="bike-spec-badge"
+                            data-en="97.2cc · Economy" data-hi="97.2cc · इकोनॉमी">97.2cc · Economy</span>
                     </div>
                 </div>
                 <!-- Passion Pro -->
@@ -468,8 +599,10 @@
                             <img src="{% static 'images/hero_passion_pro.png' %}" alt="Hero Passion Pro"
                                 class="bike-model-img">
                         </div>
-                        <h5 class="bike-model-title">Passion Pro</h5>
-                        <span class="bike-spec-badge">113cc · Executive</span>
+                        <h5 class="bike-model-title"
+                            data-en="Passion Pro" data-hi="पैशन प्रो">Passion Pro</h5>
+                        <span class="bike-spec-badge"
+                            data-en="113cc · Executive" data-hi="113cc · एक्जीक्यूटिव">113cc · Executive</span>
                     </div>
                 </div>
                 <!-- Glamour 125 -->
@@ -479,8 +612,10 @@
                             <img src="{% static 'images/hero_glamour.png' %}" alt="Hero Glamour 125"
                                 class="bike-model-img">
                         </div>
-                        <h5 class="bike-model-title">Glamour 125</h5>
-                        <span class="bike-spec-badge">125cc · i3S Tech</span>
+                        <h5 class="bike-model-title"
+                            data-en="Glamour 125" data-hi="ग्लैमर 125">Glamour 125</h5>
+                        <span class="bike-spec-badge"
+                            data-en="125cc · i3S Tech" data-hi="125cc · i3S तकनीक">125cc · i3S Tech</span>
                     </div>
                 </div>
                 <!-- Xtreme 160R -->
@@ -490,8 +625,10 @@
                             <img src="{% static 'images/hero_xtreme.png' %}" alt="Hero Xtreme 160R"
                                 class="bike-model-img">
                         </div>
-                        <h5 class="bike-model-title">Xtreme 160R</h5>
-                        <span class="bike-spec-badge">160cc · Sporty</span>
+                        <h5 class="bike-model-title"
+                            data-en="Xtreme 160R" data-hi="एक्सट्रीम 160R">Xtreme 160R</h5>
+                        <span class="bike-spec-badge"
+                            data-en="160cc · Sporty" data-hi="160cc · स्पोर्टी">160cc · Sporty</span>
                     </div>
                 </div>
                 <!-- Destini 125 -->
@@ -501,8 +638,10 @@
                             <img src="{% static 'images/hero_destini.png' %}" alt="Hero Destini 125"
                                 class="bike-model-img">
                         </div>
-                        <h5 class="bike-model-title">Destini 125</h5>
-                        <span class="bike-spec-badge">124.6cc · Scooter</span>
+                        <h5 class="bike-model-title"
+                            data-en="Destini 125" data-hi="डेस्टिनी 125">Destini 125</h5>
+                        <span class="bike-spec-badge"
+                            data-en="124.6cc · Scooter" data-hi="124.6cc · स्कूटर">124.6cc · Scooter</span>
                     </div>
                 </div>
             </div>
@@ -513,37 +652,48 @@
     <section class="py-5 bg-light">
         <div class="container py-4">
             <div class="section-header">
-                <span class="section-subtitle">Customer Trust</span>
-                <h3 class="section-title">What Hero Honda Owners Say</h3>
+                <span class="section-subtitle"
+                    data-en="Customer Trust" data-hi="ग्राहक विश्वास">Customer Trust</span>
+                <h3 class="section-title"
+                    data-en="What Hero Honda Owners Say" data-hi="हीरो होंडा मालिक क्या कहते हैं">What Hero Honda Owners Say</h3>
             </div>
 
             <div class="row g-4">
                 <div class="col-md-4">
                     <div class="review-card">
                         <div class="stars-rating">★★★★★</div>
-                        <p class="review-quote">"Best Hero Honda service shop in the area! Ashok Kumar Saini ji
+                        <p class="review-quote"
+                            data-en="&quot;Best Hero Honda service shop in the area! Ashok Kumar Saini ji explained every part replacement clearly and charges were very genuine compared to showroom.&quot;"
+                            data-hi="&quot;इलाके की सबसे अच्छी हीरो होंडा सर्विस शॉप! अशोक कुमार सैनी जी ने हर पार्ट बदलने की बात स्पष्ट रूप से बताई और शोरूम की तुलना में चार्ज बहुत उचित था।&quot;">"Best Hero Honda service shop in the area! Ashok Kumar Saini ji
                             explained every part replacement clearly and charges were very genuine compared to
                             showroom."</p>
                         <h6 class="reviewer-name">Vikram Sharma</h6>
-                        <span class="reviewer-city">Hero Honda Activa 6G Owner</span>
+                        <span class="reviewer-city"
+                            data-en="Hero Honda Activa 6G Owner" data-hi="हीरो होंडा एक्टिवा 6G मालिक">Hero Honda Activa 6G Owner</span>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="review-card">
                         <div class="stars-rating">★★★★★</div>
-                        <p class="review-quote">"Prabhu Dhyal Saini fixed my Hero Honda Unicorn engine noise issue which
+                        <p class="review-quote"
+                            data-en="&quot;Prabhu Dhyal Saini fixed my Hero Honda Unicorn engine noise issue which 2 other mechanics couldn't diagnose. Runs like brand new now!&quot;"
+                            data-hi="&quot;प्रभु ध्याल सैनी ने मेरे हीरो होंडा यूनिकॉर्न के इंजन की आवाज़ की समस्या ठीक की जिसे 2 अन्य मैकेनिक डायग्नोज़ नहीं कर पाए थे। अब बिल्कुल नई जैसी चलती है!&quot;">"Prabhu Dhyal Saini fixed my Hero Honda Unicorn engine noise issue which
                             2 other mechanics couldn't diagnose. Runs like brand new now!"</p>
                         <h6 class="reviewer-name">Rajesh Verma</h6>
-                        <span class="reviewer-city">Hero Honda Unicorn Owner</span>
+                        <span class="reviewer-city"
+                            data-en="Hero Honda Unicorn Owner" data-hi="हीरो होंडा यूनिकॉर्न मालिक">Hero Honda Unicorn Owner</span>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="review-card">
                         <div class="stars-rating">★★★★★</div>
-                        <p class="review-quote">"Super fast online appointment booking and breakdown pickup support.
+                        <p class="review-quote"
+                            data-en="&quot;Super fast online appointment booking and breakdown pickup support. Saved me so much time. Highly recommended Amar Honda Care!&quot;"
+                            data-hi="&quot;बेहद तेज़ ऑनलाइन अपॉइंटमेंट बुकिंग और ब्रेकडाउन पिकअप सहायता। मेरा बहुत समय बचाया। अमर होंडा केयर की दिल से सिफारिश करता हूं!&quot;">"Super fast online appointment booking and breakdown pickup support.
                             Saved me so much time. Highly recommended Amar Honda Care!"</p>
                         <h6 class="reviewer-name">Sunil Choudhary</h6>
-                        <span class="reviewer-city">Hero Honda SP 125 Owner</span>
+                        <span class="reviewer-city"
+                            data-en="Hero Honda SP 125 Owner" data-hi="हीरो होंडा SP 125 मालिक">Hero Honda SP 125 Owner</span>
                     </div>
                 </div>
             </div>
@@ -555,15 +705,20 @@
         <div class="container py-4">
             <div class="row g-5">
                 <div class="col-lg-5">
-                    <span class="section-subtitle">Get In Touch</span>
-                    <h3 class="section-title mb-4">Visit Amar Honda Shop</h3>
+                    <span class="section-subtitle"
+                        data-en="Get In Touch" data-hi="संपर्क करें">Get In Touch</span>
+                    <h3 class="section-title mb-4"
+                        data-en="Visit Amar Honda Shop" data-hi="अमर होंडा शॉप पर आएं">Visit Amar Honda Shop</h3>
 
                     <div class="d-flex align-items-start gap-3 mb-4">
                         <div class="p-3 rounded-3 bg-danger bg-opacity-10 text-danger fs-4"><i
                                 class="bi bi-geo-alt-fill"></i></div>
                         <div>
-                            <h6 class="fw-bold text-dark mb-1">Shop Address</h6>
-                            <p class="text-secondary small mb-0">Jaipur Road, Near Nav Durga Mata Mandir, Chomu, Jaipur,
+                            <h6 class="fw-bold text-dark mb-1"
+                                data-en="Shop Address" data-hi="दुकान का पता">Shop Address</h6>
+                            <p class="text-secondary small mb-0"
+                                data-en="Jaipur Road, Near Nav Durga Mata Mandir, Chomu, Jaipur, Rajasthan - 303702 (Authorized Two-Wheeler Repair Hub)"
+                                data-hi="जयपुर रोड, नव दुर्गा माता मंदिर के पास, चोमू, जयपुर, राजस्थान - 303702 (अधिकृत दोपहिया मरम्मत केंद्र)">Jaipur Road, Near Nav Durga Mata Mandir, Chomu, Jaipur,
                                 Rajasthan - 303702 (Authorized Two-Wheeler Repair Hub)</p>
                         </div>
                     </div>
@@ -572,7 +727,8 @@
                         <div class="p-3 rounded-3 bg-danger bg-opacity-10 text-danger fs-4"><i
                                 class="bi bi-telephone-fill"></i></div>
                         <div>
-                            <h6 class="fw-bold text-dark mb-1">Direct Owner Contacts</h6>
+                            <h6 class="fw-bold text-dark mb-1"
+                                data-en="Direct Owner Contacts" data-hi="मालिक से सीधे संपर्क">Direct Owner Contacts</h6>
                             <p class="text-secondary small mb-1"><strong>Ashok Kumar Saini:</strong> <a
                                     href="tel:9352135105"
                                     class="text-danger fw-bold text-decoration-none">9352135105</a></p>
@@ -586,8 +742,11 @@
                         <div class="p-3 rounded-3 bg-danger bg-opacity-10 text-danger fs-4"><i
                                 class="bi bi-clock-fill"></i></div>
                         <div>
-                            <h6 class="fw-bold text-dark mb-1">Working Hours</h6>
-                            <p class="text-secondary small mb-0">Monday – Sunday: <strong>8:00 AM – 8:00 PM</strong>
+                            <h6 class="fw-bold text-dark mb-1"
+                                data-en="Working Hours" data-hi="काम के घंटे">Working Hours</h6>
+                            <p class="text-secondary small mb-0"
+                                data-en="Monday – Sunday: <strong>8:00 AM – 8:00 PM</strong> (Open 7 Days a Week)"
+                                data-hi="सोमवार – रविवार: <strong>सुबह 8:00 – रात 8:00</strong> (सप्ताह के 7 दिन खुला)">Monday – Sunday: <strong>8:00 AM – 8:00 PM</strong>
                                 (Open 7 Days a Week)</p>
                         </div>
                     </div>
@@ -595,40 +754,55 @@
 
                 <div class="col-lg-7">
                     <div class="p-4 rounded-4 bg-light border border-2 shadow-sm">
-                        <h4 class="font-heading fw-bold mb-3">Send Quick Inquiry</h4>
+                        <h4 class="font-heading fw-bold mb-3"
+                            data-en="Send Quick Inquiry" data-hi="त्वरित पूछताछ भेजें">Send Quick Inquiry</h4>
                         <form>
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-secondary small">Your Name</label>
-                                    <input type="text" class="form-control" placeholder="Enter your full name" required>
+                                    <label class="form-label fw-semibold text-secondary small"
+                                        data-en="Your Name" data-hi="आपका नाम">Your Name</label>
+                                    <input type="text" class="form-control"
+                                        data-en-placeholder="Enter your full name"
+                                        data-hi-placeholder="अपना पूरा नाम दर्ज करें"
+                                        placeholder="Enter your full name" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-secondary small">Mobile Number</label>
-                                    <input type="tel" class="form-control" placeholder="Enter 10-digit mobile number"
-                                        required>
+                                    <label class="form-label fw-semibold text-secondary small"
+                                        data-en="Mobile Number" data-hi="मोबाइल नंबर">Mobile Number</label>
+                                    <input type="tel" class="form-control"
+                                        data-en-placeholder="Enter 10-digit mobile number"
+                                        data-hi-placeholder="10 अंकों का मोबाइल नंबर दर्ज करें"
+                                        placeholder="Enter 10-digit mobile number" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-secondary small">Bike Model</label>
-                                    <input type="text" class="form-control" placeholder="e.g. Activa 6G / Shine">
+                                    <label class="form-label fw-semibold text-secondary small"
+                                        data-en="Bike Model" data-hi="बाइक मॉडल">Bike Model</label>
+                                    <input type="text" class="form-control"
+                                        data-en-placeholder="e.g. Activa 6G / Shine"
+                                        data-hi-placeholder="उदा. एक्टिवा 6G / शाइन"
+                                        placeholder="e.g. Activa 6G / Shine">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-secondary small">Preferred Contact
-                                        Person</label>
+                                    <label class="form-label fw-semibold text-secondary small"
+                                        data-en="Preferred Contact Person" data-hi="पसंदीदा संपर्क व्यक्ति">Preferred Contact Person</label>
                                     <select class="form-select">
-                                        <option>Ashok Kumar Saini (9352135105)</option>
-                                        <option>Prabhu Dhyal Saini (9351749674)</option>
-                                        <option>General Workshop Line</option>
+                                        <option data-en="Ashok Kumar Saini (9352135105)" data-hi="अशोक कुमार सैनी (9352135105)">Ashok Kumar Saini (9352135105)</option>
+                                        <option data-en="Prabhu Dhyal Saini (9351749674)" data-hi="प्रभु ध्याल सैनी (9351749674)">Prabhu Dhyal Saini (9351749674)</option>
+                                        <option data-en="General Workshop Line" data-hi="सामान्य वर्कशॉप लाइन">General Workshop Line</option>
                                     </select>
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label fw-semibold text-secondary small">Issue / Service
-                                        Required</label>
+                                    <label class="form-label fw-semibold text-secondary small"
+                                        data-en="Issue / Service Required" data-hi="समस्या / आवश्यक सर्विस">Issue / Service Required</label>
                                     <textarea class="form-control" rows="3"
-                                        placeholder="Describe issue or service required..."></textarea>
+                                        data-en-placeholder="Describe issue or service required..."
+                                        data-hi-placeholder="समस्या या आवश्यक सर्विस का वर्णन करें...">
+                                    </textarea>
                                 </div>
                                 <div class="col-12">
                                     <button type="submit" class="btn btn-honda-primary w-100 py-3 font-heading fw-bold">
-                                        <i class="bi bi-send-fill me-2"></i> Submit Inquiry To Workshop
+                                        <i class="bi bi-send-fill me-2"></i>
+                                        <span data-en="Submit Inquiry To Workshop" data-hi="वर्कशॉप को पूछताछ भेजें">Submit Inquiry To Workshop</span>
                                     </button>
                                 </div>
                             </div>
@@ -645,9 +819,11 @@
             <div class="row g-4 mb-5">
                 <div class="col-lg-4">
                     <h4 class="footer-brand-title mb-2">AMAR <span class="text-danger"> HONDA CARE</span></h4>
-                    <p class="text-white-50 small mb-3">
-                        Premier Two-Wheeler Care & Repair Workshop. Managed by Ashok Kumar Saini & Prabhu Dhyal Saini.
-                        Genuine Hero Honda Spares, Diagnostic Tuning & Express Servicing.
+                    <p class="text-white-50 small mb-3"
+                        data-en="Premier Two-Wheeler Care &amp; Repair Workshop. Managed by Ashok Kumar Saini &amp; Prabhu Dhyal Saini. Genuine Hero Honda Spares, Diagnostic Tuning &amp; Express Servicing."
+                        data-hi="प्रीमियर दोपहिया केयर एवं मरम्मत वर्कशॉप। अशोक कुमार सैनी एवं प्रभु ध्याल सैनी द्वारा प्रबंधित। असली हीरो होंडा स्पेयर पार्ट्स, डायग्नोस्टिक ट्यूनिंग एवं एक्सप्रेस सर्विसिंग।">
+                        Premier Two-Wheeler Care &amp; Repair Workshop. Managed by Ashok Kumar Saini &amp; Prabhu Dhyal Saini.
+                        Genuine Hero Honda Spares, Diagnostic Tuning &amp; Express Servicing.
                     </p>
                     <div class="d-flex gap-2">
                         <a href="tel:9352135105" class="btn btn-sm btn-outline-light"><i
@@ -657,17 +833,19 @@
                     </div>
                 </div>
                 <div class="col-6 col-lg-2">
-                    <h6 class="text-white font-heading mb-3">Quick Links</h6>
+                    <h6 class="text-white font-heading mb-3"
+                        data-en="Quick Links" data-hi="त्वरित लिंक">Quick Links</h6>
                     <ul class="footer-link-list small">
-                        <li><a href="#services">Service Packages</a></li>
-                        <li><a href="#owners">Shop Owners</a></li>
-                        <li><a href="#calculator">Price Estimator</a></li>
-                        <li><a href="#status">Track Vehicle</a></li>
-                        <li><a href="{% url 'appointments:book' %}">Book Appointment</a></li>
+                        <li><a href="#services" data-en="Service Packages" data-hi="सर्विस पैकेज">Service Packages</a></li>
+                        <li><a href="#owners" data-en="Shop Owners" data-hi="दुकान मालिक">Shop Owners</a></li>
+                        <li><a href="#calculator" data-en="Price Estimator" data-hi="मूल्य अनुमानक">Price Estimator</a></li>
+                        <li><a href="#status" data-en="Track Vehicle" data-hi="वाहन ट्रैक करें">Track Vehicle</a></li>
+                        <li><a href="{% url 'appointments:book' %}" data-en="Book Appointment" data-hi="अपॉइंटमेंट बुक करें">Book Appointment</a></li>
                     </ul>
                 </div>
                 <div class="col-6 col-lg-2">
-                    <h6 class="text-white font-heading mb-3">Hero Honda Models</h6>
+                    <h6 class="text-white font-heading mb-3"
+                        data-en="Hero Honda Models" data-hi="हीरो होंडा मॉडल">Hero Honda Models</h6>
                     <ul class="footer-link-list small">
                         <li><a href="#models">Hero Honda Activa 6G</a></li>
                         <li><a href="#models">Hero Honda Shine 125</a></li>
@@ -677,20 +855,26 @@
                     </ul>
                 </div>
                 <div class="col-lg-4">
-                    <h6 class="text-white font-heading mb-3">Staff Management Portal</h6>
-                    <p class="text-white-50 small mb-3">Authorized workshop staff and mechanics can log in to access the
+                    <h6 class="text-white font-heading mb-3"
+                        data-en="Staff Management Portal" data-hi="स्टाफ प्रबंधन पोर्टल">Staff Management Portal</h6>
+                    <p class="text-white-50 small mb-3"
+                        data-en="Authorized workshop staff and mechanics can log in to access the billing, service queue, and inventory management system."
+                        data-hi="अधिकृत वर्कशॉप स्टाफ और मैकेनिक बिलिंग, सर्विस कतार और इन्वेंटरी प्रबंधन प्रणाली तक पहुंचने के लिए लॉगिन कर सकते हैं।">Authorized workshop staff and mechanics can log in to access the
                         billing, service queue, and inventory management system.</p>
                     {% if user.is_authenticated %}
                     <a href="{% url 'reports:dashboard' %}"
-                        class="btn btn-danger btn-sm font-heading fw-bold px-4 py-2">Go To Management Dashboard</a>
+                        class="btn btn-danger btn-sm font-heading fw-bold px-4 py-2"
+                        data-en="Go To Management Dashboard" data-hi="प्रबंधन डैशबोर्ड पर जाएं">Go To Management Dashboard</a>
                     {% else %}
                     <a href="{% url 'accounts:login' %}"
-                        class="btn btn-outline-light btn-sm font-heading fw-semibold px-4 py-2">Staff Portal Login</a>
+                        class="btn btn-outline-light btn-sm font-heading fw-semibold px-4 py-2"
+                        data-en="Staff Portal Login" data-hi="स्टाफ पोर्टल लॉगिन">Staff Portal Login</a>
                     {% endif %}
                 </div>
             </div>
             <div class="border-top border-secondary pt-3 text-center small text-white-50">
-                © {% now "Y" %} Amar Honda Care. All Rights Reserved. Designed with Excellence.
+                © {% now "Y" %} Amar Honda Care.
+                <span data-en="All Rights Reserved. Designed with Excellence." data-hi="सर्वाधिकार सुरक्षित। उत्कृष्टता के साथ डिज़ाइन किया गया।">All Rights Reserved. Designed with Excellence.</span>
             </div>
         </div>
     </footer>
@@ -704,6 +888,88 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/landing.js' %}"></script>
+
+    <!-- ================================================================
+         i18n Language Toggle — English / Hindi
+         ================================================================ -->
+    <script>
+    (function () {
+        'use strict';
+
+        /* ---- Configuration ---- */
+        const STORAGE_KEY = 'amar_honda_lang';
+        const DEFAULT_LANG = 'en';
+
+        /* ---- State ---- */
+        let currentLang = localStorage.getItem(STORAGE_KEY) || DEFAULT_LANG;
+
+        /* ---- DOM refs ---- */
+        const htmlRoot   = document.getElementById('html-root');
+        const toggleBtn  = document.getElementById('langToggleBtn');
+        const optEN      = document.getElementById('langOptEN');
+        const optHI      = document.getElementById('langOptHI');
+
+        /* ---- Core: apply a language to the whole page ---- */
+        function applyLang(lang) {
+            currentLang = lang;
+            localStorage.setItem(STORAGE_KEY, lang);
+            htmlRoot.setAttribute('lang', lang);
+
+            /* 1. Regular text elements with data-en / data-hi */
+            document.querySelectorAll('[data-en], [data-hi]').forEach(function (el) {
+                // Skip the toggle button's own option spans
+                if (el.closest('#langToggleBtn')) return;
+
+                const text = el.getAttribute('data-' + lang);
+                if (text === null) return;
+
+                /* Use innerHTML so we can embed <strong>, <span>, <i> etc. */
+                el.innerHTML = text;
+            });
+
+            /* 2. Placeholder-bearing inputs / textareas */
+            document.querySelectorAll('[data-en-placeholder], [data-hi-placeholder]').forEach(function (el) {
+                const ph = el.getAttribute('data-' + lang + '-placeholder');
+                if (ph !== null) el.setAttribute('placeholder', ph);
+            });
+
+            /* 3. <select> <option> elements */
+            document.querySelectorAll('select option[data-en], select option[data-hi]').forEach(function (el) {
+                const text = el.getAttribute('data-' + lang);
+                if (text !== null) el.textContent = text;
+            });
+
+            /* 4. Toggle pill UI */
+            if (lang === 'hi') {
+                optEN.classList.remove('active');
+                optHI.classList.add('active');
+            } else {
+                optHI.classList.remove('active');
+                optEN.classList.add('active');
+            }
+        }
+
+        /* ---- Fade animation helper ---- */
+        function switchWithFade(lang) {
+            document.body.classList.add('lang-fade');
+            document.body.addEventListener('animationend', function handler() {
+                document.body.removeEventListener('animationend', handler);
+                document.body.classList.remove('lang-fade');
+            });
+            applyLang(lang);
+        }
+
+        /* ---- Toggle button click ---- */
+        toggleBtn.addEventListener('click', function () {
+            switchWithFade(currentLang === 'en' ? 'hi' : 'en');
+        });
+
+        /* ---- Apply on page load (no fade) ---- */
+        applyLang(currentLang);
+
+    })();
+    </script>
+
 </body>
 
 </html>

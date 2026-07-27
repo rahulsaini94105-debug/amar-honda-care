@@ -779,3 +779,66 @@ h1, h2, h3, h4, h5, h6, .font-heading {
         justify-content: center;
     }
 }
+
+/* ==========================================================================
+   LANGUAGE TOGGLE — English / Hindi Switcher
+   ========================================================================== */
+
+.lang-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    background: #F1F5F9;
+    border: 1.5px solid #CBD5E1;
+    border-radius: var(--radius-full);
+    padding: 3px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.lang-toggle-btn:hover {
+    border-color: var(--honda-red);
+    box-shadow: 0 4px 14px var(--honda-red-glow);
+}
+
+.lang-toggle-btn .lang-option {
+    position: relative;
+    z-index: 2;
+    padding: 4px 13px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    border-radius: var(--radius-full);
+    transition: color 0.25s ease;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.lang-toggle-btn .lang-option.active {
+    color: #FFFFFF;
+    background: linear-gradient(135deg, #E60012 0%, #B3000E 100%);
+    box-shadow: 0 3px 10px var(--honda-red-glow);
+}
+
+/* Page-level fade transition on language switch */
+.lang-fade {
+    animation: langFadeSwitch 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes langFadeSwitch {
+    0%   { opacity: 1; }
+    30%  { opacity: 0.35; }
+    100% { opacity: 1; }
+}
+
+/* Hindi font rendering boost */
+[lang="hi"] body,
+body[data-lang="hi"] {
+    font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', sans-serif;
+}
+
