@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Create Account — Amar Honda Care{% endblock %}
+
+{% block auth_content %}
+<div class="login-wrapper">
+    <div class="login-container">
+        <div class="login-left-panel">
+            <div class="panel-border-box">
+                <div class="decor-dot-grid top-left"></div>
+                <div class="decor-dot-grid bottom-right"></div>
+                <div class="decor-lines-top">|||<br>||<br>|</div>
+                <div class="decor-lines-bottom">|<br>||<br>|||</div>
+
+                <div class="panel-images-container">
+                    <img src="{% static 'images/mechanic_banner.png' %}" alt="Mechanic Banner" class="img-banner">
+                    <div class="panel-images-row">
+                        <img src="{% static 'images/mechanic_engine.png' %}" alt="Mechanic Engine" class="img-square">
+                        <img src="{% static 'images/mechanic_wheel.png' %}" alt="Mechanic Wheel" class="img-square">
+                    </div>
+                </div>
+
+                <div class="panel-text-content text-center">
+                    <h3 class="fw-bold mb-2">Amar Honda Care</h3>
+                    <p class="small text-muted-light">Create your account once, then sign in with your username or email and password.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-right-panel">
+            <div class="login-form-container">
+                <div class="shop-logo-container">
+                    <img src="{% static 'images/logo.png' %}" alt="Amar Honda Care Logo" class="shop-logo">
+                </div>
+
+                <h2 class="welcome-title">Create your account</h2>
+                <p class="welcome-subtitle">Enter a username, email, and password.</p>
+
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger py-2 px-3 small rounded-3 mb-3">
+                        {{ form.non_field_errors|join:", " }}
+                    </div>
+                    {% endif %}
+
+                    {% for field in form %}
+                    <div class="form-group-custom mb-3">
+                        {% if field.name == 'password1' %}
+                        <span class="input-icon"><i class="bi bi-lock"></i></span>
+                        {% elif field.name == 'password2' %}
+                        <span class="input-icon"><i class="bi bi-shield-lock"></i></span>
+                        {% elif field.name == 'email' %}
+                        <span class="input-icon"><i class="bi bi-envelope"></i></span>
+                        {% else %}
+                        <span class="input-icon"><i class="bi bi-person"></i></span>
+                        {% endif %}
+                        {{ field }}
+                        {% if field.errors %}
+                        <div class="text-danger small mt-1">{{ field.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <button type="submit" class="btn btn-login w-100 py-2 fw-semibold">
+                        Create Account
+                    </button>
+                </form>
+
+                <div class="text-center mt-4 text-muted small" style="font-size: 0.8rem;">
+                    Already have an account? <a href="{% url 'accounts:login' %}" class="create-account-link text-decoration-none fw-semibold">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

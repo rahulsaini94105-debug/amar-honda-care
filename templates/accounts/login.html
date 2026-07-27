@@ -48,7 +48,7 @@
 
                 <!-- Welcome Header -->
                 <h2 class="welcome-title">Welcome to Amar Honda Care</h2>
-                <p class="welcome-subtitle">Login to continue.</p>
+                <p class="welcome-subtitle">Use your username or email and password to continue.</p>
 
                 <!-- Form -->
                 <form method="post" class="mt-4">
@@ -90,7 +90,7 @@
 
                 <!-- Create Account -->
                 <div class="text-center mt-4 text-muted small" style="font-size: 0.8rem;">
-                    Don't have an Account? <a href="#" class="create-account-link text-decoration-none fw-semibold">Create Account</a>
+                    Don't have an Account? <a href="{% url 'accounts:signup' %}" class="create-account-link text-decoration-none fw-semibold">Create Account</a>
                 </div>
             </div>
 

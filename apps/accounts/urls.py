@@ -5,6 +5,7 @@ app_name = 'accounts'
 
 urlpatterns = [
     path('login/', views.CustomLoginView.as_view(), name='login'),
+    path('signup/', views.SignUpView.as_view(), name='signup'),
     path('logout/', views.CustomLogoutView.as_view(), name='logout'),
     path('users/', views.UserListView.as_view(), name='user_list'),
     path('users/add/', views.UserCreateView.as_view(), name='user_create'),

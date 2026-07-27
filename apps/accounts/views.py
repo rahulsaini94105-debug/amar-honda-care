@@ -4,7 +4,7 @@ from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from django.contrib import messages
 from .models import User
-from .forms import LoginForm, UserCreateForm, UserUpdateForm
+from .forms import LoginForm, PublicSignUpForm, UserCreateForm, UserUpdateForm
 from .mixins import OwnerRequiredMixin
 
 
@@ -12,6 +12,17 @@ class CustomLoginView(LoginView):
     form_class = LoginForm
     template_name = 'accounts/login.html'
     redirect_authenticated_user = True
+
+
+class SignUpView(CreateView):
+    model = User
+    form_class = PublicSignUpForm
+    template_name = 'accounts/signup.html'
+    success_url = reverse_lazy('accounts:login')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Account created successfully. Please sign in with your credentials.')
+        return super().form_valid(form)
 
 
 class CustomLogoutView(LogoutView):
