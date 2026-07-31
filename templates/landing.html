@@ -20,7 +20,7 @@
     <!-- Three.js 3D Library for Background Animation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <!-- Custom Landing Page CSS -->
-    <link rel="stylesheet" href="{% static 'css/landing.css' %}?v=1.5">
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}?v=1.7">
 </head>
 
 <body class="landing-page">
@@ -123,17 +123,17 @@
         <div class="container hero-content">
             <div class="row align-items-center">
                 <div class="col-lg-7">
-                    <div class="hero-badge">
+                    <div class="hero-badge reveal-left">
                         <i class="bi bi-award-fill"></i>
                         <span data-en="Authorized Hero Honda Bike Care &amp; Repair Specialist"
                               data-hi="अधिकृत हीरो होंडा बाइक केयर एवं रिपेयर विशेषज्ञ">Authorized Hero Honda Bike Care &amp; Repair Specialist</span>
                     </div>
-                    <h2 class="hero-title">
+                    <h2 class="hero-title reveal-left delay-100">
                         <span data-en="Premium Care For Your" data-hi="आपके लिए प्रीमियम देखभाल">Premium Care For Your</span>
                         <span data-en=" <span>Hero Honda Bike &amp; Scooter</span>"
                               data-hi=" <span>हीरो होंडा बाइक और स्कूटर</span>"> <span>Hero Honda Bike &amp; Scooter</span></span>
                     </h2>
-                    <p class="hero-lead"
+                    <p class="hero-lead reveal-left delay-200"
                         data-en="Welcome to <strong>Amar Honda Care</strong>. Operated by <strong>Ashok Kumar Saini</strong> and <strong>Prabhu Dhyal Saini</strong>. We deliver certified multi-point Hero Honda servicing, 100% genuine spare parts, precision engine tuning, and quick breakdown pickup across the region."
                         data-hi="<strong>अमर होंडा केयर</strong> में आपका स्वागत है। संचालित <strong>अशोक कुमार सैनी</strong> और <strong>प्रभु ध्याल सैनी</strong> द्वारा। हम प्रमाणित मल्टी-पॉइंट हीरो होंडा सर्विसिंग, 100% असली स्पेयर पार्ट्स, सटीक इंजन ट्यूनिंग और क्षेत्र में त्वरित ब्रेकडाउन पिकअप प्रदान करते हैं।">
                         Welcome to <strong>Amar Honda Care</strong>. Operated by <strong>Ashok Kumar Saini</strong> and
@@ -142,7 +142,7 @@
                         engine tuning, and quick breakdown pickup across the region.
                     </p>
 
-                    <div class="hero-cta-group">
+                    <div class="hero-cta-group reveal-left delay-300">
                         <a href="{% url 'appointments:book' %}" class="btn btn-honda-primary">
                             <i class="bi bi-lightning-charge-fill"></i>
                             <span data-en="Book Online Appointment" data-hi="ऑनलाइन अपॉइंटमेंट बुक करें">Book Online Appointment</span>
@@ -153,7 +153,7 @@
                         </a>
                     </div>
 
-                    <div class="hero-stats-row">
+                    <div class="hero-stats-row reveal delay-400">
                         <div class="hero-stat-item">
                             <div class="hero-stat-number">10,000<span>+</span></div>
                             <div class="hero-stat-label"
@@ -178,7 +178,7 @@
                 </div>
 
                 <div class="col-lg-5 d-none d-lg-block">
-                    <div class="p-4 rounded-4 bg-white border border-2 shadow-lg card-3d-tilt"
+                    <div class="p-4 rounded-4 bg-white border border-2 shadow-lg card-3d-tilt reveal-right delay-200"
                         style="backdrop-filter: blur(12px);">
                         <h4 class="font-heading fw-bold mb-3 text-danger"><i class="bi bi-calendar-event me-2"></i>
                             <span data-en="Quick Service Booking" data-hi="त्वरित सेवा बुकिंग">Quick Service Booking</span>
@@ -216,7 +216,7 @@
     <!-- Shop Owners Showcase Section -->
     <section class="owners-section" id="owners">
         <div class="container">
-            <div class="section-header">
+            <div class="section-header reveal">
                 <span class="section-subtitle"
                     data-en="Leadership &amp; Commitment" data-hi="नेतृत्व और प्रतिबद्धता">Leadership &amp; Commitment</span>
                 <h3 class="section-title"
@@ -229,7 +229,7 @@
 
             <div class="row g-4 justify-content-center">
                 <!-- Owner 1: Ashok Kumar Saini -->
-                <div class="col-md-6 col-lg-5">
+                <div class="col-md-6 col-lg-5 reveal-left delay-100">
                     <div class="owners-card-glass">
                         <div class="owners-card-header">
                             <div class="owner-avatar-icon">
@@ -263,7 +263,7 @@
                 </div>
 
                 <!-- Owner 2: Prabhu Dhyal Saini -->
-                <div class="col-md-6 col-lg-5">
+                <div class="col-md-6 col-lg-5 reveal-right delay-100">
                     <div class="owners-card-glass">
                         <div class="owners-card-header">
                             <div class="owner-avatar-icon"
@@ -303,7 +303,7 @@
     <!-- Services & Pricing Section -->
     <section class="services-section" id="services">
         <div class="container">
-            <div class="section-header">
+            <div class="section-header reveal">
                 <span class="section-subtitle"
                     data-en="Transparent Pricing" data-hi="पारदर्शी मूल्य निर्धारण">Transparent Pricing</span>
                 <h3 class="section-title"
@@ -317,7 +317,7 @@
 
             <div class="row g-4">
                 <!-- Package 1 -->
-                <div class="col-md-4">
+                <div class="col-md-4 reveal delay-100">
                     <div class="service-package-card">
                         <div class="fw-bold text-danger text-uppercase fs-6 tracking-wide"
                             data-en="Essential Maintenance" data-hi="आवश्यक रखरखाव">Essential Maintenance</div>
@@ -346,7 +346,7 @@
                 </div>
 
                 <!-- Package 2 Popular -->
-                <div class="col-md-4">
+                <div class="col-md-4 reveal delay-200">
                     <div class="service-package-card popular">
                         <div class="popular-ribbon"
                             data-en="Most Popular" data-hi="सबसे लोकप्रिय">Most Popular</div>
@@ -377,7 +377,7 @@
                 </div>
 
                 <!-- Package 3 -->
-                <div class="col-md-4">
+                <div class="col-md-4 reveal delay-300">
                     <div class="service-package-card">
                         <div class="fw-bold text-danger text-uppercase fs-6 tracking-wide"
                             data-en="Heavy Duty" data-hi="हेवी ड्यूटी">Heavy Duty</div>
@@ -412,7 +412,7 @@
     <section class="py-5 bg-light" id="calculator">
         <div class="container py-4">
             <div class="row align-items-center g-5">
-                <div class="col-lg-6">
+                <div class="col-lg-6 reveal-left">
                     <span class="section-subtitle"
                         data-en="Instant Transparency" data-hi="तत्काल पारदर्शिता">Instant Transparency</span>
                     <h3 class="section-title mb-3"
@@ -492,7 +492,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg-6" id="status">
+                <div class="col-lg-6 reveal-right" id="status">
                     <!-- Live Status Tracker -->
                     <div class="status-tracker-card">
                         <div class="d-flex align-items-center gap-3 mb-3">
@@ -554,7 +554,7 @@
     <!-- Hero Motocorp Models Showcase -->
     <section class="py-5 bg-white" id="models">
         <div class="container py-4">
-            <div class="section-header">
+            <div class="section-header reveal">
                 <span class="section-subtitle"
                     data-en="We Service All Models" data-hi="हम सभी मॉडल सर्विस करते हैं">We Service All Models</span>
                 <h3 class="section-title"
@@ -567,7 +567,7 @@
 
             <div class="row g-4 justify-content-center">
                 <!-- Splendor Plus -->
-                <div class="col-6 col-md-4 col-lg-2">
+                <div class="col-6 col-md-4 col-lg-2 reveal delay-100">
                     <div class="bike-model-card">
                         <div class="bike-model-img-wrap">
                             <img src="{% static 'images/hero_splendor.png' %}" alt="Hero Splendor Plus"
@@ -580,7 +580,7 @@
                     </div>
                 </div>
                 <!-- HF Deluxe -->
-                <div class="col-6 col-md-4 col-lg-2">
+                <div class="col-6 col-md-4 col-lg-2 reveal delay-150">
                     <div class="bike-model-card">
                         <div class="bike-model-img-wrap">
                             <img src="{% static 'images/hero_hf_deluxe.png' %}" alt="Hero HF Deluxe"
@@ -593,7 +593,7 @@
                     </div>
                 </div>
                 <!-- Passion Pro -->
-                <div class="col-6 col-md-4 col-lg-2">
+                <div class="col-6 col-md-4 col-lg-2 reveal delay-200">
                     <div class="bike-model-card">
                         <div class="bike-model-img-wrap">
                             <img src="{% static 'images/hero_passion_pro.png' %}" alt="Hero Passion Pro"
@@ -606,7 +606,7 @@
                     </div>
                 </div>
                 <!-- Glamour 125 -->
-                <div class="col-6 col-md-4 col-lg-2">
+                <div class="col-6 col-md-4 col-lg-2 reveal delay-250">
                     <div class="bike-model-card">
                         <div class="bike-model-img-wrap">
                             <img src="{% static 'images/hero_glamour.png' %}" alt="Hero Glamour 125"
@@ -619,7 +619,7 @@
                     </div>
                 </div>
                 <!-- Xtreme 160R -->
-                <div class="col-6 col-md-4 col-lg-2">
+                <div class="col-6 col-md-4 col-lg-2 reveal delay-300">
                     <div class="bike-model-card">
                         <div class="bike-model-img-wrap">
                             <img src="{% static 'images/hero_xtreme.png' %}" alt="Hero Xtreme 160R"
@@ -632,7 +632,7 @@
                     </div>
                 </div>
                 <!-- Destini 125 -->
-                <div class="col-6 col-md-4 col-lg-2">
+                <div class="col-6 col-md-4 col-lg-2 reveal delay-350">
                     <div class="bike-model-card">
                         <div class="bike-model-img-wrap">
                             <img src="{% static 'images/hero_destini.png' %}" alt="Hero Destini 125"
@@ -651,7 +651,7 @@
     <!-- Customer Testimonials -->
     <section class="py-5 bg-light">
         <div class="container py-4">
-            <div class="section-header">
+            <div class="section-header reveal">
                 <span class="section-subtitle"
                     data-en="Customer Trust" data-hi="ग्राहक विश्वास">Customer Trust</span>
                 <h3 class="section-title"
@@ -659,7 +659,7 @@
             </div>
 
             <div class="row g-4">
-                <div class="col-md-4">
+                <div class="col-md-4 reveal delay-100">
                     <div class="review-card">
                         <div class="stars-rating">★★★★★</div>
                         <p class="review-quote"
@@ -672,7 +672,7 @@
                             data-en="Hero Honda Activa 6G Owner" data-hi="हीरो होंडा एक्टिवा 6G मालिक">Hero Honda Activa 6G Owner</span>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 reveal delay-200">
                     <div class="review-card">
                         <div class="stars-rating">★★★★★</div>
                         <p class="review-quote"
@@ -684,7 +684,7 @@
                             data-en="Hero Honda Unicorn Owner" data-hi="हीरो होंडा यूनिकॉर्न मालिक">Hero Honda Unicorn Owner</span>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 reveal delay-300">
                     <div class="review-card">
                         <div class="stars-rating">★★★★★</div>
                         <p class="review-quote"
@@ -704,7 +704,7 @@
     <section class="py-5 bg-white" id="contact">
         <div class="container py-4">
             <div class="row g-5">
-                <div class="col-lg-5">
+                <div class="col-lg-5 reveal-left">
                     <span class="section-subtitle"
                         data-en="Get In Touch" data-hi="संपर्क करें">Get In Touch</span>
                     <h3 class="section-title mb-4"
@@ -752,7 +752,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg-7">
+                <div class="col-lg-7 reveal-right">
                     <div class="p-4 rounded-4 bg-light border border-2 shadow-sm">
                         <h4 class="font-heading fw-bold mb-3"
                             data-en="Send Quick Inquiry" data-hi="त्वरित पूछताछ भेजें">Send Quick Inquiry</h4>
@@ -887,7 +887,7 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{% static 'js/landing.js' %}"></script>
+    <script src="{% static 'js/landing.js' %}?v=1.7"></script>
 
     <!-- ================================================================
          i18n Language Toggle — English / Hindi

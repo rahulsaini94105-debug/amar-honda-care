@@ -3,6 +3,9 @@
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 0. Enable Javascript classes for animations
+    document.documentElement.classList.add('js-enabled');
+
     // 1. Navbar Scroll Effect
     const navbar = document.querySelector('.landing-navbar');
     window.addEventListener('scroll', () => {
@@ -128,6 +131,24 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }, 600);
     });
+
+    // 6. Scroll Reveal Observer
+    const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.05,
+        rootMargin: '0px 0px -40px 0px'
+    });
+
+    revealElements.forEach(el => {
+        revealObserver.observe(el);
+    });
 });
 
 /* ==========================================================================
@@ -183,7 +204,7 @@ function initHero3DCanvas() {
     for (let i = 0; i < 6; i++) {
         const poly = new THREE.Mesh(polyGeo, i % 2 === 0 ? polyMat1 : polyMat2);
         poly.position.set(
-            (Math.random() - 0.5) * 50,
+            Math.random() * 20 + 8, // Constrain to right half of the screen
             (Math.random() - 0.5) * 30,
             (Math.random() - 0.5) * 20
         );
@@ -198,7 +219,7 @@ function initHero3DCanvas() {
     const positions = new Float32Array(particleCount * 3);
 
     for (let i = 0; i < particleCount * 3; i += 3) {
-        positions[i] = (Math.random() - 0.5) * 70;
+        positions[i] = Math.random() * 30 + 5; // Constrain to right half of the screen
         positions[i + 1] = (Math.random() - 0.5) * 40;
         positions[i + 2] = (Math.random() - 0.5) * 30;
     }
@@ -252,14 +273,18 @@ function initHero3DCanvas() {
     }
     animate();
 
-    // Resize Handler
-    window.addEventListener('resize', () => {
-        width = parent.clientWidth;
-        height = parent.clientHeight;
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
-        renderer.setSize(width, height);
+    // Resize Observer to handle dynamic layout adjustments (e.g. font loading)
+    const resizeObserver = new ResizeObserver((entries) => {
+        for (let entry of entries) {
+            const rect = entry.contentRect;
+            width = rect.width || parent.clientWidth;
+            height = rect.height || parent.clientHeight;
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        }
     });
+    resizeObserver.observe(parent);
 }
 
 /* ==========================================================================

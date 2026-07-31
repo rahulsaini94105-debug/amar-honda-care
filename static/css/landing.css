@@ -202,7 +202,7 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 /* Hero Section */
 .hero-section {
     position: relative;
-    padding: 120px 0 90px;
+    padding: 80px 0 60px;
     background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 50%, #EEF2FF 100%);
     color: #0F172A;
     overflow: hidden;
@@ -255,10 +255,10 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 }
 
 .hero-title {
-    font-size: 3.2rem;
+    font-size: 2.8rem;
     font-weight: 800;
     line-height: 1.15;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .hero-title span {
@@ -268,10 +268,10 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 }
 
 .hero-lead {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
     color: #475569;
     max-width: 580px;
-    margin-bottom: 36px;
+    margin-bottom: 24px;
     font-weight: 500;
 }
 
@@ -279,15 +279,15 @@ h1, h2, h3, h4, h5, h6, .font-heading {
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
-    margin-bottom: 48px;
+    margin-bottom: 28px;
 }
 
 .btn-honda-primary {
     background: linear-gradient(135deg, #E60012 0%, #B3000E 100%);
     color: #FFFFFF;
     font-weight: 700;
-    font-size: 1.05rem;
-    padding: 14px 32px;
+    font-size: 1rem;
+    padding: 12px 28px;
     border-radius: var(--radius-md);
     border: none;
     box-shadow: 0 10px 25px var(--honda-red-glow);
@@ -309,8 +309,8 @@ h1, h2, h3, h4, h5, h6, .font-heading {
     border: 1px solid #CBD5E1;
     color: #0F172A;
     font-weight: 700;
-    font-size: 1.05rem;
-    padding: 14px 28px;
+    font-size: 1rem;
+    padding: 12px 24px;
     border-radius: var(--radius-md);
     transition: var(--transition-fast);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
@@ -329,12 +329,12 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 .hero-stats-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
+    gap: 16px;
     background: #FFFFFF;
     border: 1px solid #E2E8F0;
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.06);
     border-radius: var(--radius-lg);
-    padding: 24px 30px;
+    padding: 16px 20px;
 }
 
 .hero-stat-item {
@@ -343,11 +343,11 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 
 .hero-stat-number {
     font-family: var(--font-heading);
-    font-size: 2.1rem;
+    font-size: 1.8rem;
     font-weight: 800;
     color: #0F172A;
     line-height: 1;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 .hero-stat-number span {
@@ -355,7 +355,7 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 }
 
 .hero-stat-label {
-    font-size: 0.82rem;
+    font-size: 0.75rem;
     color: #64748B;
     font-weight: 600;
     text-transform: uppercase;
@@ -841,4 +841,48 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 body[data-lang="hi"] {
     font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', sans-serif;
 }
+
+/* ==========================================================================
+   SCROLL REVEAL ANIMATIONS
+   ========================================================================== */
+
+/* Base style for elements that will be revealed (only when JS is enabled) */
+.js-enabled .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, opacity;
+}
+
+.js-enabled .reveal-left {
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, opacity;
+}
+
+.js-enabled .reveal-right {
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, opacity;
+}
+
+/* Active states (elements in view) */
+.js-enabled .reveal.active,
+.js-enabled .reveal-left.active,
+.js-enabled .reveal-right.active {
+    opacity: 1;
+    transform: translate(0, 0);
+}
+
+/* Delay Utilities for staggered animations */
+.js-enabled .delay-100 { transition-delay: 100ms; }
+.js-enabled .delay-150 { transition-delay: 150ms; }
+.js-enabled .delay-200 { transition-delay: 200ms; }
+.js-enabled .delay-250 { transition-delay: 250ms; }
+.js-enabled .delay-300 { transition-delay: 300ms; }
+.js-enabled .delay-350 { transition-delay: 350ms; }
+.js-enabled .delay-400 { transition-delay: 400ms; }
+.js-enabled .delay-500 { transition-delay: 500ms; }
 
