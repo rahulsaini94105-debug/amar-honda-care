@@ -84,6 +84,8 @@
                         data-en="Service Status" data-hi="सेवा स्थिति">Service Status</a></li>
                     <li class="nav-item"><a class="nav-link nav-link-custom" href="#models"
                         data-en="Hero Models" data-hi="हीरो मॉडल">Hero Models</a></li>
+                    <li class="nav-item"><a class="nav-link nav-link-custom" href="#location"
+                        data-en="Location" data-hi="लोकेशन">Location</a></li>
                     <li class="nav-item"><a class="nav-link nav-link-custom" href="#contact"
                         data-en="Contact" data-hi="संपर्क">Contact</a></li>
                 </ul>
@@ -700,6 +702,63 @@
         </div>
     </section>
 
+    <!-- Shop Location Section -->
+    <section class="location-section" id="location">
+        <div class="container py-4">
+            <div class="section-header reveal">
+                <span class="section-subtitle"
+                    data-en="Find Us Easily" data-hi="हमें आसानी से खोजें">Find Us Easily</span>
+                <h3 class="section-title"
+                    data-en="Amar Honda Care Shop Location" data-hi="अमर होंडा केयर शॉप लोकेशन">Amar Honda Care Shop Location</h3>
+                <p class="text-secondary"
+                    data-en="Visit us at Jaipur Road near Nav Durga Mata Mandir in Chomu. Use the map below for easy directions."
+                    data-hi="चोमू में नव दुर्गा माता मंदिर के पास जयपुर रोड पर हमसे मिलें। आसान दिशा-निर्देश के लिए नीचे दिया गया मैप उपयोग करें।">
+                    Visit us at Jaipur Road near Nav Durga Mata Mandir in Chomu. Use the map below for easy directions.
+                </p>
+            </div>
+
+            <div class="row g-4 align-items-stretch">
+                <div class="col-lg-5 reveal-left">
+                    <div class="location-info-card h-100">
+                        <h4 class="font-heading fw-bold mb-3">
+                            <i class="bi bi-geo-alt-fill text-danger me-2"></i>
+                            <span data-en="Workshop Address" data-hi="वर्कशॉप का पता">Workshop Address</span>
+                        </h4>
+                        <p class="text-secondary mb-3"
+                            data-en="Amar Honda Care, Jaipur Road, Near Nav Durga Mata Mandir, Chomu, Jaipur, Rajasthan - 303702"
+                            data-hi="अमर होंडा केयर, जयपुर रोड, नव दुर्गा माता मंदिर के पास, चोमू, जयपुर, राजस्थान - 303702">
+                            Amar Honda Care, Jaipur Road, Near Nav Durga Mata Mandir, Chomu, Jaipur, Rajasthan - 303702
+                        </p>
+                        <div class="d-grid gap-2">
+                            <a href="https://www.google.com/maps/search/?api=1&query=Amar+Honda+Care,+Jaipur+Road,+Near+Nav+Durga+Mata+Mandir,+Chomu,+Jaipur,+Rajasthan"
+                                class="btn btn-honda-primary" target="_blank" rel="noopener noreferrer">
+                                <i class="bi bi-sign-turn-right-fill"></i>
+                                <span data-en="Get Directions" data-hi="दिशा निर्देश प्राप्त करें">Get Directions</span>
+                            </a>
+                            <a href="https://maps.google.com/?q=Amar+Honda+Care,+Jaipur+Road,+Near+Nav+Durga+Mata+Mandir,+Chomu,+Jaipur,+Rajasthan"
+                                class="btn btn-honda-outline" target="_blank" rel="noopener noreferrer">
+                                <i class="bi bi-map-fill"></i>
+                                <span data-en="Open in Google Maps" data-hi="गूगल मैप्स में खोलें">Open in Google Maps</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-7 reveal-right">
+                    <div class="location-map-wrap">
+                        <iframe
+                            title="Amar Honda Care Location Map"
+                            loading="lazy"
+                            allowfullscreen
+                            referrerpolicy="no-referrer-when-downgrade"
+                            src="https://maps.google.com/maps?q=Amar%20Honda%20Care%2C%20Jaipur%20Road%2C%20Near%20Nav%20Durga%20Mata%20Mandir%2C%20Chomu%2C%20Jaipur%2C%20Rajasthan%20303702&t=&z=15&ie=UTF8&iwloc=&output=embed">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Contact & Map Section -->
     <section class="py-5 bg-white" id="contact">
         <div class="container py-4">
@@ -838,6 +897,7 @@
                     <ul class="footer-link-list small">
                         <li><a href="#services" data-en="Service Packages" data-hi="सर्विस पैकेज">Service Packages</a></li>
                         <li><a href="#owners" data-en="Shop Owners" data-hi="दुकान मालिक">Shop Owners</a></li>
+                        <li><a href="#location" data-en="Shop Location" data-hi="दुकान की लोकेशन">Shop Location</a></li>
                         <li><a href="#calculator" data-en="Price Estimator" data-hi="मूल्य अनुमानक">Price Estimator</a></li>
                         <li><a href="#status" data-en="Track Vehicle" data-hi="वाहन ट्रैक करें">Track Vehicle</a></li>
                         <li><a href="{% url 'appointments:book' %}" data-en="Book Appointment" data-hi="अपॉइंटमेंट बुक करें">Book Appointment</a></li>
