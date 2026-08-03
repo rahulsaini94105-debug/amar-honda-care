@@ -690,6 +690,37 @@ h1, h2, h3, h4, h5, h6, .font-heading {
     color: var(--text-muted);
 }
 
+/* Shop Location Section */
+.location-section {
+    padding: 90px 0;
+    background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+}
+
+.location-info-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: var(--radius-lg);
+    padding: 30px;
+    box-shadow: var(--shadow-soft);
+}
+
+.location-map-wrap {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+    min-height: 420px;
+}
+
+.location-map-wrap iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 420px;
+    border: 0;
+}
+
 /* Footer */
 .landing-footer {
     background: #0F172A;
@@ -762,6 +793,11 @@ h1, h2, h3, h4, h5, h6, .font-heading {
         width: 100%;
         opacity: 0.2;
     }
+
+    .location-map-wrap,
+    .location-map-wrap iframe {
+        min-height: 340px;
+    }
 }
 
 @media (max-width: 576px) {
@@ -777,6 +813,15 @@ h1, h2, h3, h4, h5, h6, .font-heading {
     .btn-honda-primary, .btn-honda-outline {
         width: 100%;
         justify-content: center;
+    }
+
+    .location-info-card {
+        padding: 22px;
+    }
+
+    .location-map-wrap,
+    .location-map-wrap iframe {
+        min-height: 280px;
     }
 }
 
