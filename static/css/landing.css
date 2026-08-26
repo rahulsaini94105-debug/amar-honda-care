@@ -110,10 +110,69 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 }
 
 /* Navbar */
+.landing-navbar .d-flex {
+    gap: 12px !important; /* Proper distance/spacing between buttons */
+}
+
 .landing-navbar .btn {
     white-space: nowrap !important;
-    padding: 7px 16px !important;
-    font-size: 0.88rem !important;
+    padding: 10px 20px !important;
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    border-radius: var(--radius-sm) !important;
+    height: 42px; /* Uniform height for all buttons */
+    box-sizing: border-box;
+    transition: var(--transition-fast) !important;
+}
+
+.landing-navbar .btn-honda-primary {
+    border: none !important;
+}
+
+.landing-navbar .btn-outline-secondary {
+    background: transparent !important;
+    border: 2px solid var(--text-secondary) !important;
+    color: var(--text-primary) !important;
+}
+
+.landing-navbar .btn-outline-secondary:hover {
+    background: var(--text-primary) !important;
+    border-color: var(--text-primary) !important;
+    color: #FFFFFF !important;
+    transform: translateY(-1px);
+}
+
+.landing-navbar .btn-outline-dark {
+    background: transparent !important;
+    border: 2px solid var(--dark-titanium) !important;
+    color: var(--dark-titanium) !important;
+}
+
+.landing-navbar .btn-outline-dark:hover {
+    background: var(--dark-titanium) !important;
+    color: #FFFFFF !important;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 991.98px) {
+    .landing-navbar .navbar-collapse {
+        padding-top: 15px;
+    }
+    .landing-navbar .d-flex {
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+        gap: 10px !important;
+        margin-top: 10px;
+    }
+    .landing-navbar .btn,
+    .landing-navbar .lang-toggle-btn {
+        flex: 1 1 auto;
+        justify-content: center;
+    }
 }
 
 .landing-navbar {
@@ -182,20 +241,31 @@ h1, h2, h3, h4, h5, h6, .font-heading {
     background: var(--honda-red-soft);
 }
 
-@media (min-width: 992px) and (max-width: 1200px) {
+@media (min-width: 992px) and (max-width: 1400px) {
     .nav-link-custom {
-        font-size: 0.8rem;
-        padding: 4px 8px !important;
+        font-size: 0.76rem !important;
+        padding: 4px 6px !important;
+    }
+    .landing-navbar .d-flex {
+        gap: 8px !important;
     }
     .landing-navbar .btn {
-        padding: 6px 10px !important;
+        padding: 6px 12px !important;
         font-size: 0.8rem !important;
+        height: 38px !important;
+    }
+    .lang-toggle-btn {
+        height: 38px !important;
+    }
+    .lang-toggle-btn .lang-option {
+        padding: 3px 8px !important;
+        font-size: 0.72rem !important;
     }
     .brand-title-text {
-        font-size: 1.15rem;
+        font-size: 1.05rem !important;
     }
-    .brand-logo-wrap {
-        gap: 8px;
+    .brand-logo-wrap img {
+        height: 32px !important;
     }
 }
 
@@ -843,6 +913,8 @@ h1, h2, h3, h4, h5, h6, .font-heading {
     overflow: hidden;
     flex-shrink: 0;
     box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    height: 42px; /* Match other navbar buttons */
+    box-sizing: border-box;
 }
 
 .lang-toggle-btn:hover {

@@ -105,12 +105,12 @@
                     {% if user.is_authenticated %}
                     <a href="{% url 'reports:dashboard' %}" class="btn btn-outline-dark py-2 px-3 fw-bold">
                         <i class="bi bi-speedometer2"></i>
-                        <span data-en="Staff Dashboard" data-hi="स्टाफ डैशबोर्ड">Staff Dashboard</span>
+                        <span data-en="Owner Dashboard" data-hi="मालिक डैशबोर्ड">Owner Dashboard</span>
                     </a>
                     {% else %}
                     <a href="{% url 'accounts:login' %}" class="btn btn-outline-secondary py-2 px-3 fw-semibold">
                         <i class="bi bi-box-arrow-in-right"></i>
-                        <span data-en="Staff Login" data-hi="स्टाफ लॉगिन">Staff Login</span>
+                        <span data-en="Owner Login" data-hi="मालिक लॉगिन">Owner Login</span>
                     </a>
                     {% endif %}
                 </div>
